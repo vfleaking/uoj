@@ -15,6 +15,7 @@
         <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
         <link rel="stylesheet" href="../css/highlight.css">
         <link href="../css/base.css" rel="stylesheet">
+        <link href="../extra.css" rel="stylesheet">
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
@@ -219,13 +220,68 @@ input_suf in
 <p>extra test 是指额外数据，在 AC 的情况下会测额外数据，如果某个额外数据通不过会被倒扣3分。</p>
 <p>至于样例，样例一定是前几个额外数据，所以有一个 <code>n_sample_tests</code> 表示是前多少组是样例。你需要把题面中的样例和大样例放进额外数据里。</p>
 <p>额外数据命名形如 ex_www1.in, ex_www2.in, ... 这个样子。</p>
-<p>checker 是指判断选手输出是否正确的。一般来说输出结果为整数序列，用 ncmp 就够了，它会比较标准答案的整数序列和选手输出的整数序列。如果是忽略所有空白字符，进行字符串序列的比较，可以用wcmp。如果你想按行比较，可以使用 fcmp。如果想手写 checker，请使用 Codeforces 的 <a href="http://codeforces.com/testlib">testlib</a> 库写 checker。</p>
+<p>checker 是指判断选手输出是否正确的。一般来说输出结果为整数序列，用 ncmp 就够了，它会比较标准答案的整数序列和选手输出的整数序列。如果是忽略所有空白字符，进行字符串序列的比较，可以用wcmp。如果你想按行比较（不忽略行末空格，但忽略文末回车），可以使用 fcmp。如果想手写 checker，请使用 Codeforces 的 <a href="http://codeforces.com/testlib">testlib</a> 库写 checker。</p>
 <p>你需要写好后命名为 chk.cpp，然后在 problem.conf 中去掉 “use_builtin_checker” 一行。</p>
-<p>如果你的题目的输入数据可以被检验是否满足题目要求，那么请写一个validator。比如“保证数据随机”“保证数据均为人手工输入”等就无法检验输入数据是否满足题目要求。</p>
-<p>validator 的作用就是检查你输入数据造得是否合法。比如你输入保证是个连通图，validator 就得检验这个图是不是连通的。还是请用testlib写，教程还是之前提到的那个教程。写好后命名为 val.cpp 就行。</p>
+<p>如果你的题目的输入数据可以被检验是否满足题目要求，那么请写一个 validator。比如“保证数据随机”“保证数据均为人手工输入”等就无法检验输入数据是否满足题目要求。</p>
+<p>validator 的作用就是检查你输入数据造得是否合法。比如你输入保证是个连通图，validator 就得检验这个图是不是连通的。还是请用 testlib 写，教程还是之前提到的那个教程。写好后命名为 val.cpp 就行。</p>
 <p>另外注意时间限制<strong>不能为小数</strong>。</p>
-<p>至于提交答案题怎么配置，让我先</p>
-<p style="font-size:233px">坑着</p></div>
+<h4 id="_9">提交答案题的配置</h4>
+<p>范例：</p>
+<pre>
+use_builtin_judger on
+submit_answer on
+n_tests 10
+input_pre www
+input_suf in
+output_pre www
+output_suf out
+
+</pre>
+
+<p>So easy！</p>
+<p>不过还没完……你要写个 checker。当然如果你是道 <a href="http://uoj.ac/problem/85">最小割计数</a> 就不用写了。。。老样子写个 use_builtin_checker ncmp 就行。</p>
+<p>提答题经常会面临给部分分，请使用 quitp 函数。由于一些历史原因（求不吐槽 QAQ），假设测试点满分为 a，则</p>
+<pre><code class="cpp">quitp(x, &quot;haha&quot;);
+</code></pre>
+
+<p>将会给 floor(a * round(100x) / 100) 分。是不是很复杂……其实很简单，当你这个测试点想给 p 分的时候，只要</p>
+<pre><code class="cpp">quitp(ceil(100.0 * p / a) / 100, &quot;haha&quot;);
+</code></pre>
+
+<p>就行了。（好麻烦啊）</p>
+<p>假设你已经写好了，赞！</p>
+<p>但是下发的本地 checker 怎么办？</p>
+<p>首先你得会写本地 checker。如果只是传参进来一个测试点编号，检查测试点是否正确，那么只要善用 registerTestlib 就行了。如果你想让 checker 与用户交互，请使用 registerInteraction。特别地，如果你想让 checker 通过终端与用户进行交互，请使用如下代码（好丑啊）</p>
+<pre><code class="cpp">    char *targv[] = {argv[0], &quot;inf_file.out&quot;, (char*)&quot;stdout&quot;};
+#ifdef __EMSCRIPTEN__
+    setvbuf(stdin, NULL, _IONBF, 0);
+#endif
+    registerInteraction(3, targv);
+</code></pre>
+
+<p>那么怎么下发文件呢？你可以在文件夹 1/ 下新建一个文件夹 download，里面放的所有东西都会打包发给选手啦～</p>
+<h4 id="_10">交叉编译</h4>
+<p>由于你的本地 checker 可能需要发布到各个平台，所以你也许需要交叉编译。交叉编译的意思是在一个平台上编译出其他平台上的可执行文件。好！下面是 Ubuntu 上交叉编译小教程时间。</p>
+<p>首先不管三七二十一装一些库：（请注意 libc 和 libc++ 可能有更新的版本）</p>
+<pre><code class="sh">sudo apt-get install libc6-dev-i386
+sudo apt-get install lib32stdc++6 lib32stdc++-4.8-dev
+sudo apt-get install mingw32
+</code></pre>
+
+<p>然后就能编译啦：</p>
+<pre><code class="sh">g++ localchk.cpp -o checker_linux64 -O2
+g++ localchk.cpp -m32 -o checker_linux32 -O2
+i586-mingw32msvc-g++ localchk.cpp -o checker_win32.exe -O2
+</code></pre>
+
+<p>问：那其他系统怎么办？有个叫 emscripten 的东西，可以把 C++ 代码编译成 javascript。请务必使用 UOJ 上的 testlib，而不是 CF 上的那个版本。由于 testlib 有些黑科技，UOJ 上的 testlib 对 emscripten 才是兼容的。</p>
+<p><a href="http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html">emscripten 下载地址</a> （建议翻墙提升下载速度）</p>
+<p>编译就用</p>
+<pre><code class="sh">em++ localchk.cpp -o checker.js -O2
+</code></pre>
+
+<p>那么现在问题来了，交互题怎么上传？让我先
+<p style="font-size:233px">坑着</p></p></div>
         </div>
 
         <footer class="col-md-12">
