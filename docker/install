@@ -1,0 +1,61 @@
+#!/bin/sh
+
+chmod +x /var/svn/uoj/hooks/post-commit
+chmod +x /var/svn/problem/new_problem.sh
+chmod +x /var/svn/problem/post-commit.sh
+
+svnserve -d -r /var/svn
+service mysql start
+cd /root
+
+svn co svn://127.0.0.1/uoj __svn_cert__
+mv uoj_1 uoj/1
+cd uoj
+svn add 1
+svn ci -m "first commit" __svn_cert__
+cd ..
+rm uoj -r
+
+rm /var/www/uoj -r && ln -s /var/svn/uoj/cur/uoj/1 /var/www/uoj
+
+while [ ! -d "/var/www/uoj/app" ]
+do
+	sleep 1
+done
+
+mv uoj_config.php /var/www/uoj/app/.config.php
+
+mysql -u root --password=root <app_uoj233.sql
+chown www-data /var/www/uoj/app/storage -R
+
+svn co svn://127.0.0.1/judge_client __svn_cert__
+mv judge_client_1 judge_client/1
+cd judge_client
+svn add 1
+svn ci -m "first commit" __svn_cert__
+cd ..
+rm judge_client -r
+
+chown local_main_judger /home/local_main_judger/jdk-7u76-linux-x64.tar.gz /home/local_main_judger/jdk-8u31-linux-x64.tar.gz
+
+su local_main_judger <<EOD
+svn update /var/svn/judge_client/cur/judge_client __svn_cert__
+ln -s /var/svn/judge_client/cur/judge_client/1 ~/judge_client
+cd ~/judge_client
+chmod +x judge_client
+echo '#define UOJ_WORK_PATH "/home/local_main_judger/judge_client/uoj_judger"' >uoj_judger/include/uoj_work_path.h
+make
+ln -s /var/uoj_data ~/judge_client/uoj_judger/data
+
+mkdir ~/judge_client/uoj_judger/run/runtime
+mv ~/jdk-7u76-linux-x64.tar.gz ~/jdk-8u31-linux-x64.tar.gz ~/judge_client/uoj_judger/run/runtime
+cd ~/judge_client/uoj_judger/run/runtime
+tar -xzf jdk-7u76-linux-x64.tar.gz
+tar -xzf jdk-8u31-linux-x64.tar.gz
+EOD
+
+mv judge_client_config.json /home/local_main_judger/judge_client/.conf.json
+chown local_main_judger /home/local_main_judger/judge_client/.conf.json
+chmod 600 /home/local_main_judger/judge_client/.conf.json
+
+echo 'insert into judger_info (judger_name, password) values ("main_judger", "__main_judger_password__")' | mysql app_uoj233 -u root --password=root

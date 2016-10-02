@@ -1,0 +1,9 @@
+.slide-editor {
+	height: 600px;
+	box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.slide-editor .CodeMirror{
+	height: 100%;
+	width: 100%;
+}

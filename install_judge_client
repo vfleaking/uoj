@@ -1,0 +1,3 @@
+#!/bin/sh
+
+docker build -f docker/judge_client/Dockerfile .

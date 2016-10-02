@@ -1,0 +1,327 @@
+body {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.uoj-content {
+	min-height: 250px;
+}
+
+.uoj-footer {
+	text-align: center;
+	margin-top: 20px;
+	padding-top: 20px;
+	color: gray;
+	border-top: 1px solid #e5e5e5;
+	line-height: 10px;
+}
+.uoj-footer a {
+	color: gray;
+}
+
+a.header-a {
+	color: #333;
+}
+
+a sup {
+	text-decoration: none;
+	display: inline-block;
+}
+a sub {
+	text-decoration: none;
+	display: inline-block;
+}
+
+.indent2 {
+	text-indent: 2em;
+}
+
+article p {
+	text-indent: 2em;
+}
+.markdown-editor-out p {
+	text-indent: 2em;
+	word-break: break-all;
+}
+
+article img {
+	vertical-align: baseline
+}
+
+pre {
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+}
+
+.uoj-username {
+	font-weight: 800;
+}
+
+.uoj-honor {
+	font-weight: 800;	
+}
+.uoj-score {
+	font-weight: 700;
+}
+
+.panel-uoj-accepted {
+	border-color:#2bff4f;
+}
+.panel-uoj-accepted>.panel-heading {
+	cursor:pointer;
+	color:#333;
+	background-color:#00ee00;
+	border-color:#2bff4f;
+}
+.panel-uoj-accepted>.panel-heading:hover {
+	background-color:#2bff4f;
+}
+.panel-uoj-accepted>.panel-heading+.panel-collapse>.panel-body {
+	border-top-color:#00ee00;
+}
+.panel-uoj-accepted>.panel-heading .badge {
+	color:#00ee00;
+	background-color:#333;
+}
+.panel-uoj-accepted>.panel-heading:hover .badge {
+	color:#2bff4f;
+}
+.panel-uoj-accepted>.panel-footer+.panel-collapse>.panel-body {
+	border-bottom-color:#2bff4f;
+}
+
+.panel-uoj-wrong {
+	border-color:#ff0000;
+}
+.panel-uoj-wrong>.panel-heading {
+	cursor:pointer;
+	color:#333;
+	background-color:#dd0000;
+	border-color:#ff0000;
+}
+.panel-uoj-wrong>.panel-heading:hover {
+	background-color:#ff0000;
+}
+.panel-uoj-wrong>.panel-heading+.panel-collapse>.panel-body {
+	border-top-color:#dd0000;
+}
+.panel-uoj-wrong>.panel-heading .badge {
+	color:#dd0000;
+	background-color:#333;
+}
+.panel-uoj-wrong>.panel-heading:hover .badge {
+	color:#ff0000;
+}
+.panel-uoj-wrong>.panel-footer+.panel-collapse>.panel-body {
+	border-bottom-color:#ff0000;
+}
+
+.panel-uoj-acceptable-answer {
+	border-color:#ff7700;
+}
+.panel-uoj-acceptable-answer>.panel-heading {
+	cursor:pointer;
+	color:#333;
+	background-color:#ee5500;
+	border-color:#ff0000;
+}
+.panel-uoj-acceptable-answer>.panel-heading:hover {
+	background-color:#ff7700;
+}
+.panel-uoj-acceptable-answer>.panel-heading+.panel-collapse>.panel-body {
+	border-top-color:#ee5500;
+}
+.panel-uoj-acceptable-answer>.panel-heading .badge {
+	color:#ff7700;
+	background-color:#333;
+}
+.panel-uoj-acceptable-answer>.panel-heading:hover .badge {
+	color:#ff7700;
+}
+.panel-uoj-acceptable-answer>.panel-footer+.panel-collapse>.panel-body {
+	border-bottom-color:#ff7700;
+}
+
+.panel-uoj-tle {
+	border-color:#ffff2b;
+}
+.panel-uoj-tle>.panel-heading {
+	cursor:pointer;
+	color:#333;
+	background-color:#e6e61e;
+	border-color:#ffff2b;
+}
+.panel-uoj-tle>.panel-heading:hover {
+	background-color:#ffff2b;
+}
+.panel-uoj-tle>.panel-heading+.panel-collapse>.panel-body {
+	border-top-color:#ffff2b;
+}
+.panel-uoj-tle>.panel-heading .badge {
+	color:#e6e61e;
+	background-color:#333;
+}
+.panel-uoj-tle>.panel-heading:hover .badge {
+	color:#ffff2b;
+}
+.panel-uoj-tle>.panel-footer+.panel-collapse>.panel-body {
+	border-bottom-color:#ffff2b;
+}
+
+.table-text-center>thead>tr>th {
+	text-align: center;
+}
+.table-text-center>tbody>tr>td {
+	text-align: center;
+}
+
+.table-vertical-middle>thead>tr>th {
+	vertical-align: middle;
+}
+.table-vertical-middle>tbody>tr>td {
+	vertical-align: middle;
+}
+
+.top-buffer-no {
+	margin-top: 0px;
+}
+.top-buffer-xs {
+	margin-top: 3px;
+}
+.top-buffer-sm {
+	margin-top: 5px;
+}
+.top-buffer-md {
+	margin-top: 10px;
+}
+.top-buffer-lg {
+	margin-top: 30px;
+}
+
+.bot-buffer-no {
+	margin-bottom: 0px;
+}
+.bot-buffer-xs {
+	margin-bottom: 3px;
+}
+.bot-buffer-sm {
+	margin-bottom: 5px;
+}
+.bot-buffer-md {
+	margin-bottom: 10px;
+}
+.bot-buffer-lg {
+	margin-bottom: 30px;
+}
+
+.glyphicon-ok, .glyphicon-ok-sign {
+	color: green;
+}
+.glyphicon-remove, .glyphicon-remove-sign {
+	color: red;
+}
+
+.comt {
+}
+
+.comtposterbox {
+	text-align:center;
+}
+.comtbox {
+	width: 100%;
+}
+.comtbox1 {
+	white-space: pre-wrap;
+	word-break: break-all;
+	min-height: 80px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+.comtbox2 {
+	text-align: right;
+}
+.comtbox3 {
+	display: inline-block;
+	margin-right: 5px;
+}
+.comtbox4 {
+	display: inline-block;
+}
+.comtbox5 {
+	background-image: -webkit-linear-gradient(top, #f5f5f5 0, #fafafa 100%);
+	background-image: -o-linear-gradient(top, #f5f5f5 0, #fafafa 100%);
+	background-image: linear-gradient(to bottom, #f5f5f5 0, #fafafa 100%);
+	background-repeat: repeat-x;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff5f5f5', endColorstr='#fffafafa', GradientType=0);
+	border-color: #dcdcdc;
+	-webkit-box-shadow: inset 0 1px 3px rgba(0,0,0,0.05),0 1px 0 rgba(255,255,255,0.1);
+	box-shadow: inset 0 1px 3px rgba(0,0,0,0.05),0 1px 0 rgba(255,255,255,0.1);
+	padding: 9px;
+	border-radius: 3px;
+	
+	min-height: 20px;
+	margin-bottom: 20px;
+	border: 1px solid #e3e3e3;
+
+	margin-top: 10px;
+}
+.comtbox6 {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.uoj-click-zan-block {
+	display: inline-block;
+	min-width: 140px;
+	text-align: left;
+}
+
+.uoj-click-zan-up, .uoj-click-zan-down, .uoj-click-zan-cnt {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.uoj-click-zan-block-cur-up .uoj-click-zan-up {
+	color: green;
+	font-weight: 700;
+}
+.uoj-click-zan-block-cur-down .uoj-click-zan-down {
+	color: red;
+	font-weight: 700;
+}
+.uoj-click-zan-block-cur-down .uoj-click-zan-up, .uoj-click-zan-block-cur-up .uoj-click-zan-down {
+	color: gray;
+}
+
+.uoj-click-zan-block-positive .uoj-click-zan-cnt {
+	color: green;
+}
+.uoj-click-zan-block-neutral .uoj-click-zan-cnt {
+	color: gray;
+}
+.uoj-click-zan-block-negative .uoj-click-zan-cnt {
+	color: red;
+}
+
+.uoj-problem-tag {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+.uoj-blog-tag {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.uoj-status-details-img-div {
+	display:inline-block;
+	width:50%;
+	padding-right:10px;
+	text-align:right;
+}
+.uoj-status-details-text-div {
+	display:inline-block;
+	width:50%;
+	padding-left:10px;
+	text-align:left;
+}

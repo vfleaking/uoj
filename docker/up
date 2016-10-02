@@ -1,0 +1,10 @@
+#!/bin/sh
+
+service ntp start
+service apache2 start
+service mysql start
+svnserve -d -r /var/svn
+
+su local_main_judger -c '~/judge_client/judge_client start'
+
+exec bash
