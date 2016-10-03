@@ -1,9 +1,11 @@
 # Universal Online Judge
 
 ## Installation
-First please download [JDK7u76](http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html#jdk-7u76-oth-JPR) and [JDK8u31](http://www.oracle.com/technetwork/java/javase/downloads/java-archive-javase8-2177648.html#jdk-8u31-oth-JPR), and put them to `docker/jdk-7u76-linux-x64.tar.gz` and `docker/jdk-8u31-linux-x64.tar.gz`.
+This is a dockerized version of UOJ. Before installation, please make sure that [Docker](https://www.docker.com/) has already been installed on your OS.
 
-Next, you can run the following command in your terminal:
+First please download [JDK7u76](http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html#jdk-7u76-oth-JPR) and [JDK8u31](http://www.oracle.com/technetwork/java/javase/downloads/java-archive-javase8-2177648.html#jdk-8u31-oth-JPR), and put them to `docker/jdk-7u76-linux-x64.tar.gz` and `docker/jdk-8u31-linux-x64.tar.gz`. These two compressed files are used by judge\_client for judging Java program. If you are too lazy to download these two huge files, you can simply place two empty .tar.gz files there.
+
+Next, you can run the following command in your terminal: (not the one in the `docker/` directory!)
 ```sh
 ./install
 ```
@@ -13,7 +15,7 @@ To start your UOJ main server, please run:
 ```sh
 docker run -it -p 80:80 -p 3690:3690 <image-id>
 ```
-If you are using docker on Mac OS, you could possibly this alternative command:
+If you are using docker on Mac OS, you could possibly use this alternative command:
 ```sh
 docker run -it -p 80:80 -p 3690:3690 --cap-add SYS_PTRACE <image-id>
 ```
@@ -26,7 +28,9 @@ mysql app_uoj233 -u root -p
 ```
 to login mysql in the terminal.
 
-Notice that if you want only one judge client, then everything is ok now. But if you want more judge clients, you need to set up them one by one. First run:
+Notice that if you want only one judge client, then everything is ok now. Cheers!
+
+However, if you want more judge clients, you need to set up them one by one. First run:
 ```sh
 ./config_judge_client
 ```
