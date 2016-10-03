@@ -1,8 +1,11 @@
 # Universal Online Judge
 
-## Installation
+## Dependence
 This is a dockerized version of UOJ. Before installation, please make sure that [Docker](https://www.docker.com/) has already been installed on your OS.
 
+The docker image of UOJ is **64-bit**, so a **32-bit** host OS may cause installation failure.
+
+## Installation
 First please download [JDK7u76](http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html#jdk-7u76-oth-JPR) and [JDK8u31](http://www.oracle.com/technetwork/java/javase/downloads/java-archive-javase8-2177648.html#jdk-8u31-oth-JPR), and put them to `docker/jdk-7u76-linux-x64.tar.gz` and `docker/jdk-8u31-linux-x64.tar.gz`. These two compressed files are used by judge\_client for judging Java program. If you are too lazy to download these two huge files, you can simply place two empty .tar.gz files there.
 
 Next, you can run the following command in your terminal: (not the one in the `docker/` directory!)
