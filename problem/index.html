@@ -181,7 +181,7 @@
 <p>可以通过这个页面增加或删除题目管理员。</p>
 <h3 id="_7">数据</h3>
 <p>UOJ 使用 svn 管理题目数据，svn 仓库地址可以在本页面上找到。当你点了本页面的某个按钮后，UOJ 将把 svn 密码发送到你的邮箱。这个 svn 密码是不随题目变化而变化的。</p>
-<p>但是，初始时 UOJ 是没有配置过用于给大家发邮件的邮箱的。所以如果你还没有配置过，请直接在数据库的 user_info 表中找到 svn_password 一栏存储的值。</p>
+<p>但是，初始时 UOJ 是没有配置过用于给大家发邮件的邮箱的。所以如果你还没有配置过，请直接在数据库的 user_info 表中找到 svn_password 一栏存储的值；如果你愿意折腾一下，可以在 /var/www/uoj/app/.config.php 里配置一下邮箱，详情见<a href="../install/">安装</a>咯～</p>
 <ol>
 <li>下载 svn，即 subversion。如果是 win 可以用 TortoiseSVN，如果是 ubuntu 直接 apt-get 一发，也可以用 smartsvn。</li>
 <li>学习怎么使用 svn。（蛮好懂的吧，会用 checkout，add，remove，commit 什么的就行了）</li>
