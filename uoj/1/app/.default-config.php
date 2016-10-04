@@ -9,11 +9,13 @@ return [
 	'web' => [
 		'main' => [
 			'protocol' => 'http',
-			'host' => 'local_uoj.ac'
+			'host' => 'local_uoj.ac',
+			'port' => 80
 		],
 		'blog' => [
 			'protocol' => 'http',
-			'host' => 'blog.local_uoj.ac'
+			'host' => 'blog.local_uoj.ac',
+			'port' => 80
 		]
 	],
 	'security' => [
@@ -27,7 +29,9 @@ return [
 	'mail' => [
 		'noreply' => [
 			'username' => 'noreply@none',
-			'password' => 'noreply'
+			'password' => 'noreply',
+			'host' => 'smtp.sina.com',
+			'port' => 25
 		]
 	],
 	'judger' => [
@@ -41,5 +45,9 @@ return [
 			'username' => 'our-root',
 			'password' => 'our-root'
 		]
+	],
+	'switch' => [
+		'ICP-license' => false,
+		'web-analytics' => false
 	]
 ];

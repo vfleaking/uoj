@@ -63,6 +63,9 @@ class HTML {
 		}
 		
 		$url = UOJConfig::$data['web'][$config['location']]['protocol'].'://'.UOJConfig::$data['web'][$config['location']]['host'];
+		if (UOJConfig::$data['web'][$config['location']]['port'] != 80) {
+			$url .= ':'.UOJConfig::$data['web'][$config['location']]['port'];
+		}
 		if ($param) {
 			$url .= $path.'?'.HTML::query_string_encode($param);
 		} else {

@@ -5,8 +5,6 @@
 		require_once $_SERVER['DOCUMENT_ROOT'] . '/app/models/' . $class_name . '.php';
 	});
 	
-	Session::init();
-	
 	function requireLib($name) { // html lib
 		global $REQUIRE_LIB;
 		$REQUIRE_LIB[$name] = '';
@@ -23,6 +21,7 @@
 	requirePHPLib('contest');
 	requirePHPLib('html');
 	
+	Session::init();
 	UOJTime::init();
 	DB::init();
 	Auth::init();

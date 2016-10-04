@@ -6,7 +6,8 @@ class UOJMail {
 	public static function noreply() {
 		$mailer = new PHPMailer();  
 		$mailer->isSMTP();
-		$mailer->Host = "smtp.sina.com";
+		$mailer->Host = UOJConfig::$data['mail']['noreply']['host'];
+		$mailer->Port = UOJConfig::$data['mail']['noreply']['port'];
 		$mailer->SMTPAuth = true;
 		$mailer->Username = UOJConfig::$data['mail']['noreply']['username'];
 		$mailer->Password = UOJConfig::$data['mail']['noreply']['password'];

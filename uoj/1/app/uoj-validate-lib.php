@@ -43,3 +43,7 @@ function validateInt($x) {
 function validateUploadedFile($name) {
 	return isset($_FILES[$name]) && is_uploaded_file($_FILES[$name]['tmp_name']);
 }
+
+function validateIP($ip) {
+	return filter_var($ip, FILTER_VALIDATE_IP) !== false;
+}

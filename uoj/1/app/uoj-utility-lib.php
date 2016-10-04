@@ -1,9 +1,11 @@
 <?php
 
 function mergeConfig(&$config, $default_config) {
-	foreach ($default_config as $key => $val) {
+	foreach($default_config as $key => $val) {
 		if (!isset($config[$key])) {
 			$config[$key] = $val;
+		} elseif (is_array($config[$key])) {
+			mergeConfig($config[$key], $val);
 		}
 	}
 }

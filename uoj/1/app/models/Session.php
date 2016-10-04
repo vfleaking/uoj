@@ -2,9 +2,16 @@
 
 class Session {
 	public static function init() {
+		$domain = UOJConfig::$data['web']['main']['host'];
+		if (validateIP($domain)) {
+			$domain = '';
+		} else {
+			$domain = '.'.$domain;
+		}
+		
 		session_name('UOJSESSID');
 		ini_set('session.cookie_path', '/');
-		ini_set('session.cookie_domain', '.'.UOJConfig::$data['web']['main']['host']);
+		ini_set('session.cookie_domain', $domain);
 		
 		session_start();
 		
