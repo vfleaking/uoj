@@ -1,0 +1,11 @@
+site_name: UOJ Documentation
+pages:
+- 主页: 'index.md'
+- 安装: 'install.md'
+- 维护: 'maintain.md'
+- 题目: 'problem.md'
+- 比赛: 'contest.md'
+- 开发: 'dev.md'
+- 关于: 'about.md'
+theme: cerulean
+extra_css: [extra.css]

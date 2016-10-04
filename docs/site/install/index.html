@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+
+	<title>安装 - UOJ Documentation</title>
+
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
+        <link href="../css/base.css" rel="stylesheet">
+        <link href="../extra.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="..">UOJ Documentation</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="..">主页</a>
+                </li>
+            
+            
+            
+                <li class="active">
+                    <a href="./">安装</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../maintain/">维护</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../problem/">题目</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../contest/">比赛</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../dev/">开发</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../about/">关于</a>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li >
+                    <a rel="next" href="..">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../maintain/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#_1">安装</a></li>
+        
+            <li><a href="#_2">教练我想安装！</a></li>
+        
+            <li><a href="#_3">教练我还想折腾！</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="_1">安装</h1>
+<h2 id="_2">教练我想安装！</h2>
+<p>请参见 <a href="https://github.com/vfleaking/uoj/blob/master/README.md">README.md</a> 来安装。</p>
+<p>嘿嘿现在我假设你已经是超级管理员了！</p>
+<p>那么你就可以新建题目了！</p>
+<p>看看看，problem/1 这个文件夹，里面有一道样题，赶紧动手上传！（啊感觉我应该多给几道样题的）</p>
+<p>关于如何传题请参见<a href="../problem/">题目文档</a></p>
+<p>啊如果你在 “与svn仓库同步” 的过程中发现 <samp>compile error</samp> 并且还说 <samp>no comment</samp> 的话……多半是……UOJ 尝试 ptrace 然而 ptrace 被禁了……</p>
+<p>被禁了可能是被 docker 禁了，可以加一句 <code>--privileged --cap-add SYS_PTRACE</code> （见 <a href="https://github.com/vfleaking/uoj/blob/master/README.md">README.md</a>）……要是这样不能解决问题。。。估计就是被黑恶势力禁掉了。。。大概就不是咱们这边的锅了，找找是哪个黑恶势力禁的吧。。。</p>
+<p>传题都没问题的话，感觉就可以愉快使用 UOJ 了！</p>
+<h2 id="_3">教练我还想折腾！</h2>
+<p>嗯！来来来我们来折腾一波。</p>
+<p>有个很厉害的配置文件，在 /var/www/uoj/app/.config.php 里，你可以配置一波……一个完全体如下：（有可能本文档没有跟上代码更新的速度，请以旁边的那个 .default-config.php 为准）</p>
+<pre><code class="php">&lt;?php
+return [
+    'database' =&gt; [                         // 数据库相关
+        'database'  =&gt; 'app_uoj233',            // 数据库名称
+        'username' =&gt; 'root',                   // 用户名
+        'password' =&gt; '',                       // 密码
+        'host' =&gt; '127.0.0.1'                   // 数据库主机名
+    ],
+    'web' =&gt; [                              // 网址相关
+        'main' =&gt; [                             // 网站主体
+            'protocol' =&gt; 'http',                   // 传输协议
+            'host' =&gt; 'local_uoj.ac',               // 主机名
+            'port' =&gt; 80                            // 端口
+        ],
+        'blog' =&gt; [                             // UOJ 博客 （用户名放前面之后成为完整的域名）
+            'protocol' =&gt; 'http',                   // 传输协议
+            'host' =&gt; 'blog.local_uoj.ac',          // 主机名
+            'port' =&gt; 80                            // 端口
+        ]
+    ],
+    'security' =&gt; [                         // 安全相关（不要动）
+        'user' =&gt; [
+            'client_salt' =&gt; 'salt0'
+        ],
+        'cookie' =&gt; [
+            'checksum_salt' =&gt; ['salt1', 'salt2', 'salt3']
+        ],
+    ],
+    'mail' =&gt; [                             // 邮件相关（SMTP 协议发送）
+        'noreply' =&gt; [                          // noreply 邮箱
+            'username' =&gt; 'noreply@none',
+            'password' =&gt; 'noreply',
+            'host' =&gt; 'smtp.sina.com',
+            'port' =&gt; 25
+        ]
+    ],
+    'judger' =&gt; [                           // 测评相关（不要动）
+        'socket' =&gt; [                           // 与测评机的 socket 服务器通讯的设置
+            'port' =&gt; '233',                        // 端口
+            'password' =&gt; 'password233'             // 认证密码（证明自己 UOJ 服务器）
+        ]
+    ],
+    'svn' =&gt; [                              // svn 相关（不要动）
+        'our-root' =&gt; [                         // 每个题目的 svn 仓库自带的仓库管理员
+            'username' =&gt; 'our-root',               // 管理员用户名
+            'password' =&gt; 'our-root'                // 密码
+        ]
+    ],
+    'switch' =&gt; [                           // 一些开关
+        'ICP-license' =&gt; false,                 // ICP 备案信息的显示
+        'web-analytics' =&gt; false                // 网站流量统计（记 uoj.ac 名下……想统计自己的得改代码）
+    ]
+];
+</code></pre>
+
+<h3 id="_4">域名</h3>
+<p>如果你想使用自己的域名，改 config 即可。</p>
+<p>如果你是搭校内网站这种的，可能没有 DNS。你可以选择自己搭校内的 DNS 解析，或者自己改 hosts。</p>
+<p>或者你想成为一条咸鱼，可以直接在 config 里的 host 那里写 ip。</p>
+<p>谜之声：为什么博客用不了？</p>
+<p>嗯。。。博客的话需要给每个用户的博客域名进行解析……最好是用泛解析解决。如果没这条件，我帮你点根蜡烛 23333……期待有为青年码一个“博客以子域名还是子目录形式出现”的开关。</p>
+<h3 id="_5">邮箱</h3>
+<p>noreply 邮箱的目的是发一些莫名其妙的邮件，比如 svn 密码和 “找回密码”。</p>
+<p>你可以随便找一个邮箱小号把账号密码塞这里，但是记得查查邮件服务商的 SMTP 服务器名和端口。以及，有些邮箱是需要手动开启某个开关才能允许 SMTP 发送邮件的。</p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/highlight.pack.js"></script>
+        <script src="../js/base.js"></script>
+    </body>
+</html>

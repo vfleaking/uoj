@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+
+	<title>题目 - UOJ Documentation</title>
+
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
+        <link href="../css/base.css" rel="stylesheet">
+        <link href="../extra.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="..">UOJ Documentation</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="..">主页</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../install/">安装</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../maintain/">维护</a>
+                </li>
+            
+            
+            
+                <li class="active">
+                    <a href="./">题目</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../contest/">比赛</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../dev/">开发</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../about/">关于</a>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li >
+                    <a rel="next" href="../maintain/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../contest/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#_1">题目</a></li>
+        
+            <li><a href="#_2">上传题目</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="_1">题目</h1>
+<h2 id="_2">上传题目</h2>
+<p>新建题目只有超级管理员有权限，所以想加题先要联系超级管理员君，点一下题库右下方的 “新建题目” 按钮。</p>
+<p>新建题目后，超级管理员或该题目的题目管理员可以看到题目后台。后台分为三个选项卡：</p>
+<ol>
+<li>编辑：题面编辑页面</li>
+<li>管理者：题目管理员列表管理页面</li>
+<li>数据：题目数据管理页面</li>
+</ol>
+<p>当然还有最后个 “返回” 选项卡退出后台。下面将逐一介绍这三个选项卡。</p>
+<h3 id="_3">编辑</h3>
+<p>该页面可以对题面本身进行编辑，还可以管理题目的标签。</p>
+<h4 id="_4">编辑题面</h4>
+<p>题面用 Markdown 编写。</p>
+<p>理论上题面是可以自由编写的，但还是有一些推荐的格式。可参照 UOJ 上对应类型的题面（传统题，交互题，提交答案题等）</p>
+<p>一些推荐的规则：</p>
+<ol>
+<li>中文与英文、数字之间加一个空格隔开。</li>
+<li>输入输出样例用 <code>&lt;pre&gt;</code> 标签包围，并且以一个空行结尾。（方便大家复制样例到终端后不用再打回车）</li>
+<li>题面中最高级标题为三级标题。这是因为题目名称是二级标题。</li>
+<li>名称超过一个字符的数学符号要用 mathrm。例如 <code>\mathrm{sgn}</code>， <code>\mathrm{lca}</code>。</li>
+<li>注意 <code>\max</code>, <code>\min</code>, <code>\gcd</code> 都是有现成的。</li>
+<li>注意 xor 这种名称超过一个字符的二元运算符请用 <code>\mathbin{\mathrm{xor}}</code>。</li>
+<li>一行内的计算机输入输出和常量字符串表达式请用 <code>&lt;samp&gt;</code> 标签，例如 <code>请输出 “&lt;samp&gt;NO SOLUTION&lt;/samp&gt;”</code>， <code>&lt;samp&gt;aaa&lt;/samp&gt; 中有三个 &lt;samp&gt;a&lt;/samp&gt;</code>。</li>
+<li>一行内的计算机代码请用 <code>`</code> 括起来，就像上面的规则那样。</li>
+</ol>
+<p>可参考下面这个例子：</p>
+<pre><code class="markdown">读入一个整数 $n$，表示题目中提到的 $3$ 位大爷 AC 的总题数。请输出他们分别 AC 的总题数。如果你不能正确读入，那么将获得 $0$ 分。前 $3$ 个测试点你正确读入即可获得 $6$ 分，第 4 个测试点你正确读入只能获得 $3$ 分。如果你不会做这道题，请直接输出 “&lt;samp&gt;WOBUHUI&lt;/samp&gt;”
+
+下面有一个样例：
+&lt;pre&gt;
+233
+
+&lt;/pre&gt;
+</code></pre>
+
+<h4 id="_5">编辑标签</h4>
+<p>只需要用英文逗号隔开标签填入文本框就行。</p>
+<p>推荐你使用如下几条规则填写标签：</p>
+<ol>
+<li>标签的目的是标出题目类型，方便用户检索题目。一般来说，标签顺序基本为从小范围到大范围。</li>
+<li>最前面的几个标签是这题所需要的前置技能，这里假定 “二分查找” 之类过于基础的技能选手已经掌握。</li>
+<li>接下来是这道题的大方法，比如 “贪心”、“DP”、“乱搞”、“构造”、“分治”……</li>
+<li>接下来，如果这道题是非传统题，用一个标签注明非传统题类型，比如 “提交答案”、“交互式”、“通讯”。</li>
+<li>接下来，如果这道题是模板题，用一个标签注明 “模板题”。</li>
+<li>接下来，如果这道题是不用脑子想就能做出的题，例如 NOIP 第一题难度，用一个标签注明 “水题”。</li>
+<li>最后，如果这题的来源比较重要，用一个标签注明。比如 “UOJ Round”、“NOI”、“WC”。</li>
+<li>前置技能中，“数学” 太过宽泛不能作为标签，但 “数论” 可以作为前置技能。</li>
+<li>如果有多个解法，每个解法的前值技能和大方法都不太一样，那么尽可能都标上去。</li>
+<li>“乱搞” 标签不宜滥用。</li>
+</ol>
+<h3 id="_6">管理者</h3>
+<p>只有题目管理员和超级管理员才能看到后台，但只有题目管理员才能管理题目数据。</p>
+<p>可以通过这个页面增加或删除题目管理员。</p>
+<h3 id="_7">数据</h3>
+<p>UOJ 使用 svn 管理题目数据，svn 仓库地址可以在本页面上找到。当你点了本页面的某个按钮后，UOJ 将把 svn 密码发送到你的邮箱。这个 svn 密码是不随题目变化而变化的。</p>
+<p>但是，初始时 UOJ 是没有配置过用于给大家发邮件的邮箱的。所以如果你还没有配置过，请直接在数据库的 user_info 表中找到 svn_password 一栏存储的值；如果你愿意折腾一下，可以在 /var/www/uoj/app/.config.php 里配置一下邮箱，详情见<a href="../install/">安装</a>咯～</p>
+<ol>
+<li>下载 svn，即 subversion。如果是 win 可以用 TortoiseSVN，如果是 ubuntu 直接 apt-get 一发，也可以用 smartsvn。</li>
+<li>学习怎么使用 svn。（蛮好懂的吧，会用 checkout，add，remove，commit 什么的就行了）</li>
+<li>在题目数据管理页面，获取 svn 密码。</li>
+<li>checkout 这道题。</li>
+<li>在你的 working copy 下，建立文件夹 1，然后在 1 这个文件夹下放置题目数据什么的。</li>
+<li>搞完之后 commit。</li>
+<li>在网页上点“与SVN仓库同步”，就可以啦！</li>
+</ol>
+<h4 id="_8">题目配置格式</h4>
+<p>主要麻烦是要写个 problem.conf，下面主要介绍传统题的配置。</p>
+<p>例如：</p>
+<pre>
+use_builtin_judger on
+use_builtin_checker ncmp
+n_tests 10
+n_ex_tests 5
+n_sample_tests 1
+input_pre www
+input_suf in
+output_pre www
+output_suf out
+time_limit 1
+memory_limit 256
+output_limit 64
+
+</pre>
+
+<p>假如你 input 文件是 www1.in, www2.in, ... 这个样子，那么你需要在 problem.conf 里记录：</p>
+<pre>
+input_pre www
+input_suf in
+
+</pre>
+
+<p>output 文件同理。 </p>
+<p>extra test 是指额外数据，在 AC 的情况下会测额外数据，如果某个额外数据通不过会被倒扣3分。</p>
+<p>至于样例，样例一定是前几个额外数据，所以有一个 <code>n_sample_tests</code> 表示是前多少组是样例。你需要把题面中的样例和大样例放进额外数据里。</p>
+<p>额外数据命名形如 ex_www1.in, ex_www2.in, ... 这个样子。</p>
+<p>checker 是指判断选手输出是否正确的。一般来说输出结果为整数序列，用 ncmp 就够了，它会比较标准答案的整数序列和选手输出的整数序列。如果是忽略所有空白字符，进行字符串序列的比较，可以用wcmp。如果你想按行比较（不忽略行末空格，但忽略文末回车），可以使用 fcmp。如果想手写 checker，请使用 Codeforces 的 <a href="http://codeforces.com/testlib">testlib</a> 库写 checker。</p>
+<p>你需要写好后命名为 chk.cpp，然后在 problem.conf 中去掉 “use_builtin_checker” 一行。</p>
+<p>如果你的题目的输入数据可以被检验是否满足题目要求，那么请写一个 validator。比如“保证数据随机”“保证数据均为人手工输入”等就无法检验输入数据是否满足题目要求。</p>
+<p>validator 的作用就是检查你输入数据造得是否合法。比如你输入保证是个连通图，validator 就得检验这个图是不是连通的。还是请用 testlib 写，教程还是之前提到的那个教程。写好后命名为 val.cpp 就行。</p>
+<p>另外注意时间限制<strong>不能为小数</strong>。</p>
+<h4 id="_9">提交答案题的配置</h4>
+<p>范例：</p>
+<pre>
+use_builtin_judger on
+submit_answer on
+n_tests 10
+input_pre www
+input_suf in
+output_pre www
+output_suf out
+
+</pre>
+
+<p>So easy！</p>
+<p>不过还没完……你要写个 checker。当然如果你是道 <a href="http://uoj.ac/problem/85">最小割计数</a> 就不用写了。。。老样子写个 use_builtin_checker ncmp 就行。</p>
+<p>提答题经常会面临给部分分，请使用 quitp 函数。由于一些历史原因（求不吐槽 QAQ），假设测试点满分为 a，则</p>
+<pre><code class="cpp">quitp(x, &quot;haha&quot;);
+</code></pre>
+
+<p>将会给 floor(a * round(100x) / 100) 分。是不是很复杂……其实很简单，当你这个测试点想给 p 分的时候，只要</p>
+<pre><code class="cpp">quitp(ceil(100.0 * p / a) / 100, &quot;haha&quot;);
+</code></pre>
+
+<p>就行了。（好麻烦啊）</p>
+<p>假设你已经写好了，赞！</p>
+<p>但是下发的本地 checker 怎么办？</p>
+<p>首先你得会写本地 checker。如果只是传参进来一个测试点编号，检查测试点是否正确，那么只要善用 registerTestlib 就行了。如果你想让 checker 与用户交互，请使用 registerInteraction。特别地，如果你想让 checker 通过终端与用户进行交互，请使用如下代码（好丑啊）</p>
+<pre><code class="cpp">    char *targv[] = {argv[0], &quot;inf_file.out&quot;, (char*)&quot;stdout&quot;};
+#ifdef __EMSCRIPTEN__
+    setvbuf(stdin, NULL, _IONBF, 0);
+#endif
+    registerInteraction(3, targv);
+</code></pre>
+
+<p>那么怎么下发文件呢？你可以在文件夹 1/ 下新建一个文件夹 download，里面放的所有东西都会打包发给选手啦～</p>
+<h4 id="_10">交叉编译</h4>
+<p>由于你的本地 checker 可能需要发布到各个平台，所以你也许需要交叉编译。交叉编译的意思是在一个平台上编译出其他平台上的可执行文件。好！下面是 Ubuntu 上交叉编译小教程时间。</p>
+<p>首先不管三七二十一装一些库：（请注意 libc 和 libc++ 可能有更新的版本）</p>
+<pre><code class="sh">sudo apt-get install libc6-dev-i386
+sudo apt-get install lib32stdc++6 lib32stdc++-4.8-dev
+sudo apt-get install mingw32
+</code></pre>
+
+<p>然后就能编译啦：</p>
+<pre><code class="sh">g++ localchk.cpp -o checker_linux64 -O2
+g++ localchk.cpp -m32 -o checker_linux32 -O2
+i586-mingw32msvc-g++ localchk.cpp -o checker_win32.exe -O2
+</code></pre>
+
+<p>问：那其他系统怎么办？有个叫 emscripten 的东西，可以把 C++ 代码编译成 javascript。请务必使用 UOJ 上的 testlib，而不是 CF 上的那个版本。由于 testlib 有些黑科技，UOJ 上的 testlib 对 emscripten 才是兼容的。</p>
+<p><a href="http://kripken.github.io/emscripten-site/docs/getting_started/downloads.html">emscripten 下载地址</a> （建议翻墙提升下载速度）</p>
+<p>编译就用</p>
+<pre><code class="sh">em++ localchk.cpp -o checker.js -O2
+</code></pre>
+
+<p>那么现在问题来了，交互题怎么上传？让我先
+<p style="font-size:233px">坑着</p></p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/highlight.pack.js"></script>
+        <script src="../js/base.js"></script>
+    </body>
+</html>

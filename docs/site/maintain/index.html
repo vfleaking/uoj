@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+
+	<title>维护 - UOJ Documentation</title>
+
+        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../css/highlight.css">
+        <link href="../css/base.css" rel="stylesheet">
+        <link href="../extra.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="..">UOJ Documentation</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="..">主页</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../install/">安装</a>
+                </li>
+            
+            
+            
+                <li class="active">
+                    <a href="./">维护</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../problem/">题目</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../contest/">比赛</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../dev/">开发</a>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../about/">关于</a>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li >
+                    <a rel="next" href="../install/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../problem/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#_1">维护</a></li>
+        
+            <li><a href="#_2">数据可持久化</a></li>
+        
+            <li><a href="#_3">更新</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="_1">维护</h1>
+<h2 id="_2">数据可持久化</h2>
+<p>（我并不是在说函数式线段树233）</p>
+<p>有同学表示重启后 docker 丢失了数据。在这里要科普下 docker 的 image 和 container 的概念。</p>
+<p><code>run</code> 命令的功能是读一个 image 并运行，跑起来的 image 是一名光荣的 container，跑完的 container 还是一名光荣的 container。</p>
+<p>所以当你关掉了你的 container 之后，使用 <code>run</code> 命令试图让它复活是不对的。。。</p>
+<p>首先，你需要</p>
+<pre><code class="sh">docker ps -a
+</code></pre>
+
+<p>来查看所有正在运行或运行结束的 container，找到你刚才掐掉的那个（通常就是第一个），然后复制下它的 container id。然后：</p>
+<pre><code class="sh">docker restart &lt;container-id&gt;
+</code></pre>
+
+<p>这家伙就在后台默默跑起来了！如果你想让它回到前台，请用</p>
+<pre><code class="sh">docker attach &lt;container-id&gt;
+</code></pre>
+
+<p>当当！复活了！你以为丢失了的数据都回来了！（container 其实可以起名的，这种进阶用法自己探索吧233）</p>
+<h2 id="_3">更新</h2>
+<p>当 github 上有更新的时候，如何更新自己本地的版本呢？</p>
+<p>求看眼<a href="../dev/">开发</a>最前面几行关于使用 svn 仓库的。</p>
+<p>嗯好，假设你已经看完了。如果是 uoj 和 judge_client 的更新，那么你可以 svn checkout 一下，然后把 git 里的新版本 commit 上去……不过你以前 checkout 过的话就可以留着那个文件夹，下次就不用重新 checkout 了。</p>
+<p>如果有什么数据库上的更新……再说吧，这部分我还没设计，感觉。。。到时候给个自动的小脚本好了。</p></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../js/jquery-1.10.2.min.js"></script>
+        <script src="../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../js/highlight.pack.js"></script>
+        <script src="../js/base.js"></script>
+    </body>
+</html>
