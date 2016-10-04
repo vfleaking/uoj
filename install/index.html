@@ -135,7 +135,7 @@
 <p>看看看，problem/1 这个文件夹，里面有一道样题，赶紧动手上传！（啊感觉我应该多给几道样题的）</p>
 <p>关于如何传题请参见<a href="../problem/">题目文档</a></p>
 <p>啊如果你在 “与svn仓库同步” 的过程中发现 <samp>compile error</samp> 并且还说 <samp>no comment</samp> 的话……多半是……UOJ 尝试 ptrace 然而 ptrace 被禁了……</p>
-<p>被禁了可能是被 docker 禁了，可以加一句 <code>--cap-add SYS_PTRACE</code> （见 <a href="https://github.com/vfleaking/uoj/blob/master/README.md">README.md</a>）……要是这样不能解决问题。。。估计就是被黑恶势力禁掉了。。。大概就不是咱们这边的锅了，找找是哪个黑恶势力禁的吧。。。</p>
+<p>被禁了可能是被 docker 禁了，可以加一句 <code>--privileged --cap-add SYS_PTRACE</code> （见 <a href="https://github.com/vfleaking/uoj/blob/master/README.md">README.md</a>）……要是这样不能解决问题。。。估计就是被黑恶势力禁掉了。。。大概就不是咱们这边的锅了，找找是哪个黑恶势力禁的吧。。。</p>
 <p>传题都没问题的话，感觉就可以愉快使用 UOJ 了！</p>
 <h2 id="_3">教练我还想折腾！</h2>
 <p>嗯！来来来我们来折腾一波。</p>
