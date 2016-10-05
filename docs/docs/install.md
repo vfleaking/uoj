@@ -14,7 +14,9 @@
 
 啊如果你在 “与svn仓库同步” 的过程中发现 <samp>compile error</samp> 并且还说 <samp>no comment</samp> 的话……多半是……UOJ 尝试 ptrace 然而 ptrace 被禁了……
 
-被禁了可能是被 docker 禁了，可以加一句 `--privileged --cap-add SYS_PTRACE` （见 [README.md](https://github.com/vfleaking/uoj/blob/master/README.md)）……要是这样不能解决问题。。。估计就是被黑恶势力禁掉了。。。大概就不是咱们这边的锅了，找找是哪个黑恶势力禁的吧。。。
+被禁了可能是被 docker 禁了，可以加一句 `--cap-add SYS_PTRACE` （见 [README.md](https://github.com/vfleaking/uoj/blob/master/README.md)）……要是这样不能解决问题。。。估计就是被黑恶势力禁掉了。。。大概就不是咱们这边的锅了，找找是哪个黑恶势力禁的吧。。。
+
+另：如果上述方法不能解决 ptrace 问题也可以考虑使用 `--privileged`，但是这么做会导致 docker 失去其原有的隔离性而带来潜在的风险，不建议在生产环境中使用。
 
 传题都没问题的话，感觉就可以愉快使用 UOJ 了！
 
