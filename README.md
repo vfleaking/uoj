@@ -20,7 +20,7 @@ docker run -it -p 80:80 -p 3690:3690 <image-id>
 ```
 If you are using docker on Mac OS or having 'std: compile error. no comment' message on uploading problem data, you could possibly use this alternative command:
 ```sh
-docker run -it -p 80:80 -p 3690:3690 --privileged --cap-add SYS_PTRACE <image-id>
+docker run -it -p 80:80 -p 3690:3690 --cap-add SYS_PTRACE <image-id>
 ```
 
 The default hostname of UOJ is `local_uoj.ac`, so you need to modify your host file in your OS in order to map `127.0.0.1` to `local_uoj.ac`. (It is `/etc/hosts` on Linux.) After that, you can access UOJ in your web browser.
