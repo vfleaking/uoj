@@ -31,7 +31,7 @@ return [
 			'username' => 'noreply@none',
 			'password' => 'noreply',
 			'host' => 'smtp.sina.com',
-			'secure' => 'ssl',
+			'secure' => '',
 			'port' => 25
 		]
 	],
