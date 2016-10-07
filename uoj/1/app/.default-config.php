@@ -7,6 +7,11 @@ return [
 		'host' => '127.0.0.1'
 	],
 	'web' => [
+		'common' => [
+			'protocol' => 'http',
+			'host' => 'local_uoj.ac',
+			'port' => 80
+		],
 		'main' => [
 			'protocol' => 'http',
 			'host' => 'local_uoj.ac',
