@@ -2,7 +2,7 @@
 
 class Session {
 	public static function init() {
-		$domain = UOJConfig::$data['web']['main']['host'];
+		$domain = UOJConfig::$data['web']['common']['host'];
 		if (validateIP($domain)) {
 			$domain = '';
 		} else {
