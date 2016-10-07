@@ -15,7 +15,7 @@ class Cookie {
 		), $config);
 		$_COOKIE[$key] = $val;
 		
-		$domain = UOJConfig::$data['web']['common']['host'];
+		$domain = UOJConfig::$data['web']['domain'];
 		if (validateIP($domain)) {
 			$domain = '';
 		} else {
@@ -29,7 +29,7 @@ class Cookie {
 		}
 		unset($_COOKIE[$key]);
 		
-		$domain = UOJConfig::$data['web']['common']['host'];
+		$domain = UOJConfig::$data['web']['domain'];
 		if (validateIP($domain)) {
 			$domain = '';
 		} else {
