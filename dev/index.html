@@ -133,6 +133,35 @@ uoj = 666666
 来增加一位名为 "<samp>uoj</samp>"，密码为 "<samp>666666</samp>" 的 svn 仓库管理员。</p>
 <p>之后你就可以随意用 svn 玩耍了哇咔咔……</p>
 <p>在本地写完之后，如果你想与别人分享，你可以把代码再放到 git 中（什么鬼？）再 push 到 github。</p>
+<p>如果你想更新的东西已经不局限于网站代码，还想对数据库、文件系统之类的折腾一番，请在 app/upgrade 目录下建立文件夹，举个例子，叫 <code>2333_create_table_qaq</code>。即，以一串数字开头，后面加一个下划线，再后面随便取名字吧，仅能包含数字字母和下划线。</p>
+<p>在这个文件夹下你可以放一些小脚本。大概 UOJ 运行这些小脚本是这么个逻辑：</p>
+<pre><code class="php">if (is_file(&quot;{$dir}/upgrade.php&quot;)) {
+    $fun = include &quot;{$dir}/upgrade.php&quot;;
+    $fun(&quot;up&quot;);
+}
+if (is_file(&quot;{$dir}/up.sql&quot;)) {
+    runSQL(&quot;{$dir}/up.sql&quot;);
+}
+if (is_file(&quot;{$dir}/upgrade.sh&quot;)) {
+    runShell(&quot;/bin/bash {$dir}/upgrade.sh up&quot;);
+}
+</code></pre>
+
+<p>你只需要以超级管理员身份访问 <a href="http://local_uoj.ac/upgrade/up/2333_create_table_qaq">http://local_uoj.ac/upgrade/up/2333_create_table_qaq</a> 就可以运行了，这个运行过程我们称为 <code>up</code>。</p>
+<p>请务必再写一下还原的小脚本，我们称为 <code>down</code>。写完代码后你需要保证 <code>up</code> 再 <code>down</code> 能回到原来的系统。与 <code>up</code> 类似，你需要访问 <a href="http://local_uoj.ac/upgrade/up/2333_create_table_qaq">http://local_uoj.ac/upgrade/down/2333_create_table_qaq</a>，执行 <code>down</code> 的逻辑如下：</p>
+<pre><code class="php">if (is_file(&quot;{$dir}/upgrade.php&quot;)) {
+    $fun = include &quot;{$dir}/upgrade.php&quot;;
+    $fun(&quot;down&quot;);
+}
+if (is_file(&quot;{$dir}/down.sql&quot;)) {
+    runSQL(&quot;{$dir}/down.sql&quot;);
+}
+if (is_file(&quot;{$dir}/upgrade.sh&quot;)) {
+    runShell(&quot;/bin/bash {$dir}/upgrade.sh down&quot;);
+}
+</code></pre>
+
+<p>在数据库中，UOJ 会记录自己已经加载了哪些 upgrade，当你访问 <a href="http://local_uoj.ac/upgrade/latest">http://local_uoj.ac/upgrade/latest</a> 的时候，UOJ 会把所有已经在 app/upgrade 文件夹下但还没有加载的 upgrade 都给 <code>up</code> 一下，并且是按前缀上的那一串数字从小到大执行。所以写好了这种小 upgrade 之后，你就可以跟别人分享了！</p>
 <p>不过关于架构什么的介绍我还是先
 <p style="font-size:233px">坑着</p></p></div>
         </div>
