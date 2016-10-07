@@ -46,7 +46,7 @@ class UOJContext {
 		return $_SERVER['REQUEST_METHOD'];
 	}
 	public static function httpHost() {
-		return $_SERVER['HTTP_HOST'];
+		return isset($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '');
 	}
 	
 	public static function setupBlog() {
