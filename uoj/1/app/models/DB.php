@@ -52,6 +52,10 @@ class DB {
 		return $cnt;
 	}
 	
+	public static function checkTableExists($name) {
+		return DB::query("select 1 from $name") !== false;
+	}
+	
 	public static function num_rows() {
 		return mysql_num_rows();
 	}

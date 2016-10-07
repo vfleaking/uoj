@@ -6,6 +6,8 @@ chmod +x /var/svn/problem/post-commit.sh
 
 svnserve -d -r /var/svn
 service mysql start
+service apache2 start
+
 cd /root
 
 svn co svn://127.0.0.1/uoj __svn_cert__
@@ -59,3 +61,5 @@ chown local_main_judger /home/local_main_judger/judge_client/.conf.json
 chmod 600 /home/local_main_judger/judge_client/.conf.json
 
 echo 'insert into judger_info (judger_name, password) values ("main_judger", "__main_judger_password__")' | mysql app_uoj233 -u root --password=root
+
+curl http://127.0.0.1/upgrade/latest
