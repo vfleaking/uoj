@@ -68,15 +68,13 @@ EOD;
 	}
 
 	$info_form = new UOJForm('info');
-	$http_host = HTML::escape(UOJContext::httpHost());
-	$download_url = HTML::escape(HTML::url("/download.php?type=problem&id={$problem['id']}"));
 	$info_form->appendHTML(<<<EOD
 <div class="form-group">
 	<label class="col-sm-3 control-label">SVN地址</label>
 	<div class="col-sm-9">
 		<div class="form-control-static">
 			<button id="button-getsvn" type="button" class="btn btn-info btn-xs pull-right">把我的svn密码发到我的邮箱</button>
-			<a>svn://{$http_host}/problem/{$problem['id']}</a>
+			<a>svn://{$_SERVER['HTTP_HOST']}/problem/{$problem['id']}</a>
 		</div>
 	</div>
 </div>
@@ -123,7 +121,7 @@ EOD
 	<label class="col-sm-3 control-label">problem_{$problem['id']}.zip</label>
 	<div class="col-sm-9">
 		<div class="form-control-static">
-			<a href="$download_url">$download_url</a>
+			<a href="/download.php?type=problem&amp;id={$problem['id']}">http://{$_SERVER['HTTP_HOST']}/download.php?type=problem&id={$problem['id']}</a>
 		</div>
 	</div>
 </div>
