@@ -32,4 +32,4 @@ docker attach <container-id>
 
 嗯好，假设你已经看完了。如果是 uoj 和 judge_client 的更新，那么你可以 svn checkout 一下，然后把 git 里的新版本 commit 上去……不过你以前 checkout 过的话就可以留着那个文件夹，下次就不用重新 checkout 了。
 
-如果有什么数据库上的更新……再说吧，这部分我还没设计，感觉。。。到时候给个自动的小脚本好了。
+随着 UOJ 代码的更新，可能会有一些数据哇文件系统哇之类的更新，这种会被打包放在 app/upgrade 目录下。你只需要以超级管理员身份打开浏览器访问 [http://local_uoj.ac/upgrade/latest](http://local_uoj.ac/upgrade/latest) 就好啦！
