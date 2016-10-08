@@ -16,11 +16,6 @@ class Cookie {
 		$_COOKIE[$key] = $val;
 		
 		$domain = UOJConfig::$data['web']['domain'];
-		if (validateIP($domain)) {
-			$domain = '';
-		} else {
-			$domain = '.'.$domain;
-		}
 		return setcookie($key, $val, $expire, $path, $domain, $config['secure'], $config['httponly']);
 	}
 	public static function unsetVar($key, $path = null) {
@@ -30,11 +25,6 @@ class Cookie {
 		unset($_COOKIE[$key]);
 		
 		$domain = UOJConfig::$data['web']['domain'];
-		if (validateIP($domain)) {
-			$domain = '';
-		} else {
-			$domain = '.'.$domain;
-		}
 		return setcookie($key, null, -1, $path, $domain);
 	}
 	public static function safeCheck($key, $path = null) {
