@@ -1,4 +1,3 @@
-
 <?php
 
 function rand_str($len, $charset = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') {
