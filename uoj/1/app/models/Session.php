@@ -3,9 +3,11 @@
 class Session {
 	public static function init() {
 		$domain = UOJConfig::$data['web']['domain'];
-                if (!validateIP($domain)) {
-                        $domain = '.'.$domain;
-                }
+		if (validateIP($domain)) {
+			$domain = '';
+		} else {
+			$domain = '.'.$domain;
+		}
 		
 		session_name('UOJSESSID');
 		ini_set('session.cookie_path', '/');
