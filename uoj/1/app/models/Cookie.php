@@ -14,28 +14,14 @@ class Cookie {
 			'httponly' => false
 		), $config);
 		$_COOKIE[$key] = $val;
-		
-		$domain = UOJConfig::$data['web']['domain'];
-		if (validateIP($domain)) {
-			$domain = '';
-		} else {
-			$domain = '.'.$domain;
-		}
-		return setcookie($key, $val, $expire, $path, $domain, $config['secure'], $config['httponly']);
+		return setcookie($key, $val, $expire, $path, UOJContext::cookieDomain(), $config['secure'], $config['httponly']);
 	}
 	public static function unsetVar($key, $path = null) {
 		if (!isset($_COOKIE[$key])) {
 			return true;
 		}
 		unset($_COOKIE[$key]);
-		
-		$domain = UOJConfig::$data['web']['domain'];
-		if (validateIP($domain)) {
-			$domain = '';
-		} else {
-			$domain = '.'.$domain;
-		}
-		return setcookie($key, null, -1, $path, $domain);
+		return setcookie($key, null, -1, $path, UOJContext::cookieDomain());
 	}
 	public static function safeCheck($key, $path = null) {
 		if (!isset($_COOKIE[$key])) {

@@ -48,6 +48,18 @@ class UOJContext {
 	public static function httpHost() {
 		return isset($_SERVER['HTTP_X_FORWARDED_HOST']) ? $_SERVER['HTTP_X_FORWARDED_HOST'] : (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '');
 	}
+	public static function cookieDomain() {
+		$domain = UOJConfig::$data['web']['domain'];
+		if ($domain === null) {
+			UOJConfig::$data['web']['main']['host'];
+		}
+		if (validateIP($domain)) {
+			$domain = '';
+		} else {
+			$domain = '.'.$domain;
+		}
+		return $domain;
+	}
 	
 	public static function setupBlog() {
 		$username = blog_name_decode($_GET['blog_username']);
