@@ -51,7 +51,7 @@ class UOJContext {
 	public static function cookieDomain() {
 		$domain = UOJConfig::$data['web']['domain'];
 		if ($domain === null) {
-			UOJConfig::$data['web']['main']['host'];
+			$domain = UOJConfig::$data['web']['main']['host'];
 		}
 		if (validateIP($domain)) {
 			$domain = '';

@@ -44,8 +44,8 @@ class Upgrader {
 			return;
 		}
 		
-		if (is_file($dir.'upgrade.php')) {
-			$fun = include $dir.'upgrade.php';
+		if (is_file($dir.'/upgrade.php')) {
+			$fun = include $dir.'/upgrade.php';
 			$fun($type);
 		}
 		if (is_file($dir.'/'.$type.'.sql')) {
