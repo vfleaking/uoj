@@ -59,10 +59,6 @@ Route::group([
 		Route::any('/download.php', '/download.php');
 		
 		Route::any('/click-zan', '/click_zan.php');
-		
-		Route::any('/upgrade/up/{upgrade_name}', '/upgrade.php?type=up');
-		Route::any('/upgrade/down/{upgrade_name}', '/upgrade.php?type=down');
-		Route::any('/upgrade/latest', '/upgrade.php?type=latest');
 	}
 );
 
