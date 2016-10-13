@@ -147,8 +147,8 @@ if (is_file(&quot;{$dir}/upgrade.sh&quot;)) {
 }
 </code></pre>
 
-<p>你只需要以超级管理员身份访问 <a href="http://local_uoj.ac/upgrade/up/2333_create_table_qaq">http://local_uoj.ac/upgrade/up/2333_create_table_qaq</a> 就可以运行了，这个运行过程我们称为 <code>up</code>。</p>
-<p>请务必再写一下还原的小脚本，我们称为 <code>down</code>。写完代码后你需要保证 <code>up</code> 再 <code>down</code> 能回到原来的系统。与 <code>up</code> 类似，你需要访问 <a href="http://local_uoj.ac/upgrade/up/2333_create_table_qaq">http://local_uoj.ac/upgrade/down/2333_create_table_qaq</a>，执行 <code>down</code> 的逻辑如下：</p>
+<p>你只需要在 /var/www/uoj/app 下执行 <code>php cli.php upgrade:up 2333_create_table_qaq</code> 就可以运行了，这个运行过程我们称为 <code>up</code>。</p>
+<p>请务必再写一下还原的小脚本，我们称为 <code>down</code>。写完代码后你需要保证 <code>up</code> 再 <code>down</code> 能回到原来的系统。与 <code>up</code> 类似，你需要执行 <code>php cli.php upgrade:down 2333_create_table_qaq</code>，执行 <code>down</code> 的逻辑如下：</p>
 <pre><code class="php">if (is_file(&quot;{$dir}/upgrade.php&quot;)) {
     $fun = include &quot;{$dir}/upgrade.php&quot;;
     $fun(&quot;down&quot;);
@@ -161,7 +161,7 @@ if (is_file(&quot;{$dir}/upgrade.sh&quot;)) {
 }
 </code></pre>
 
-<p>在数据库中，UOJ 会记录自己已经加载了哪些 upgrade，当你访问 <a href="http://local_uoj.ac/upgrade/latest">http://local_uoj.ac/upgrade/latest</a> 的时候，UOJ 会把所有已经在 app/upgrade 文件夹下但还没有加载的 upgrade 都给 <code>up</code> 一下，并且是按前缀上的那一串数字从小到大执行。所以写好了这种小 upgrade 之后，你就可以跟别人分享了！</p>
+<p>在数据库中，UOJ 会记录自己已经加载了哪些 upgrade，当你执行 <code>php cli.php upgrade:latest</code> 的时候，UOJ 会把所有已经在 app/upgrade 文件夹下但还没有加载的 upgrade 都给 <code>up</code> 一下，并且是按前缀上的那一串数字从小到大执行。所以写好了这种小 upgrade 之后，你就可以跟别人分享了！</p>
 <p>不过关于架构什么的介绍我还是先
 <p style="font-size:233px">坑着</p></p></div>
         </div>
