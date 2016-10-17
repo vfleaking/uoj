@@ -43,7 +43,7 @@ class HTML {
 	}
 	
 	public static function blog_url($username, $uri) {
-		$url = UOJConfig::$data['web']['blog']['protocol'].'://'.blog_name_encode($username).'.'.UOJConfig::$data['web']['blog']['host'];
+		$url = UOJConfig::$data['web']['blog']['protocol'].'://'.UOJConfig::$data['web']['blog']['host'].'/user_'.blog_name_encode($username);
 		if (UOJConfig::$data['web']['blog']['port'] != 80) {
 			$url .= ':'.UOJConfig::$data['web']['blog']['port'];
 		}
