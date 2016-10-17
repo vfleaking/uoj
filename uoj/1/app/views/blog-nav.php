@@ -11,8 +11,11 @@
 		</div>
 		<div class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
-				<li><a href="/archive">日志</a></li>
-				<li><a href="/aboutme">关于我</a></li>
+			<?php
+					$username = blog_name_decode($_GET['blog_username']);
+					?>
+				<li><a href="/user_<?=$username?>/archive">日志</a></li>
+				<li><a href="/user_<?=$username?>/aboutme">关于我</a></li>
 				<li><a href="<?= HTML::url('/') ?>">UOJ</a></li>
 			</ul>
 		</div><!--/.nav-collapse -->

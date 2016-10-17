@@ -116,16 +116,16 @@ function base64url_decode($data) {
 }
 
 function blog_name_encode($name) {
-	$name = str_replace('-', '_', $name);
+	/*$name = str_replace('-', '_', $name);
 	if (!strStartWith($name, '_') && !strEndWith($name, '_')) {
 		$name = str_replace('_', '-', $name);
 	}
-	$name = strtolower($name);
+	$name = strtolower($name);*/
 	return $name;
 }
-function blog_name_decode($name) {
+function blog_name_decode($name) {/*
 	$name = str_replace('-', '_', $name);
-	$name = strtolower($name);
+	$name = strtolower($name);*/
 	return $name;
 }
 
