@@ -193,5 +193,71 @@ i586-mingw32msvc-g++ localchk.cpp -o checker_win32.exe -O2
 em++ localchk.cpp -o checker.js -O2
 ```
 
-那么现在问题来了，交互题怎么上传？让我先
-<p style="font-size:233px">坑着</p>
+#### 交互题的配置
+嘛……其实并没有 UOJ 内部并没有显式地支持交互式（真正的程序与程序交互的版本还没发布出来），只是提供了 require、implementer 和 token 这两个东西。
+
+除了前文所述的 download 这个文件夹，还有一个叫 require 的神奇文件夹。在测评时，这个文件夹里的所有文件均会被移动到与选手源程序同一目录下。在这个文件夹下，你可以放置交互库，供编译时使用。
+
+再来说 implementer 的用途。如果你在 problem.conf 里设置 `with_implementer on` 的话，各个语言的编译命令将变为：
+
+* C++: g++ code implementer.cpp code.cpp -lm -O2 -DONLINE_JUDGE
+* C: gcc code implementer.c code.c -lm -O2 -DONLINE_JUDGE
+* Pascal: fpc implementer.pas -o code -O2
+
+好……不管那些奇怪的选手的话，一个交互题就搞好了……你需要写 implementer.cpp、implementer.c 和 implementer.pas。当然你不想兹瓷某个语言的话不写对应的交互库就好了。
+
+如果是 C/C++，正确姿势是搞一个统一的头文件放置接口，让 implementer 和选手程序都 include 这个头文件。把主函数写在 implementer 里，连起来编译时程序就是从 implementer 开始执行的了。
+
+如果是 Pascal，正确姿势是让选手写一个 pascal unit 上来，在 implementer.pas 里 uses 一下。除此之外也要搞另外一个 pascal unit，里面存交互库的各种接口，让 implementer 和选手程序都 uses 一下。
+
+哦另外 require 文件夹的内容显然不会被下发……如果你想下发一个样例交互库，可以放到 download 文件夹里。
+
+好下面来解释什么是 token……考虑一道典型的交互题，交互库跟选手函数交流得很愉快，最后给了个满分。此时交互库输出了 “AC!!!” 的字样，也可能输出了选手一共调用了几次接口。但是聪明的选手发现，只要自己手动输出一下 “AC!!!” 然后果断退出似乎就能骗过测评系统了娃哈哈。
+
+这是因为选手函数和交互库已经融为一体成为了一个统一的程序，测评系统分辨出谁是谁。这时候，token 就出来拯救世界了。
+
+在 problem.conf 里配置一个奇妙的 token，比如 `token wahaha233`，然后把这个 token 写进交互库的代码里（线上交互库，不是样例交互库）。在交互库准备输出任何东西之前，先输出一下这个 token。当测评系统要给选手判分时，首先判断文件的第一行是不是 token，如果不是，直接零分。这样就避免了奇怪的选手 hack 测评系统了。这里的 token 判定是在调用 checker 之前，测评系统会把 token 去掉之后的选手输出喂给 checker。（所以一道交互题的 token 要好好保护好）
+
+另外另外，记得在 C/C++ 的交互库里给全局变量开 static，意为仅本文件可访问。
+
+#### 意想不到的非传统题
+吼，假如你有一道题不属于上述任何一种题目类型 —— 恭喜你中奖啦！得自己写 judger 啦！
+
+judger 的任务：给你选手提交的文件，把测评结果告诉我。
+
+把 problem.conf 里的 `use_builtin_judger on` 这行去掉，搞一个 judger 放在题目目录下，就好了。
+
+噢对怎么搞这个 judger 呢。。。全自动啦233。。。你需要写个 Makefile……比如
+```makefile
+export INCLUDE_PATH
+CXXFLAGS = -I$(INCLUDE_PATH) -O2
+
+all: chk judger
+
+% : %.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
+```
+
+什么？你问 judger 应该怎么写？
+
+很抱歉的是这部分我封装得并不是很方便……请 include 一下 uoj_judger.h 来辅助你写 judger……参照 QUINE 这个样题……
+
+说实在的 uoj_judger.h 写得太丑了（不过反正我会用2333）。期待神犇再来造一遍轮子，或者用 python 码个框架（需要解决 python 启动就耗时 40ms 的坑爹问题）
+
+哦对，要使用自己的 judger 的话就只有超级管理员能 “与 SVN 仓库同步” 了。另外无论你的 judger 如何折腾，测评也是有 10 分钟 的时间限制的。
+
+## 样题
+在 problem 文件夹下有我们给出的几道样题。
+
+1. 一个典型的传统题
+	* \#1. A + B Problem。
+2. 一个典型的非传统题：
+	* \#8. Quine。
+3. 一个典型的交互题：
+	* \#52. 【UR \#4】元旦激光炮。
+4. 一个典型的 ACM 赛制题（错一个就 0 分）：
+	* \#79. 一般图最大匹配。
+5. 一个典型的提交答案题：
+	* \#116. 【ZJOI2015】黑客技术。
+6. 一个典型的 subtask 制的题：
+	* \#225. 【UR #15】奥林匹克五子棋。
