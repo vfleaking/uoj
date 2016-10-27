@@ -74,9 +74,10 @@ mysql default password: root
 
 local\_main\_judger password: judger
 
-You can change the default hostname and something else in `/var/www/uoj/app/.config.php`. However, not all the config is here, lol.
+You can change the default hostname and something else in `/var/www/uoj/app/.config.php`. However, not all the config is here, haha.
 
 ## More Documentation
+As you know, my Yingyu is not very hao. Suoyi only the README file is En(Chi)nglish for internationalization.
 
 More documentation is here: [https://vfleaking.github.io/uoj/](https://vfleaking.github.io/uoj/)
 
