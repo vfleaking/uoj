@@ -1,5 +1,7 @@
 # Universal Online Judge
 
+[中文版本](https://github.com/vfleaking/uoj/blob/master/README_zh-cn.md) also avaliable in wiki.
+
 ## Dependence
 This is a dockerized version of UOJ. Before installation, please make sure that [Docker](https://www.docker.com/) has already been installed on your OS.
 
@@ -72,10 +74,9 @@ mysql default password: root
 
 local\_main\_judger password: judger
 
-You can change the default hostname and something else in `/var/www/uoj/app/.config.php`. However, not all the config is here, haha.
+You can change the default hostname and something else in `/var/www/uoj/app/.config.php`. However, not all the config is here, lol.
 
 ## More Documentation
-As you know, my Yingyu is not very hao. Suoyi only the README file is En(Chi)nglish for internationalization.
 
 More documentation is here: [https://vfleaking.github.io/uoj/](https://vfleaking.github.io/uoj/)
 
