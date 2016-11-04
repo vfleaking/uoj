@@ -14,7 +14,14 @@
 
 啊如果你在 “与svn仓库同步” 的过程中发现 <samp>compile error</samp> 并且还说 <samp>no comment</samp> 的话……多半是……UOJ 尝试 ptrace 然而 ptrace 被禁了……
 
-被禁了可能是被 docker 禁了，可以加一句 `--cap-add SYS_PTRACE` （见 [README.md](https://github.com/vfleaking/uoj/blob/master/README.md)）……要是这样不能解决问题。。。估计就是被黑恶势力禁掉了。。。大概就不是咱们这边的锅了，找找是哪个黑恶势力禁的吧。。。
+被禁了可能是被 docker 禁了，可以加一句 `--cap-add SYS_PTRACE` （见 [README.md](https://github.com/vfleaking/uoj/blob/master/README.md)）……要是这样不能解决问题……是 Ubuntu/openSUSE 环境嘛？请尝试用下面的命令阻止 AppArmor 对 docker 的行为产生影响。当然把第二行加到 `rc.local` 里就不用每次重启都输入一遍啦~（详细解释戳 [→ 这里](https://github.com/docker/docker/issues/7276)）
+
+```sh
+sudo apt-get install apparmor-utils
+aa-complain /etc/apparmor.d/docker
+```
+
+要是这样还是不能解决问题……估计就是被黑恶势力禁掉了。。。大概就不是咱们这边的锅了，找找是哪个黑恶势力禁的吧。。。
 
 另：如果上述方法不能解决 ptrace 问题也可以考虑使用 `--privileged`，但是这么做会导致 docker 失去其原有的隔离性而带来潜在的风险，不建议在生产环境中使用。
 
