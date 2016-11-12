@@ -65,7 +65,7 @@ EOD;
 		$search_tag = $_GET['tag'];
 	}
 	if ($search_tag) {
-		$cond[] = "'".$search_tag."' in (select tag from problems_tags where problems_tags.problem_id = problems.id)";
+		$cond[] = "'".DB::escape($search_tag)."' in (select tag from problems_tags where problems_tags.problem_id = problems.id)";
 	}
 	
 	if ($cond) {
