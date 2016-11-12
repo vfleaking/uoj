@@ -25,7 +25,7 @@ docker run -it -p 80:80 -p 3690:3690 --cap-add SYS_PTRACE <image-id>
 
 The default hostname of UOJ is `local_uoj.ac`, so you need to modify your host file in your OS in order to map `127.0.0.1` to `local_uoj.ac`. (It is `/etc/hosts` on Linux.) After that, you can access UOJ in your web browser.
 
-If you need a super user, please register a user and change its `usergroup` to "<samp>S</samp>" in the table `user_info`. Run
+The first user registered after the installation of UOJ will be a super user. If you need another super user, please register a user and change its `usergroup` to "<samp>S</samp>" in the table `user_info`. Run
 ```sh
 mysql app_uoj233 -u root -p
 ```
