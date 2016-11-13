@@ -84,7 +84,7 @@ return [
 	],
 	'switch' => [                           // 一些开关
 		'ICP-license' => false,                 // ICP 备案信息的显示
-		'web-analytics' => false                // 网站流量统计（记 uoj.ac 名下……想统计自己的得改代码）
+		'web-analytics' => false,			    // 网站流量统计（记 uoj.ac 名下……想统计自己的得改代码）
 		'blog-use-subdomain' => true			// 每个人的博客使用独立的子域名
 	]
 ];
