@@ -43,7 +43,10 @@ class HTML {
 	}
 	
 	public static function blog_url($username, $uri) {
-		$url = UOJConfig::$data['web']['blog']['protocol'].'://'.blog_name_encode($username).'.'.UOJConfig::$data['web']['blog']['host'];
+		if (UOJConfig::$data['switch']['blog-use-subdomain'])
+			$url = UOJConfig::$data['web']['blog']['protocol'].'://'.blog_name_encode($username).'.'.UOJConfig::$data['web']['blog']['host'];
+		else
+			$url = UOJConfig::$data['web']['blog']['protocol'].'://'.UOJConfig::$data['web']['blog']['host'].'/blogof/'.blog_name_encode($username);
 		if (UOJConfig::$data['web']['blog']['port'] != 80) {
 			$url .= ':'.UOJConfig::$data['web']['blog']['port'];
 		}

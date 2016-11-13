@@ -50,6 +50,7 @@ return [
 	],
 	'switch' => [
 		'ICP-license' => false,
-		'web-analytics' => false
+		'web-analytics' => false,
+		'blog-use-subdomain' => true
 	]
 ];
