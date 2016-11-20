@@ -16,12 +16,9 @@ If everything goes well, you will see `Successfully built <image-id>` in the las
 
 To start your UOJ main server, please run:
 ```sh
-docker run -it -p 80:80 -p 3690:3690 <image-id>
-```
-If you are using docker on Mac OS or having 'std: compile error. no comment' message on uploading problem data, you could possibly use this alternative command:
-```sh
 docker run -it -p 80:80 -p 3690:3690 --cap-add SYS_PTRACE <image-id>
 ```
+If you are encountering 'std: compile error. no comment' message when uploading problem data, please refer to [here](https://vfleaking.github.io/uoj/install/).
 
 The default hostname of UOJ is `local_uoj.ac`, so you need to modify your host file in your OS in order to map `127.0.0.1` to `local_uoj.ac`. (It is `/etc/hosts` on Linux.) After that, you can access UOJ in your web browser.
 
