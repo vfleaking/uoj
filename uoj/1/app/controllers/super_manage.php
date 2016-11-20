@@ -22,18 +22,26 @@
 	$options = array(
 		'ban' => '封禁',
 		'deblocking' => '解封',
+		'upgrade' => '使之成为管理员',
+		'downgrade' => '解除管理员身份',
 		'login' => '登录'
 	);
 	$user_form->addSelect('op-type', $options, '操作类型', '');
 	$user_form->handle = function() {
 		global $user_form;
 		
-		$username = $_POST['username'];
+		$username = DB::escape($_POST['username']);
 		switch ($_POST['op-type']) {
 			case 'ban':
 				DB::update("update user_info set usergroup = 'B' where username = '{$username}'");
 				break;
 			case 'deblocking':
+				DB::update("update user_info set usergroup = 'U' where username = '{$username}'");
+				break;
+			case 'upgrade':
+				DB::update("update user_info set usergroup = 'S' where username = '{$username}'");
+				break;
+			case 'downgrade':
 				DB::update("update user_info set usergroup = 'U' where username = '{$username}'");
 				break;
 			case 'login':
@@ -210,14 +218,14 @@
 	};
 	$custom_test_deleter->runAtServer();
 	
-	$banlist_cols = array('username', 'usergroup');
-	$banlist_config = array();
-	$banlist_header_row = <<<EOD
+	$superuser_cols = $banlist_cols = array('username', 'usergroup');
+	$superuser_config = $banlist_config = array();
+	$superuser_header_row = $banlist_header_row = <<<EOD
 	<tr>
 		<th>用户名</th>
 	</tr>
 EOD;
-	$banlist_print_row = function($row) {
+	$superuser_print_row = $banlist_print_row = function($row) {
 		$hislink = getUserLink($row['username']);
 		echo <<<EOD
 			<tr>
@@ -274,6 +282,8 @@ EOD;
 			<?php $user_form->printHTML(); ?>
 			<h3>封禁名单</h3>
 			<?php echoLongTable($banlist_cols, 'user_info', "usergroup='B'", '', $banlist_header_row, $banlist_print_row, $banlist_config) ?>
+			<h3>管理员</h3>
+			<?php echoLongTable($superuser_cols, 'user_info', "usergroup='S'", '', $superuser_header_row, $superuser_print_row, $superuser_config) ?>
 		<?php elseif ($cur_tab === 'blogs'): ?>
 			<div>
 				<h4>添加到比赛链接</h4>
