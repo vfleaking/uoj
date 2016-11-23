@@ -412,6 +412,7 @@ RunResult trace_children() {
 				fprintf(stderr, "exit     : %d\n", WEXITSTATUS(stat));
 			}
 			if (rp_children[0].mode == -1) {
+				stop_all();
 				return RunResult(RS_JGF, -1, -1, WEXITSTATUS(stat));
 			} else {
 				if (pid == rp_children[0].pid) {
@@ -431,10 +432,13 @@ RunResult trace_children() {
 			if (pid == rp_children[0].pid) {
 				switch(WTERMSIG(stat)) {
 				case SIGXCPU: // nearly impossible
+					stop_all();
 					return RunResult(RS_TLE);
 				case SIGXFSZ:
+					stop_all();
 					return RunResult(RS_OLE);
 				default:
+					stop_all();
 					return RunResult(RS_RE);
 				}
 			} else {
