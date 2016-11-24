@@ -56,7 +56,7 @@ class Route {
 		
 		$cur = array();
 		$cur['methods'] = $methods;
-		$cur['uri'] = $uri;
+		$cur['uri'] = rtrim($uri, '/');
 		$cur['action'] = $action;
 		$cur = array_merge(self::getGroup(), $cur);
 		self::$routes[] = $cur;
@@ -84,7 +84,7 @@ class Route {
 		}
 		
 		$uri_pat = strtr($route['uri'], $rep_arr);
-		if (!preg_match('/^'.$uri_pat.'$/', UOJContext::requestPath(), $uri_matches)) {
+		if (!preg_match('/^'.$uri_pat.'$/', rtrim(UOJContext::requestPath(), '/'), $uri_matches)) {
 			return false;
 		}
 		$matches = array_merge($matches, $uri_matches);
