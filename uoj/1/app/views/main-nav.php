@@ -10,12 +10,12 @@
 		</div>
 		<div class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
-				<li><a href="/contests"><?= UOJLocale::get('contests') ?></a></li>
-				<li><a href="/problems"><?= UOJLocale::get('problems') ?></a></li>
-				<li><a href="/submissions"><?= UOJLocale::get('submissions') ?></a></li>
-				<li><a href="/hacks"><?= UOJLocale::get('hacks') ?></a></li>
-				<li><a href="/blogs"><?= UOJLocale::get('blogs') ?></a></li>
-				<li><a href="/faq"><?= UOJLocale::get('help') ?></a></li>
+				<li><a href="<?= HTML::url('/contests') ?>"><?= UOJLocale::get('contests') ?></a></li>
+				<li><a href="<?= HTML::url('/problems') ?>"><?= UOJLocale::get('problems') ?></a></li>
+				<li><a href="<?= HTML::url('/submissions') ?>"><?= UOJLocale::get('submissions') ?></a></li>
+				<li><a href="<?= HTML::url('/hacks') ?>"><?= UOJLocale::get('hacks') ?></a></li>
+				<li><a href="<?= UOJConfig::$data['web']['blog']['protocol'].'://' . UOJConfig::$data['web']['blog']['host'] ?>"><?= UOJLocale::get('blogs') ?></a></li>
+				<li><a href="<?= HTML::url('/faq') ?>"><?= UOJLocale::get('help') ?></a></li>
 			</ul>
 		</div><!--/.nav-collapse -->
 	</div>

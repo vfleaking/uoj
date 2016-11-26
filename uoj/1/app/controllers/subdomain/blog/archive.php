@@ -34,8 +34,11 @@
 	<div class="col-md-3">
 		<?php if (UOJContext::hasBlogPermission()): ?>
 		<div class="btn-group btn-group-justified">
-			<a href="/blog/new/write" class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> 写新博客</a>
-			<a href="/slide/new/write" class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> 写新幻灯片</a>
+			<?php
+					$username = blog_name_decode($_GET['blog_username']);
+					?>
+			<a href="/user_<?=$username?>/blog/new/write" class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> 写新博客</a>
+			<a href="/user_<?=$username?>/slide/new/write" class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> 写新幻灯片</a>
 		</div>
 		<?php endif ?>
 		<div class="panel panel-info top-buffer-sm">
