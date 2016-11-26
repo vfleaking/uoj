@@ -28,6 +28,7 @@ $config = [
 		'host' => '127.0.0.1'
 	],
 	'web' => [
+		'domain' => 'local_uoj.ac',
 		'main' => [
 			'protocol' => 'http',
 			'host' => 'local_uoj.ac'
