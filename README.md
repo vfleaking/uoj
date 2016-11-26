@@ -1,5 +1,7 @@
 # Universal Online Judge
 
+[中文版本](https://github.com/vfleaking/uoj/blob/master/README_zh-cn.md) also avaliable in wiki.
+
 ## Dependence
 This is a dockerized version of UOJ. Before installation, please make sure that [Docker](https://www.docker.com/) has already been installed on your OS.
 
