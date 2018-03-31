@@ -62,7 +62,7 @@
 				transition: 'slide',
 				
 				math: {
-					mathjax: '//cdnjscn.b0.upaiyun.com/libs/mathjax/2.4.0/MathJax.js',
+					mathjax: '//cdn.bootcss.com/mathjax/2.6.0/MathJax.js',
 					config: 'TeX-AMS_HTML-full'
 				},
 
