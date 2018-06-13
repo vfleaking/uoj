@@ -32,8 +32,8 @@ return [
 			'username' => 'noreply@none',
 			'password' => 'noreply',
 			'host' => 'smtp.sina.com',
-			'secure' => '',
-			'port' => 25
+			'secure' => 'tls',
+			'port' => 587
 		]
 	],
 	'judger' => [

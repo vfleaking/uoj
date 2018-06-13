@@ -164,6 +164,9 @@
 	function rejudgeProblemAC($problem) {
 		mysql_query("update submissions set judge_time = NULL , result = '' , score = NULL , status = 'Waiting Rejudge' where problem_id = ${problem['id']} and score = 100");
 	}
+	function rejudgeProblemGe97($problem) {
+		mysql_query("update submissions set judge_time = NULL , result = '' , score = NULL , status = 'Waiting Rejudge' where problem_id = ${problem['id']} and score >= 97");
+	}
 	function rejudgeSubmission($submission) {
 		mysql_query("update submissions set judge_time = NULL , result = '' , score = NULL , status = 'Waiting Rejudge' where id = ${submission['id']}");
 	}

@@ -53,6 +53,10 @@
 			$this->user = $user;
 		}
 		
+		private function check_conf_on($name) {
+			return isset($this->problem_conf[$name]) && $this->problem_conf[$name] == 'on';
+		}
+		
 		private function copy_to_prepare($file_name) {
 			global $uojMainJudgerWorkPath;
 			if (!isset($this->allow_files[$file_name])) {
@@ -194,7 +198,7 @@
 					$this->copy_to_prepare('require');
 				}
 
-				if (isset($this->problem_conf['use_builtin_judger']) && $this->problem_conf['use_builtin_judger'] == 'on') {
+				if ($this->check_conf_on('use_builtin_judger')) {
 					$n_tests = getUOJConfVal($this->problem_conf, 'n_tests', 10);
 					if (!validateUInt($n_tests) || $n_tests <= 0) {
 						throw new UOJProblemConfException("n_tests must be a positive integer");
@@ -207,16 +211,18 @@
 						$this->copy_file_to_prepare($output_file_name);
 					}
 
-					if (isset($this->problem_conf['use_builtin_checker'])) {
-						if (!preg_match('/^[a-zA-Z0-9_]{1,20}$/', $this->problem_conf['use_builtin_checker'])) {
-							throw new Exception("<strong>" . htmlspecialchars($this->problem_conf['use_builtin_checker']) . "</strong> is not a valid checker");
+					if (!$this->check_conf_on('interaction_mode')) {
+						if (isset($this->problem_conf['use_builtin_checker'])) {
+							if (!preg_match('/^[a-zA-Z0-9_]{1,20}$/', $this->problem_conf['use_builtin_checker'])) {
+								throw new Exception("<strong>" . htmlspecialchars($this->problem_conf['use_builtin_checker']) . "</strong> is not a valid checker");
+							}
+						} else {
+							$this->copy_file_to_prepare('chk.cpp');
+							$this->compile_at_prepare('chk', array('need_include_header' => true));
 						}
-					} else {
-						$this->copy_file_to_prepare('chk.cpp');
-						$this->compile_at_prepare('chk', array('need_include_header' => true));
 					}
-
-					if (isset($this->problem_conf['submit_answer']) && $this->problem_conf['submit_answer'] == 'on') {
+					
+					if ($this->check_conf_on('submit_answer')) {
 						if ($this->problem['hackable']) {
 							throw new UOJProblemConfException("the problem can't be hackable if submit_answer is on");
 						}
@@ -260,6 +266,11 @@
 							$this->copy_file_to_prepare('val.cpp');
 							$this->compile_at_prepare('val', array('need_include_header' => true));
 						}
+						
+						if ($this->check_conf_on('interaction_mode')) {
+							$this->copy_file_to_prepare('interactor.cpp');
+							$this->compile_at_prepare('interactor', array('need_include_header' => true));
+						}
 
 						$n_sample_tests = getUOJConfVal($this->problem_conf, 'n_sample_tests', $n_tests);
 						if (!validateUInt($n_sample_tests) || $n_sample_tests < 0) {
@@ -269,19 +280,21 @@
 							throw new UOJProblemConfException("n_sample_tests can't be greater than n_ex_tests");
 						}
 
-						for ($num = 1; $num <= $n_sample_tests; $num++) {
-							$input_file_name = getUOJProblemExtraInputFileName($this->problem_conf, $num);
-							$output_file_name = getUOJProblemExtraOutputFileName($this->problem_conf, $num);
-							$zip_file->addFile("{$this->prepare_dir}/{$input_file_name}", "$input_file_name");
-							if (!isset($this->problem_extra_config['dont_download_sample_output'])) {
-								$zip_file->addFile("{$this->prepare_dir}/{$output_file_name}", "$output_file_name");
+						if (!isset($this->problem_extra_config['dont_download_sample'])) {
+							for ($num = 1; $num <= $n_sample_tests; $num++) {
+								$input_file_name = getUOJProblemExtraInputFileName($this->problem_conf, $num);
+								$output_file_name = getUOJProblemExtraOutputFileName($this->problem_conf, $num);
+								$zip_file->addFile("{$this->prepare_dir}/{$input_file_name}", "$input_file_name");
+								if (!isset($this->problem_extra_config['dont_download_sample_output'])) {
+									$zip_file->addFile("{$this->prepare_dir}/{$output_file_name}", "$output_file_name");
+								}
 							}
 						}
 
 						$this->requirement[] = array('name' => 'answer', 'type' => 'source code', 'file_name' => 'answer.code');
 					}
 				} else {
-					if (isSuperUser($user)) {
+					if (!isSuperUser($this->user)) {
 						throw new UOJProblemConfException("use_builtin_judger must be on.");
 					} else {
 						foreach ($this->allow_files as $file_name => $file_num) {

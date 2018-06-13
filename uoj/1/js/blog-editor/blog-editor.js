@@ -152,13 +152,13 @@ function blog_editor_init(name, editor_config) {
 		}
 		
 		var post_data = {};
-		post_data["save-" + name] = '';
 		$($(this_form).serializeArray()).each(function() {
 			post_data[this["name"]] = this["value"];
 		});
 		if (config.need_preview) {
 			post_data['need_preview'] = 'on';
 		}
+		post_data["save-" + name] = '';
 		
 		$.ajax({
 			type : 'POST',

@@ -47,7 +47,7 @@
 		<?= HTML::css_link('/css/bootstrap-theme.min.css?v=2015.5.31') ?>
 
 		<!-- Custom styles for this template -->
-		<?= HTML::css_link('/css/uoj-theme.css?v=2.33') ?>
+		<?= HTML::css_link('/css/uoj-theme.css?v=2.3333') ?>
 		
 		<!-- jQuery (necessary for Bootstrap\'s JavaScript plugins) -->
 		<?= HTML::js_src('/js/jquery.min.js') ?>
@@ -66,8 +66,8 @@
 		<!-- jQuery modal -->
 		<?= HTML::js_src('/js/jquery.modal.js') ?>
 		
-		<!-- jQuery tag canvas -->
 		<?php if (isset($REQUIRE_LIB['tagcanvas'])): ?>
+		<!-- jQuery tag canvas -->
 		<?= HTML::js_src('/js/jquery.tagcanvas.min.js') ?>
 		<?php endif ?>
 		
@@ -78,7 +78,10 @@
 		<?= HTML::js_src('/js/color-converter.min.js') ?>
 		
 		<!-- uoj -->
-		<?= HTML::js_src('/js/uoj.js?v=2016.8.15') ?>
+		<?= HTML::js_src('/js/uoj.js?v=2017.01.01') ?>
+		
+		<!-- readmore -->
+		<?= HTML::js_src('/js/readmore/readmore.min.js') ?>
 		
 		<!-- LAB -->
 		<?= HTML::js_src('/js/LAB.min.js') ?>
@@ -92,7 +95,7 @@
 		<?php $REQUIRE_LIB['switch'] = '' ?>
 		<?= HTML::css_link('/js/codemirror/lib/codemirror.css') ?>
 		<?= HTML::css_link('/css/blog-editor.css') ?>
-		<?= HTML::js_src('/js/marked.js') ?>
+		<?= HTML::js_src('/js/marked.js?v=2016.10.19') ?>
 		<?= HTML::js_src('/js/blog-editor/blog-editor.js?v=2015.7.9') ?>
 		<?= HTML::js_src('/js/codemirror/lib/codemirror.js') ?>
 		<?= HTML::js_src('/js/codemirror/addon/mode/overlay.js') ?>

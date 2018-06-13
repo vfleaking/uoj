@@ -200,10 +200,17 @@ def update_problem_data(problem_id, problem_mtime):
 		copy_name = uoj_judger_path('/data/%d' % problem_id)
 		copy_zip_name = uoj_judger_path('/data/%d.zip' % problem_id)
 		if os.path.isdir(copy_name):
+			quoted_copy_name = pipes.quote(copy_name)
 			if os.path.getmtime(copy_name) >= problem_mtime:
+				execute('touch -a %s' % quoted_copy_name)
 				return
 			else:
-				execute('chmod 700 %s -R && rm -rf %s' % (pipes.quote(copy_name), pipes.quote(copy_name)))
+				execute('chmod 700 %s -R && rm -rf %s' % (quoted_copy_name, quoted_copy_name))
+		del_list = sorted(os.listdir(uoj_judger_path('/data')), key=lambda fname: os.path.getatime(uoj_judger_path('/data/%s' % fname)))[:-99]
+		for fname in del_list:
+			quoted_fname = pipes.quote(uoj_judger_path('/data/%s' % fname))
+			os.system('chmod 700 %s -R && rm -rf %s' % (quoted_fname, quoted_fname))
+		
 		uoj_download('/problem/%d' % problem_id, copy_zip_name)
 		execute('cd %s && unzip -q %d.zip && rm %d.zip && chmod -w %d -R' % (uoj_judger_path('/data'), problem_id, problem_id, problem_id))
 	except Exception:

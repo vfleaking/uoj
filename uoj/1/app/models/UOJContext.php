@@ -21,6 +21,13 @@ class UOJContext {
 		return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
 	}
 	
+	public static function contentLength() {
+		if (!isset($_SERVER['CONTENT_LENGTH'])) {
+			return null;
+		}
+		return (int)$_SERVER['CONTENT_LENGTH'];
+	}
+	
 	public static function documentRoot() {
 		return $_SERVER['DOCUMENT_ROOT'];
 	}

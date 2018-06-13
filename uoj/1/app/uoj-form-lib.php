@@ -12,6 +12,7 @@
 		private $data = array();
 		private $vdata = array();
 		private $main_html = '';
+		public $max_post_size = 15728640; // 15M
 		
 		public $handle;
 		
@@ -34,6 +35,16 @@
 						becomeMsgPage('The form is incomplete.');
 					}
 				}
+				
+				if (UOJContext::requestMethod() == 'POST') {
+					$len = UOJContext::contentLength();
+					if ($len === null) {
+						become403Page();
+					} elseif ($len > $this->max_post_size) {
+						becomeMsgPage('The form is too large.');
+					}
+				}
+				
 				crsf_defend();
 				$errors = $this->validateAtServer();
 				if ($errors) {
@@ -128,9 +139,9 @@ EOD;
 EOD;
 			$this->add($name, $html,
 				function($opt) use ($options) {
-					return isset($options, $opt) ? '' : "无效选项";
+					return isset($options[$opt]) ? '' : "无效选项";
 				},
-				'always_ok'
+				null
 			);
 		}
 		
@@ -143,7 +154,7 @@ EOD;
 			$html = <<<EOD
 <div id="div-$name">
 	<label for="input-$name" class="control-label">$label_text</label>
-	<select class="form-control" id="input-content" name="$name">
+	<select class="form-control" id="input-{$name}" name="$name">
 
 EOD;
 			foreach ($options as $opt_name => $opt_label) {
@@ -165,9 +176,9 @@ EOD;
 EOD;
 			$this->add($name, $html,
 				function($opt) use ($options) {
-					return isset($options, $opt) ? '' : "无效选项";
+					return isset($options[$opt]) ? '' : "无效选项";
 				},
-				'always_ok'
+				null
 			);
 		}
 		

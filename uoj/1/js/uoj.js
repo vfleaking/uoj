@@ -451,6 +451,10 @@ $.fn.uoj_highlight = function() {
 		$(this).find(".uoj-blog-tag").uoj_blog_tag();
 		$(this).find(".uoj-click-zan-block").click_zan_block();
 		$(this).find(".countdown").countdown();
+		$(this).find(".uoj-readmore").readmore({
+			moreLink: '<a href="#" class="text-right">more...</a>',
+			lessLink: '<a href="#" class="text-right">close</a>',
+		});
 	});
 };
 
@@ -469,7 +473,8 @@ function checkContestNotice(id, lastTime) {
 				checkContestNotice(id, data.time);
 			}, 60000);
 			if (data.msg != undefined) {
-				alert(data.msg);
+				var len=data.msg.length;
+				for (var i=0;i<len;i++) alert(data.msg[i]);
 			}
 		},
 		'json'

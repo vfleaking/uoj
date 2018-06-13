@@ -30,27 +30,21 @@ struct RunResult {
 	}
 };
 
-int put_result(RunResult res) {
-	printf("%d %d %d %d\n", res.result, res.ust, res.usm, res.exit_code);
-	if (res.result == RS_JGF) {
-		return 1;
-	} else {
-		return 0;
-	}
-}
-
 struct RunProgramConfig
 {
 	int time_limit;
+	int real_time_limit;
 	int memory_limit;
 	int output_limit;
 	int stack_limit;
 	string input_file_name;
 	string output_file_name;
 	string error_file_name;
+	string result_file_name;
 	string work_path;
 	string type;
 	vector<string> extra_readable_files;
+	vector<string> extra_writable_files;
 	bool allow_proc;
 	bool safe_mode;
 	bool need_show_trace_details;
@@ -58,7 +52,28 @@ struct RunProgramConfig
 	string program_name;
 	string program_basename;
 	vector<string> argv;
+
 };
+
+int put_result(string result_file_name, RunResult res) {
+	FILE *f;
+	if (result_file_name == "stdout") {
+		f = stdout;
+	} else if (result_file_name == "stderr") {
+		f = stderr;
+	} else {
+		f = fopen(result_file_name.c_str(), "w");
+	}
+	fprintf(f, "%d %d %d %d\n", res.result, res.ust, res.usm, res.exit_code);
+	if (f != stdout && f != stderr) {
+		fclose(f);
+	}
+	if (res.result == RS_JGF) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
 
 char self_path[PATH_MAX + 1] = {};
 
@@ -67,19 +82,23 @@ char self_path[PATH_MAX + 1] = {};
 argp_option run_program_argp_options[] =
 {
 	{"tl"                 , 'T', "TIME_LIMIT"  , 0, "Set time limit (in second)"                            ,  1},
-	{"ml"                 , 'M', "MEMORY_LIMIT", 0, "Set memory limit (in mb)"                              ,  2},
-	{"ol"                 , 'O', "OUTPUT_LIMIT", 0, "Set output limit (in mb)"                              ,  3},
-	{"sl"                 , 'S', "STACK_LIMIT" , 0, "Set stack limit (in mb)"                               ,  4},
-	{"in"                 , 'i', "IN"          , 0, "Set input file name"                                   ,  5},
-	{"out"                , 'o', "OUT"         , 0, "Set output file name"                                  ,  6},
-	{"err"                , 'e', "ERR"         , 0, "Set error file name"                                   ,  7},
-	{"work-path"          , 'w', "WORK_PATH"   , 0, "Set the work path of the program"                      ,  8},
-	{"type"               , 't', "TYPE"        , 0, "Set the program type (for some program such as python)",  9},
-	{"add-readable"       , 500, "FILE"        , 0, "Add a readable file"                                   , 10},
-	{"unsafe"             , 501, 0             , 0, "Don't check dangerous syscalls"                        , 11},
-	{"show-trace-details" , 502, 0             , 0, "Show trace details"                                    , 12},
-	{"allow-proc"         , 503, 0             , 0, "Allow fork, exec... etc."                              , 13},
-	{"add-readable-raw"   , 504, "FOLDER"      , 0, "Add a readable (don't transform to its real path)"     , 14},
+	{"rtl"                , 'R', "TIME_LIMIT"  , 0, "Set real time limit (in second)"                       ,  2},
+	{"ml"                 , 'M', "MEMORY_LIMIT", 0, "Set memory limit (in mb)"                              ,  3},
+	{"ol"                 , 'O', "OUTPUT_LIMIT", 0, "Set output limit (in mb)"                              ,  4},
+	{"sl"                 , 'S', "STACK_LIMIT" , 0, "Set stack limit (in mb)"                               ,  5},
+	{"in"                 , 'i', "IN"          , 0, "Set input file name"                                   ,  6},
+	{"out"                , 'o', "OUT"         , 0, "Set output file name"                                  ,  7},
+	{"err"                , 'e', "ERR"         , 0, "Set error file name"                                   ,  8},
+	{"work-path"          , 'w', "WORK_PATH"   , 0, "Set the work path of the program"                      ,  9},
+	{"type"               , 't', "TYPE"        , 0, "Set the program type (for some program such as python)", 10},
+	{"res"                , 'r', "RESULT_FILE" , 0, "Set the file name for outputing the result            ", 10},
+	{"add-readable"       , 500, "FILE"        , 0, "Add a readable file"                                   , 11},
+	{"add-writable"       , 505, "FILE"        , 0, "Add a writable file"                                   , 11},
+	{"unsafe"             , 501, 0             , 0, "Don't check dangerous syscalls"                        , 12},
+	{"show-trace-details" , 502, 0             , 0, "Show trace details"                                    , 13},
+	{"allow-proc"         , 503, 0             , 0, "Allow fork, exec... etc."                              , 14},
+	{"add-readable-raw"   , 504, "FILE"        , 0, "Add a readable (don't transform to its real path)"     , 15},
+	{"add-writable-raw"   , 506, "FILE"        , 0, "Add a writable (don't transform to its real path)"     , 15},
 	{0}
 };
 error_t run_program_argp_parse_opt (int key, char *arg, struct argp_state *state)
@@ -90,6 +109,9 @@ error_t run_program_argp_parse_opt (int key, char *arg, struct argp_state *state
 	{
 		case 'T':
 			config->time_limit = atoi(arg);
+			break;
+		case 'R':
+			config->real_time_limit = atoi(arg);
 			break;
 		case 'M':
 			config->memory_limit = atoi(arg);
@@ -115,6 +137,9 @@ error_t run_program_argp_parse_opt (int key, char *arg, struct argp_state *state
 				argp_usage(state);
 			}
 			break;
+		case 'r':
+			config->result_file_name = arg;
+			break;
 		case 't':
 			config->type = arg;
 			break;
@@ -132,6 +157,12 @@ error_t run_program_argp_parse_opt (int key, char *arg, struct argp_state *state
 			break;
 		case 504:
 			config->extra_readable_files.push_back(arg);
+			break;
+		case 505:
+			config->extra_writable_files.push_back(realpath(arg));
+			break;
+		case 506:
+			config->extra_writable_files.push_back(arg);
 			break;
 		case ARGP_KEY_ARG:
 			config->argv.push_back(arg);
@@ -164,6 +195,7 @@ RunProgramConfig run_program_config;
 
 void parse_args(int argc, char **argv) {
 	run_program_config.time_limit = 1;
+	run_program_config.real_time_limit = -1;
 	run_program_config.memory_limit = 256;
 	run_program_config.output_limit = 64;
 	run_program_config.stack_limit = 1024;
@@ -171,6 +203,7 @@ void parse_args(int argc, char **argv) {
 	run_program_config.output_file_name = "stdout";
 	run_program_config.error_file_name = "stderr";
 	run_program_config.work_path = "";
+	run_program_config.result_file_name = "stdout";
 	run_program_config.type = "default";
 	run_program_config.safe_mode = true;
 	run_program_config.need_show_trace_details = false;
@@ -178,11 +211,13 @@ void parse_args(int argc, char **argv) {
 
 	argp_parse(&run_program_argp, argc, argv, ARGP_NO_ARGS | ARGP_IN_ORDER, 0, &run_program_config);
 
+	if (run_program_config.real_time_limit == -1)
+		run_program_config.real_time_limit = run_program_config.time_limit + 2;
 	run_program_config.stack_limit = min(run_program_config.stack_limit, run_program_config.memory_limit);
 
 	if (!run_program_config.work_path.empty()) {
 		if (chdir(run_program_config.work_path.c_str()) == -1) {
-			exit(put_result(RS_JGF));
+			exit(put_result(run_program_config.result_file_name, RS_JGF));
 		}
 	}
 
@@ -197,7 +232,7 @@ void parse_args(int argc, char **argv) {
 		run_program_config.argv[0] = "./" + run_program_config.program_basename;
 
 		if (chdir(run_program_config.work_path.c_str()) == -1) {
-			exit(put_result(RS_JGF));
+			exit(put_result(run_program_config.result_file_name, RS_JGF));
 		}
 	}
 
@@ -230,7 +265,7 @@ void set_limit(int r, int rcur, int rmax = -1)  {
 	}
 }
 void run_child() {
-	set_limit(RLIMIT_CPU, run_program_config.time_limit, run_program_config.time_limit + 2);
+	set_limit(RLIMIT_CPU, run_program_config.time_limit, run_program_config.real_time_limit);
 	set_limit(RLIMIT_FSIZE, run_program_config.output_limit << 20);
 	set_limit(RLIMIT_STACK, run_program_config.stack_limit << 20);
 
@@ -352,7 +387,7 @@ RunResult trace_children() {
 		return RunResult(RS_JGF);
 	} else if (rp_timer_pid == 0) {
 		struct timespec ts;
-		ts.tv_sec = run_program_config.time_limit + 2;
+		ts.tv_sec = run_program_config.real_time_limit;
 		ts.tv_nsec = 0;
 		nanosleep(&ts, NULL);
 		exit(0);
@@ -536,11 +571,11 @@ int main(int argc, char **argv) {
 
 	pid_t pid = fork();
 	if (pid == -1) {
-		return put_result(RS_JGF);
+		return put_result(run_program_config.result_file_name, RS_JGF);
 	} else if (pid == 0) {
 		run_child();
 	} else {
-		return put_result(run_parent(pid));
+		return put_result(run_program_config.result_file_name, run_parent(pid));
 	}
-	return put_result(RS_JGF);
+	return put_result(run_program_config.result_file_name, RS_JGF);
 }

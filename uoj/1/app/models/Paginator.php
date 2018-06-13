@@ -10,7 +10,12 @@ class Paginator {
 	public $table;
 	
 	public function __construct($config) {
-		if (!isset($config['echo_full'])) {
+		if (isset($config['data'])) {
+			$this->n_pages = 1;
+			$this->cur_page = 1;
+			$this->cur_start = 0;
+			$this->table = $config['data'];
+		} elseif (!isset($config['echo_full'])) {
 			$this->n_rows = DB::selectCount("select count(*) from {$config['table_name']} where {$config['cond']}");
 			
 			$this->page_len = isset($config['page_len']) ? $config['page_len'] : 10;

@@ -2147,8 +2147,17 @@ void InStream::reset()
 void InStream::init(std::string fileName, TMode mode)
 {
     opened = false;
-    name = fileName;
-    stdfile = false;
+	if (fileName == "/dev/stdin")
+	{
+		name = "stdin";
+		this->file = stdin;
+		stdfile = true;
+	}
+	else
+	{
+		name = fileName;
+		stdfile = false;
+	}
     this->mode = mode;
     reset();
 }

@@ -29,7 +29,11 @@
 				echo '<td>';
 			}
 			echo '#', $problem['id'], '</td>';
-			echo '<td class="text-left">', '<a href="/problem/', $problem['id'], '">', $problem['title'], '</a>';
+			echo '<td class="text-left">';
+			if ($problem['is_hidden']) {
+				echo ' <span class="text-danger">[隐藏]</span> ';
+			}
+			echo '<a href="/problem/', $problem['id'], '">', $problem['title'], '</a>';
 			if (isset($_COOKIE['show_tags_mode'])) {
 				foreach (queryProblemTags($problem['id']) as $tag) {
 					echo '<a class="uoj-problem-tag">', '<span class="badge">', HTML::escape($tag), '</span>', '</a>';

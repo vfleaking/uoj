@@ -33,6 +33,8 @@ EOD;
 			$mailer->msgHTML($html);
 			if ($mailer->send()) {  
 				echo 'good';
+			} else {
+			    error_log('PHPMailer: '.$mailer->ErrorInfo);
 			}
 			die();
 		}
@@ -69,7 +71,7 @@ EOD;
 
 	$info_form = new UOJForm('info');
 	$http_host = HTML::escape(UOJContext::httpHost());
-	$download_url = HTML::escape(HTML::url("/download.php?type=problem&id={$problem['id']}"));
+	$download_url = HTML::url("/download.php?type=problem&id={$problem['id']}");
 	$info_form->appendHTML(<<<EOD
 <div class="form-group">
 	<label class="col-sm-3 control-label">SVN地址</label>
@@ -397,16 +399,21 @@ EOD
 				);
 			}
 			
-			if (isset($problem_conf['use_builtin_checker'])) {
-				$data_disp->addDisplayer('checker', function($self) {
-					echo '<h4>use builtin checker : ', $self->problem_conf['use_builtin_checker']['val'], '</h4>';
-				});
-			} else {
-				$data_disp->addDisplayer('checker', $getDisplaySrcFunc('chk'));
+			if (!isset($problem_conf['interaction_mode'])) {
+				if (isset($problem_conf['use_builtin_checker'])) {
+					$data_disp->addDisplayer('checker', function($self) {
+						echo '<h4>use builtin checker : ', $self->problem_conf['use_builtin_checker']['val'], '</h4>';
+					});
+				} else {
+					$data_disp->addDisplayer('checker', $getDisplaySrcFunc('chk'));
+				}
 			}
 			if ($problem['hackable']) {
 				$data_disp->addDisplayer('standard', $getDisplaySrcFunc('std'));
 				$data_disp->addDisplayer('validator', $getDisplaySrcFunc('val'));
+			}
+			if (isset($problem_conf['interaction_mode'])) {
+				$data_disp->addDisplayer('interactor', $getDisplaySrcFunc('interactor'));
 			}
 			return $data_disp;
 		} else {
@@ -444,6 +451,7 @@ EOD
 	$data_form = new UOJForm('data');
 	$data_form->handle = function() {
 		global $problem, $myUser;
+		set_time_limit(60 * 5);
 		$ret = svnSyncProblemData($problem, $myUser);
 		if ($ret) {
 			becomeMsgPage('<div>' . $ret . '</div><a href="/problem/'.$problem['id'].'/manage/data">返回</a>');
@@ -471,6 +479,16 @@ EOD
 	$rejudge_form->submit_button_config['class_str'] = 'btn btn-danger btn-block';
 	$rejudge_form->submit_button_config['text'] = '重测该题';
 	$rejudge_form->submit_button_config['smart_confirm'] = '';
+	
+	$rejudgege97_form = new UOJForm('rejudgege97');
+	$rejudgege97_form->handle = function() {
+		global $problem;
+		rejudgeProblemGe97($problem);
+	};
+	$rejudgege97_form->succ_href = "/submissions?problem_id={$problem['id']}";
+	$rejudgege97_form->submit_button_config['class_str'] = 'btn btn-danger btn-block';
+	$rejudgege97_form->submit_button_config['text'] = '重测 >=97 的程序';
+	$rejudgege97_form->submit_button_config['smart_confirm'] = '';
 	
 	$view_type_form = new UOJForm('view_type');
 	$view_type_form->addVSelect('view_content_type',
@@ -569,6 +587,7 @@ EOD
 	$data_form->runAtServer();
 	$clear_data_form->runAtServer();
 	$rejudge_form->runAtServer();
+	$rejudgege97_form->runAtServer();
 	$info_form->runAtServer();
 ?>
 <?php
@@ -647,6 +666,9 @@ EOD
 		</div>
 		<div class="top-buffer-md">
 			<?php $rejudge_form->printHTML(); ?>
+		</div>
+		<div class="top-buffer-md">
+			<?php $rejudgege97_form->printHTML(); ?>
 		</div>
 	</div>
 </div>

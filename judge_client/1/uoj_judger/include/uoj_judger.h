@@ -17,133 +17,10 @@
 
 #include <unistd.h>
 #include <sys/file.h>
+#include <sys/wait.h>
 
 #include "uoj_env.h"
 using namespace std;
-
-/*====================== parameter ==================== */
-
-struct RunLimit {
-	int time;
-	int memory;
-	int output;
-
-	RunLimit() {
-	}
-	RunLimit(const int &_time, const int &_memory, const int &_output)
-			: time(_time), memory(_memory), output(_output) {
-	}
-};
-
-const RunLimit RL_DEFAULT = RunLimit(1, 256, 64);
-const RunLimit RL_JUDGER_DEFAULT = RunLimit(600, 1024, 128);
-const RunLimit RL_CHECKER_DEFAULT = RunLimit(5, 256, 64);
-const RunLimit RL_VALIDATOR_DEFAULT = RunLimit(5, 256, 64);
-const RunLimit RL_MARKER_DEFAULT = RunLimit(5, 256, 64);
-const RunLimit RL_COMPILER_DEFAULT = RunLimit(15, 512, 64);
-
-struct PointInfo  {
-	int num;
-	int scr;
-	int ust, usm;
-	string info, in, out, res;
-
-	PointInfo(const int &_num, const int &_scr,
-			const int &_ust, const int &_usm, const string &_info,
-			const string &_in, const string &_out, const string &_res)
-			: num(_num), scr(_scr),
-			ust(_ust), usm(_usm), info(_info),
-			in(_in), out(_out), res(_res) {
-	}
-};
-
-struct CustomTestInfo  {
-	int ust, usm;
-	string info, exp, out;
-
-	CustomTestInfo(const int &_ust, const int &_usm, const string &_info,
-			const string &_exp, const string &_out)
-			: ust(_ust), usm(_usm), info(_info),
-			exp(_exp), out(_out) {
-	}
-};
-
-struct RunResult {
-	int type;
-	int ust, usm;
-	int exit_code;
-
-	static RunResult failed_result() {
-		RunResult res;
-		res.type = RS_JGF;
-		res.ust = -1;
-		res.usm = -1;
-		return res;
-	}
-};
-struct RunCheckerResult {
-	int type;
-	int ust, usm;
-	int scr;
-	string info;
-	
-	static RunCheckerResult failed_result() {
-		RunCheckerResult res;
-		res.type = RS_JGF;
-		res.ust = -1;
-		res.usm = -1;
-		res.scr = 0;
-		res.info = "Checker Judgment Failed";
-		return res;
-	}
-};
-struct RunValidatorResult {
-	int type;
-	int ust, usm;
-	bool succeeded;
-	string info;
-	
-	static RunValidatorResult failed_result() {
-		RunValidatorResult res;
-		res.type = RS_JGF;
-		res.ust = -1;
-		res.usm = -1;
-		res.succeeded = 0;
-		res.info = "Validator Judgment Failed";
-		return res;
-	}
-};
-struct RunCompilerResult {
-	int type;
-	int ust, usm;
-	bool succeeded;
-	string info;
-
-	static RunCompilerResult failed_result() {
-		RunCompilerResult res;
-		res.type = RS_JGF;
-		res.ust = -1;
-		res.usm = -1;
-		res.succeeded = false;
-		res.info = "Compile Failed";
-		return res;
-	}
-};
-
-int problem_id;
-string main_path;
-string work_path;
-string data_path;
-string result_path;
-
-int tot_time   = 0;
-int max_memory = 0;
-int tot_score  = 0;
-ostringstream details_out;
-//vector<PointInfo> points_info;
-map<string, string> config;
-
-/*==================== parameter End ================== */
 
 /*========================== execute ====================== */
 
@@ -191,12 +68,6 @@ int executef(const char *fmt, ...) {
 
 /*========================= file ====================== */
 
-/*
-bool file_exist(const string &name) {
-	return access(name.c_str(), F_OK);
-}
-*/
-
 string file_preview(const string &name, const size_t &len = 100) {
 	FILE *f = fopen(name.c_str(), "r");
 	if (f == NULL) {
@@ -237,68 +108,191 @@ void file_hide_token(const string &name, const string &token) {
 	fclose(rf);
 	fclose(wf);
 }
-/*
-string read_file (FILE *file, const string &s, int t = (int) 1e9)  {
-	int ch;
-	string res = "";
-	int l = t + 4;
-	while (ch = next(file), ch != EOF  &&  l)  res += ch, --l;
-	if ((int)res.size() > t + 3)
-	{
-		res.resize(t);
-		res += "...";
-	}
-	fclose(file);
-	if (res == "")  return s;
-	return res;
-}
-string read_file (const string &name, const string &s, int t = (int) 1e9)  {
-	if (file_exist(name))  return s;
-  return read_file(fopen(name.c_str(), "r"), s, t);
-}
-*/
-
-/*
-bool file_compare(const char *fileA, const char *fileB, const int &mark)  {
-	FILE *A = fopen(fileA, "r");
-	FILE *B = fopen(fileB, "r");
-	int chA = 'a';
-	int chB = 'a';
-	bool result = true;
-	
-	if (mark == 0)  {
-		do  if ((chA  = fgetc(A)) != (chB  = fgetc(B)))  {  result = false;  break;  }
-		while   (chA != EOF       &&  chB != EOF);
-	}
-	else  {
-		do  {
-			chA = fgetc(A);
-			if (chB !=  EOF)  chB = fgetc(B);
-			if (chA == '\r')  chA = fgetc(A);
-			if (chB == '\r')  chB = fgetc(B);
-			if (chB ==  chA)  continue;
-			if (chA ==  EOF)  swap(chA, chB), swap(A, B);
-			if (chB ==  EOF)  {  if (chA != ' '  &&  chA != '\n')  {  result = false;  break;  }  else  continue;  }
-			if (chB == '\n')  swap(chA, chB), swap(A, B);
-			if (chA == '\n')  {
-				while (chB ==  ' ')    chB = fgetc(B);
-				if    (chB == '\r')    chB = fgetc(B);
-				if    (chB == chA  ||  chB == EOF)   continue;
-			}
-			result = false;  break;
-		}
-		while (chA != EOF);
-	}
-	fclose(A);
-	fclose(B);
-	return result;
-}
-bool file_compare(const string &fileA, const string &fileB, const int &mark)  {
-	return file_compare(fileA.c_str(), fileB.c_str(), mark);
-}*/
-
 
 /*======================= file End ==================== */
+
+/*====================== parameter ==================== */
+
+struct RunLimit {
+	int time;
+	int real_time;
+	int memory;
+	int output;
+
+	RunLimit() {
+	}
+	RunLimit(const int &_time, const int &_memory, const int &_output)
+			: time(_time), memory(_memory), output(_output), real_time(-1) {
+	}
+};
+
+const RunLimit RL_DEFAULT = RunLimit(1, 256, 64);
+const RunLimit RL_JUDGER_DEFAULT = RunLimit(600, 1024, 128);
+const RunLimit RL_CHECKER_DEFAULT = RunLimit(5, 256, 64);
+const RunLimit RL_INTERACTOR_DEFAULT = RunLimit(1, 256, 64);
+const RunLimit RL_VALIDATOR_DEFAULT = RunLimit(5, 256, 64);
+const RunLimit RL_MARKER_DEFAULT = RunLimit(5, 256, 64);
+const RunLimit RL_COMPILER_DEFAULT = RunLimit(15, 512, 64);
+
+struct PointInfo  {
+	int num;
+	int scr;
+	int ust, usm;
+	string info, in, out, res;
+
+	PointInfo(const int &_num, const int &_scr,
+			const int &_ust, const int &_usm, const string &_info,
+			const string &_in, const string &_out, const string &_res)
+			: num(_num), scr(_scr),
+			ust(_ust), usm(_usm), info(_info),
+			in(_in), out(_out), res(_res) {
+		if (info == "default") {
+			if (scr == 0) {
+				info = "Wrong Answer";
+			} else if (scr == 100) {
+				info = "Accepted";
+			} else {
+				info = "Acceptable Answer";
+			}
+		}
+	}
+};
+
+struct CustomTestInfo  {
+	int ust, usm;
+	string info, exp, out;
+
+	CustomTestInfo(const int &_ust, const int &_usm, const string &_info,
+			const string &_exp, const string &_out)
+			: ust(_ust), usm(_usm), info(_info),
+			exp(_exp), out(_out) {
+	}
+};
+
+struct RunResult {
+	int type;
+	int ust, usm;
+	int exit_code;
+
+	static RunResult failed_result() {
+		RunResult res;
+		res.type = RS_JGF;
+		res.ust = -1;
+		res.usm = -1;
+		return res;
+	}
+
+	static RunResult from_file(const string &file_name) {
+		RunResult res;
+		FILE *fres = fopen(file_name.c_str(), "r");
+		if (fres == NULL || fscanf(fres, "%d %d %d %d", &res.type, &res.ust, &res.usm, &res.exit_code) != 4) {
+			return RunResult::failed_result();
+		}
+		fclose(fres);
+		return res;
+	}
+};
+struct RunCheckerResult {
+	int type;
+	int ust, usm;
+	int scr;
+	string info;
+
+	static RunCheckerResult from_file(const string &file_name, const RunResult &rres) {
+		RunCheckerResult res;
+		res.type = rres.type;
+		res.ust = rres.ust;
+		res.usm = rres.usm;
+
+		if (rres.type != RS_AC) {
+			res.scr = 0;
+		} else {
+			FILE *fres = fopen(file_name.c_str(), "r");
+			char type[21];
+			if (fres == NULL || fscanf(fres, "%20s", type) != 1) {
+				return RunCheckerResult::failed_result();
+			}
+			if (strcmp(type, "ok") == 0) {
+				res.scr = 100;
+			} else if (strcmp(type, "points") == 0) {
+				double d;
+				if (fscanf(fres, "%lf", &d) != 1) {
+					return RunCheckerResult::failed_result();
+				} else {
+					res.scr = (int)floor(100 * d + 0.5);
+				}
+			} else {
+				res.scr = 0;
+			}
+			fclose(fres);
+		}
+		res.info = file_preview(file_name);
+		return res;
+	}
+	
+	static RunCheckerResult failed_result() {
+		RunCheckerResult res;
+		res.type = RS_JGF;
+		res.ust = -1;
+		res.usm = -1;
+		res.scr = 0;
+		res.info = "Checker Judgment Failed";
+		return res;
+	}
+};
+struct RunValidatorResult {
+	int type;
+	int ust, usm;
+	bool succeeded;
+	string info;
+	
+	static RunValidatorResult failed_result() {
+		RunValidatorResult res;
+		res.type = RS_JGF;
+		res.ust = -1;
+		res.usm = -1;
+		res.succeeded = 0;
+		res.info = "Validator Judgment Failed";
+		return res;
+	}
+};
+struct RunCompilerResult {
+	int type;
+	int ust, usm;
+	bool succeeded;
+	string info;
+
+	static RunCompilerResult failed_result() {
+		RunCompilerResult res;
+		res.type = RS_JGF;
+		res.ust = -1;
+		res.usm = -1;
+		res.succeeded = false;
+		res.info = "Compile Failed";
+		return res;
+	}
+};
+
+// see also: run_simple_interaction
+struct RunSimpleInteractionResult {
+	RunResult res; // prog
+	RunCheckerResult ires; // interactor
+};
+
+int problem_id;
+string main_path;
+string work_path;
+string data_path;
+string result_path;
+
+int tot_time   = 0;
+int max_memory = 0;
+int tot_score  = 0;
+ostringstream details_out;
+//vector<PointInfo> points_info;
+map<string, string> config;
+
+/*==================== parameter End ================== */
 
 /*====================== info print =================== */
 
@@ -332,26 +326,6 @@ inline string info_str(int id)  {
 	case RS_RE : return "Runtime Error";
 	case RS_DGS: return "Dangerous Syscalls";
 	case RS_JGF: return "Judgment Failed";
-	/*
-	case RS_SPJ_RE : return "Special Judge Runtime Error";
-	case RS_SPJ_MLE: return "Special Judge Memory Limit Exceeded";
-	case RS_SPJ_OLE: return "Special Judge Output Limit Exceeded";
-	case RS_SPJ_TLE: return "Special Judge Time Limit Exceeded";
-	case RS_SPJ_DGS: return "Special Judge Dangerous Syscalls";
-	case RS_SPJ_JGF: return "Special Judge Judgement Failed";
-	case RS_HK_MLE:  return "Hack Successfully : Memory Limit Exceeded";
-	case RS_HK_TLE:  return "Hack Successfully : Time Limit Exceeded";
-	case RS_HK_OLE:  return "Hack Successfully : Output LImit Exceeded";
-	case RS_HK_RE:   return "Hack Successfully : Runtime Error";
-	case RS_HK_DGS:  return "Hack Successfully : Dangerous Syscalls";
-	case RS_HK_JGF:  return "Hack Successfully : Judgement Failed";
-	case RS_HK_SPJ_RE:  return "Hack Successfully : Special Judge Runtime Error";
-	case RS_HK_SPJ_MLE: return "Hack Successfully : Special Judge Memory Limit Exceeded";
-	case RS_HK_SPJ_OLE: return "Hack Successfully : Special Judge Output Limit Exceeded";
-	case RS_HK_SPJ_TLE: return "Hack Successfully : Special Judge Time Limit Exceeded";
-	case RS_HK_SPJ_DGS: return "Hack Successfully : Special Judge Dangerous Syscalls";
-	case RS_HK_SPJ_JGF: return "Hack Successfully : Special Judge Judgement Failed"; 
-	*/
 	default    : return "Unknown Result";
 	}
 }
@@ -434,20 +408,6 @@ void end_judge_compile_error(const RunCompilerResult &res) {
 	fclose(fres);
 	exit(0);
 }
-/*
-void put_info(int num, int scr, int ust, int usm, const char *s, const char *in, const char *out, const char *res)  {
-	return put_info(num, scr, ust, usm, string(s), string(in), string(out), string(res));
-}
-void put_info(int num, int scr, const string &s, const string &in, const string &out, const string &res)  {
-	return put_info(num, scr, -1, -1, s, in, out, res);
-}
-void put_info(int num, int scr, const char *s, const char *in, const char *out, const char *res)  {
-	return put_info(num, scr, -1, -1, string(s), string(in), string(out), string(res));
-}
-void end_info(int scr)  {
-	return put_info(0, scr, -1, -1, "", "", "", "");
-}
-*/
 
 void report_judge_status(const char *status) {
 	FILE *f = fopen((result_path + "/cur_status.txt").c_str(), "a");
@@ -614,8 +574,87 @@ struct RunProgramConfig {
 		}
 		va_end(vl);
 	}
+
+	void set_submission_program_name(string name) {
+		string lang = conf_str(string(name) + "_language");
+		type = "default";
+		string program_name = name;
+		if (lang == "Python2.7") {
+			type = "python2.7";
+		} else if (lang == "Python3") {
+			type = "python3.4";
+		} else if (lang == "Java7") {
+			program_name += "." + conf_str(name + "_main_class");
+			type = "java7u76";
+		} else if (lang == "Java8") {
+			program_name += "." + conf_str(name + "_main_class");
+			type = "java8u31";
+		}
+
+		set_argv(program_name.c_str(), NULL);
+	}
+
+	string get_cmd() const {
+		ostringstream sout;
+		sout << main_path << "/run/run_program"
+			<< " " << "--res=" << escapeshellarg(result_file_name)
+			<< " " << "--in=" << escapeshellarg(input_file_name)
+			<< " " <<"--out=" << escapeshellarg(output_file_name)
+			<< " " << "--err=" << escapeshellarg(error_file_name)
+			<< " " << "--tl=" << limit.time
+			<< " " << "--ml=" << limit.memory
+			<< " " << "--ol=" << limit.output
+			<< " " << "--type=" << type
+			<< " " << "--work-path=" << work_path
+			/*<< " " << "--show-trace-details"*/;
+		for (vector<string>::const_iterator it = readable_file_names.begin(); it != readable_file_names.end(); it++) {
+			sout << " " << "--add-readable=" << escapeshellarg(*it);
+		}
+		for (vector<string>::const_iterator it = argv.begin(); it != argv.end(); it++) {
+			sout << " " << escapeshellarg(*it);
+		}
+		return sout.str();
+	}
 };
 
+struct PipeConfig {
+	int from, to;
+	int from_fd, to_fd;
+
+	string saving_file_name;
+
+	PipeConfig() {
+	}
+	PipeConfig(int _from, int _from_fd, int _to, int _to_fd, const string &_saving_file_name = "")
+			: from(_from), from_fd(_from_fd), to(_to), to_fd(_to_fd), saving_file_name(_saving_file_name) {
+	}
+};
+struct RunInteractionConfig {
+	vector<string> cmds;
+	vector<PipeConfig> pipes;
+
+	string get_cmd() const {
+		ostringstream sout;
+		sout << main_path << "/run/run_interaction";
+		for (int i = 0; i < (int)cmds.size(); i++) {
+			sout << " " << escapeshellarg(cmds[i]);
+		}
+		for (int i = 0; i < (int)pipes.size(); i++) {
+			sout << " " << "-p";
+			sout << " " << pipes[i].from << ":" << pipes[i].from_fd;
+			sout << "-" << pipes[i].to << ":" << pipes[i].to_fd;
+
+			if (!pipes[i].saving_file_name.empty()) {
+				sout << " " << "-s";
+				sout << " " << escapeshellarg(pipes[i].saving_file_name);
+			}
+		}
+		return sout.str();
+	}
+};
+
+// @deprecated
+// will be removed in the future
 RunResult vrun_program(
 		const char *run_program_result_file_name,
 		const char *input_file_name,
@@ -625,7 +664,7 @@ RunResult vrun_program(
 		const vector<string> &rest) {
 	ostringstream sout;
 	sout << main_path << "/run/run_program"
-		<< " " << ">" << escapeshellarg(run_program_result_file_name)
+		<< " " << "--res=" << escapeshellarg(run_program_result_file_name)
 		<< " " << "--in=" << escapeshellarg(input_file_name)
 		<< " " <<"--out=" << escapeshellarg(output_file_name)
 		<< " " << "--err=" << escapeshellarg(error_file_name)
@@ -636,46 +675,23 @@ RunResult vrun_program(
 	for (vector<string>::const_iterator it = rest.begin(); it != rest.end(); it++) {
 		sout << " " << escapeshellarg(*it);
 	}
-	RunResult res;
+
 	if (execute(sout.str().c_str()) != 0) {
 		return RunResult::failed_result();
 	}
-	FILE *fres = fopen(run_program_result_file_name, "r");
-	if (fres != NULL && fscanf(fres, "%d %d %d %d", &res.type, &res.ust, &res.usm, &res.exit_code) != 4) {
-		return RunResult::failed_result();
-	}
-	fclose(fres);
-	return res;
+	return RunResult::from_file(run_program_result_file_name);
 }
 
 RunResult run_program(const RunProgramConfig &rpc) {
-	ostringstream sout;
-	sout << main_path << "/run/run_program"
-		<< " " << ">" << escapeshellarg(rpc.result_file_name)
-		<< " " << "--in=" << escapeshellarg(rpc.input_file_name)
-		<< " " <<"--out=" << escapeshellarg(rpc.output_file_name)
-		<< " " << "--err=" << escapeshellarg(rpc.error_file_name)
-		<< " " << "--tl=" << rpc.limit.time
-		<< " " << "--ml=" << rpc.limit.memory
-		<< " " << "--ol=" << rpc.limit.output
-		<< " " << "--type=" << rpc.type
-		<< " " << "--work-path=" << rpc.work_path;
-	for (vector<string>::const_iterator it = rpc.readable_file_names.begin(); it != rpc.readable_file_names.end(); it++) {
-		sout << " " << "--add-readable=" << escapeshellarg(*it);
-	}
-	for (vector<string>::const_iterator it = rpc.argv.begin(); it != rpc.argv.end(); it++) {
-		sout << " " << escapeshellarg(*it);
-	}
-	RunResult res;
-	if (execute(sout.str().c_str()) != 0) {
+	if (execute(rpc.get_cmd().c_str()) != 0) {
 		return RunResult::failed_result();
 	}
-	FILE *fres = fopen(rpc.result_file_name.c_str(), "r");
-	if (fres != NULL && fscanf(fres, "%d %d %d %d", &res.type, &res.ust, &res.usm, &res.exit_code) != 4) {
-		return RunResult::failed_result();
-	}
-	fclose(fres);
-	return res;
+	return RunResult::from_file(rpc.result_file_name);
+}
+
+// @return interaction return value
+int run_interaction(const RunInteractionConfig &ric) {
+	return execute(ric.get_cmd().c_str());
 }
 
 RunResult run_program(
@@ -746,35 +762,7 @@ RunCheckerResult run_checker(
 			realpath(answer_file_name).c_str(),
 			NULL);
 
-	RunCheckerResult res;
-	res.type = ret.type;
-	res.ust = ret.ust;
-	res.usm = ret.usm;
-
-	if (ret.type != RS_AC) {
-		res.scr = 0;
-	} else {
-		FILE *fres = fopen((result_path + "/checker_error.txt").c_str(), "r");
-		char type[21];
-		if (fres == NULL || fscanf(fres, "%20s", type) != 1) {
-			return RunCheckerResult::failed_result();
-		}
-		if (strcmp(type, "ok") == 0) {
-			res.scr = 100;
-		} else if (strcmp(type, "points") == 0) {
-			double d;
-			if (fscanf(fres, "%lf", &d) != 1) {
-				return RunCheckerResult::failed_result();
-			} else {
-				res.scr = (int)floor(100 * d + 0.5);
-			}
-		} else {
-			res.scr = 0;
-		}
-		fclose(fres);
-	}
-	res.info = file_preview(result_path + "/checker_error.txt");
-	return res;
+	return RunCheckerResult::from_file(result_path + "/checker_error.txt", ret);
 }
 
 RunCompilerResult run_compiler(const char *path, ...) {
@@ -818,28 +806,12 @@ RunResult run_submission_program(
 		const RunLimit &limit,
 		const string &name,
 		RunProgramConfig rpc = RunProgramConfig()) {
-	string lang = conf_str(string(name) + "_language");
-	string program_type = "default";
-	string program_name = name;
-	if (lang == "Python2.7") {
-		program_type = "python2.7";
-	} else if (lang == "Python3") {
-		program_type = "python3.4";
-	} else if (lang == "Java7") {
-		program_name += "." + conf_str(name + "_main_class");
-		program_type = "java7u76";
-	} else if (lang == "Java8") {
-		program_name += "." + conf_str(name + "_main_class");
-		program_type = "java8u31";
-	}
-
 	rpc.result_file_name = result_path + "/run_submission_program.txt";
 	rpc.input_file_name = input_file_name;
 	rpc.output_file_name = output_file_name;
 	rpc.error_file_name = "/dev/null";
 	rpc.limit = limit;
-	rpc.type = program_type;
-	rpc.set_argv(program_name.c_str(), NULL);
+	rpc.set_submission_program_name(name);
 
 	RunResult res = run_program(rpc);
 	if (res.type == RS_AC && res.exit_code != 0) {
@@ -848,17 +820,103 @@ RunResult run_submission_program(
 	return res;
 }
 
+void prepare_interactor() {
+	static bool prepared = false;
+	if (prepared) {
+		return;
+	}
+	string data_path_std = data_path + "/interactor";
+	string work_path_std = work_path + "/interactor";
+	executef("cp %s %s", data_path_std.c_str(), work_path_std.c_str());
+	conf_add("interactor_language", "C++");
+	prepared = true;
+}
+
+// simple: prog <---> interactor <---> data
+RunSimpleInteractionResult run_simple_interation(
+		const string &input_file_name,
+		const string &answer_file_name,
+		const string &real_input_file_name,
+		const string &real_output_file_name,
+		const RunLimit &limit,
+		const RunLimit &ilimit,
+		const string &name,
+		RunProgramConfig rpc = RunProgramConfig(),
+		RunProgramConfig irpc = RunProgramConfig()) {
+	prepare_interactor();
+
+	rpc.result_file_name = result_path + "/run_submission_program.txt";
+	rpc.input_file_name = "stdin";
+	rpc.output_file_name = "stdout";
+	rpc.error_file_name = "/dev/null";
+	rpc.limit = limit;
+	rpc.set_submission_program_name(name);
+
+	irpc.result_file_name = result_path + "/run_interactor_program.txt";
+	irpc.readable_file_names.push_back(input_file_name);
+	irpc.readable_file_names.push_back(answer_file_name);
+	irpc.input_file_name = "stdin";
+	irpc.output_file_name = "stdout";
+	irpc.error_file_name = result_path + "/interactor_error.txt";
+	irpc.limit = ilimit;
+	irpc.set_submission_program_name("interactor");
+	irpc.argv.push_back(input_file_name);
+	irpc.argv.push_back("/dev/stdin");
+	irpc.argv.push_back(answer_file_name);
+
+	irpc.limit.real_time = rpc.limit.real_time = rpc.limit.time + irpc.limit.time + 1;
+
+	RunInteractionConfig ric;
+	ric.cmds.push_back(rpc.get_cmd());
+	ric.cmds.push_back(irpc.get_cmd());
+
+	// from:fd, to:fd
+	ric.pipes.push_back(PipeConfig(2, 1, 1, 0, real_input_file_name));
+	ric.pipes.push_back(PipeConfig(1, 1, 2, 0, real_output_file_name));
+	
+	run_interaction(ric);
+
+	RunSimpleInteractionResult rires;
+	RunResult res = RunResult::from_file(rpc.result_file_name);
+	RunCheckerResult ires = RunCheckerResult::from_file(irpc.error_file_name, RunResult::from_file(irpc.result_file_name));
+
+	if (res.type == RS_AC && res.exit_code != 0) {
+		res.type = RS_RE;
+	}
+
+	if (ires.type == RS_JGF) {
+		ires.info = "Interactor Judgment Failed";
+	}
+	if (ires.type == RS_TLE) {
+		ires.type = RS_AC;
+		res.type = RS_TLE;
+	}
+
+	rires.res = res;
+	rires.ires = ires;
+	return rires;
+}
+
 void prepare_run_standard_program() {
+	static bool prepared = false;
+	if (prepared) {
+		return;
+	}
 	string data_path_std = data_path + "/std";
 	string work_path_std = work_path + "/std";
 	executef("cp %s %s", data_path_std.c_str(), work_path_std.c_str());
 	conf_add("std_language", "C++");
+	prepared = true;
 }
+
+// @deprecated
+// will be removed in the future
 RunResult run_standard_program(
 		const string &input_file_name,
 		const string &output_file_name,
 		const RunLimit &limit,
 		RunProgramConfig rpc = RunProgramConfig()) {
+	prepare_run_standard_program();
 	rpc.result_file_name = result_path + "/run_standard_program.txt";
 	return run_submission_program(
 			input_file_name,
@@ -1229,6 +1287,7 @@ RunCompilerResult compile_with_implementer(const char *name)  {
 
 struct TestPointConfig {
 	int submit_answer;
+
 	int validate_input_before_test;
 	string input_file_name;
 	string output_file_name;
@@ -1278,54 +1337,77 @@ PointInfo test_point(const string &name, const int &num, TestPointConfig tpc = T
 		}
 	}
 
-	RunResult pro_ret;
-	if (!tpc.submit_answer) {
-		pro_ret = run_submission_program(
-				tpc.input_file_name.c_str(),
-				tpc.output_file_name.c_str(),
-				conf_run_limit(num, RL_DEFAULT),
-				name);
-		if (conf_has("token")) {
-			file_hide_token(tpc.output_file_name, conf_str("token", ""));
+	if (!conf_is("interaction_mode", "on")) {
+		RunResult pro_ret;
+		if (!tpc.submit_answer) {
+			pro_ret = run_submission_program(
+					tpc.input_file_name.c_str(),
+					tpc.output_file_name.c_str(),
+					conf_run_limit(num, RL_DEFAULT),
+					name);
+			if (conf_has("token")) {
+				file_hide_token(tpc.output_file_name, conf_str("token", ""));
+			}
+			if (pro_ret.type != RS_AC) {
+				return PointInfo(num, 0, -1, -1,
+						info_str(pro_ret.type),
+						file_preview(tpc.input_file_name), file_preview(tpc.output_file_name),
+						"");
+			}
+		} else {
+			pro_ret.type = RS_AC;
+			pro_ret.ust = -1;
+			pro_ret.usm = -1;
+			pro_ret.exit_code = 0;
 		}
-		if (pro_ret.type != RS_AC) {
+
+		RunCheckerResult chk_ret = run_checker(
+				conf_run_limit("checker", num, RL_CHECKER_DEFAULT),
+				conf_str("checker"),
+				tpc.input_file_name,
+				tpc.output_file_name,
+				tpc.answer_file_name);
+		if (chk_ret.type != RS_AC) {
 			return PointInfo(num, 0, -1, -1,
-					info_str(pro_ret.type),
+					"Checker " + info_str(chk_ret.type),
 					file_preview(tpc.input_file_name), file_preview(tpc.output_file_name),
 					"");
 		}
-	} else {
-		pro_ret.type = RS_AC;
-		pro_ret.ust = -1;
-		pro_ret.usm = -1;
-		pro_ret.exit_code = 0;
-	}
 
-	RunCheckerResult chk_ret = run_checker(
-			conf_run_limit("checker", num, RL_CHECKER_DEFAULT),
-			conf_str("checker"),
-			tpc.input_file_name,
-			tpc.output_file_name,
-			tpc.answer_file_name);
-	if (chk_ret.type != RS_AC) {
-		return PointInfo(num, 0, -1, -1,
-				"Checker " + info_str(chk_ret.type),
+		return PointInfo(num, chk_ret.scr, pro_ret.ust, pro_ret.usm, 
+				"default",
 				file_preview(tpc.input_file_name), file_preview(tpc.output_file_name),
-				"");
-	}
-
-	string info;
-	if (chk_ret.scr == 0) {
-		info = "Wrong Answer";
-	} else if (chk_ret.scr == 100) {
-		info = "Accepted";
+				chk_ret.info);
 	} else {
-		info = "Acceptable Answer";
+		string real_output_file_name = tpc.output_file_name + ".real_input.txt";
+		string real_input_file_name = tpc.output_file_name + ".real_output.txt";
+		RunSimpleInteractionResult rires = run_simple_interation(
+				tpc.input_file_name,
+				tpc.answer_file_name,
+				real_input_file_name,
+				real_output_file_name,
+				conf_run_limit(num, RL_DEFAULT),
+				conf_run_limit("interactor", num, RL_INTERACTOR_DEFAULT),
+				name);
+
+		if (rires.ires.type != RS_AC) {
+			return PointInfo(num, 0, -1, -1,
+					"Interactor " + info_str(rires.ires.type),
+					file_preview(real_input_file_name), file_preview(real_output_file_name),
+					"");
+		}
+		if (rires.res.type != RS_AC) {
+			return PointInfo(num, 0, -1, -1,
+					info_str(rires.res.type),
+					file_preview(real_input_file_name), file_preview(real_output_file_name),
+					"");
+		}
+
+		return PointInfo(num, rires.ires.scr, rires.res.ust, rires.res.usm, 
+				"default",
+				file_preview(real_input_file_name), file_preview(real_output_file_name),
+				rires.ires.info);
 	}
-	return PointInfo(num, chk_ret.scr, pro_ret.ust, pro_ret.usm, 
-			info,
-			file_preview(tpc.input_file_name), file_preview(tpc.output_file_name),
-			chk_ret.info);
 }
 
 PointInfo test_hack_point(const string &name, TestPointConfig tpc) {
@@ -1348,18 +1430,54 @@ PointInfo test_hack_point(const string &name, TestPointConfig tpc) {
 				val_ret.info);
 	}
 
-	RunResult std_ret = run_standard_program(
-			tpc.input_file_name,
-			tpc.answer_file_name,
-			conf_run_limit(0, RL_DEFAULT));
-	if (std_ret.type != RS_AC) {
-		return PointInfo(0, 0, -1, -1,
-				"Standard Program " + info_str(std_ret.type),
-				file_preview(tpc.input_file_name), "",
-				"");
-	}
-	if (conf_has("token")) {
-		file_hide_token(tpc.answer_file_name, conf_str("token", ""));
+	RunLimit default_std_run_limit = conf_run_limit(0, RL_DEFAULT);
+
+	prepare_run_standard_program();
+	if (!conf_is("interaction_mode", "on")) {
+		RunProgramConfig rpc;
+		rpc.result_file_name = result_path + "/run_standard_program.txt";
+		RunResult std_ret = run_submission_program(
+				tpc.input_file_name,
+				tpc.answer_file_name,
+				conf_run_limit("standard", 0, default_std_run_limit),
+				"std",
+				rpc);
+		if (std_ret.type != RS_AC) {
+			return PointInfo(0, 0, -1, -1,
+					"Standard Program " + info_str(std_ret.type),
+					file_preview(tpc.input_file_name), "",
+					"");
+		}
+		if (conf_has("token")) {
+			file_hide_token(tpc.answer_file_name, conf_str("token", ""));
+		}
+	} else {
+		RunProgramConfig rpc;
+		rpc.result_file_name = result_path + "/run_standard_program.txt";
+		string real_output_file_name = tpc.answer_file_name;
+		string real_input_file_name = tpc.output_file_name + ".real_output.txt";
+		RunSimpleInteractionResult rires = run_simple_interation(
+				tpc.input_file_name,
+				tpc.answer_file_name,
+				real_input_file_name,
+				real_output_file_name,
+				conf_run_limit("standard", 0, default_std_run_limit),
+				conf_run_limit("interactor", 0, RL_INTERACTOR_DEFAULT),
+				"std",
+				rpc);
+
+		if (rires.ires.type != RS_AC) {
+			return PointInfo(0, 0, -1, -1,
+					"Interactor " + info_str(rires.ires.type) + " (Standard Program)",
+					file_preview(real_input_file_name), "",
+					"");
+		}
+		if (rires.res.type != RS_AC) {
+			return PointInfo(0, 0, -1, -1,
+					"Standard Program " + info_str(rires.res.type),
+					file_preview(real_input_file_name), "",
+					"");
+		}
 	}
 
 	PointInfo po = test_point(name, 0, tpc);

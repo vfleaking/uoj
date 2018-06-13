@@ -6,28 +6,15 @@
 	}
 	genMoreContestInfo($contest);
 
-	if (!hasContestPermission($myUser, $contest)) {
+	if (!hasContestPermission(Auth::user(), $contest)) {
 		if ($contest['cur_progress'] == CONTEST_NOT_STARTED) {
 			header("Location: /contest/{$contest['id']}/register");
 			die();
 		} elseif ($contest['cur_progress'] == CONTEST_IN_PROGRESS) {
-			if ($myUser == null || !hasRegistered($myUser, $contest)) {
+			if ($myUser == null || !hasRegistered(Auth::user(), $contest)) {
 				becomeMsgPage("<h1>比赛正在进行中</h1><p>很遗憾，您尚未报名。比赛结束后再来看吧～</p>");
 			}
 		}
-	}
-
-	if (isset($_POST['check_notice'])) {
-		$result = mysql_query("select * from contests_notice where contest_id = '${contest['id']}' order by time desc limit 1");
-		try {
-			while ($row = mysql_fetch_array($result)) {
-				if (new DateTime($row['time']) > new DateTime($_POST['last_time'])) {
-					die(json_encode(array('msg' => $row['title'] . ' : ' . $row['content'], 'time' => UOJTime::$time_now_str)));
-				}
-			}
-		} catch (Exception $e) {
-		}
-		die(json_encode(array('time' => UOJTime::$time_now_str)));
 	}
 	
 	if (isset($_GET['tab'])) {
@@ -35,100 +22,59 @@
 	} else {
 		$cur_tab = 'dashboard';
 	}
-
-	// problems: pos => id
-	// data    : id, submit_time, submitter, problem_pos, score
-	// people  : username, user_rating
-	function queryContestData() {
-		global $contest;
-		$problems = array();
-		$prob_pos = array();
-		$n_problems = 0;
-		$result = mysql_query("select problem_id from contests_problems where contest_id = ${contest['id']} order by problem_id");
-		while ($row = mysql_fetch_array($result, MYSQL_NUM)) {
-			$prob_pos[$problems[] = (int)$row[0]] = $n_problems++;
-		}
-		
-		$data = array();
-		if ($contest['cur_progress'] < CONTEST_FINISHED) {
-			$result = mysql_query("select id, submit_time, submitter, problem_id, score from submissions where contest_id = {$contest['id']} and score is not null order by id");
-		} else {
-			$result = mysql_query("select submission_id, date_add('{$contest['start_time_str']}', interval penalty second), submitter, problem_id, score from contests_submissions where contest_id = {$contest['id']}");
-		}
-		while ($row = mysql_fetch_array($result, MYSQL_NUM)) {
-			$row[0] = (int)$row[0];
-			$row[3] = $prob_pos[$row[3]];
-			$row[4] = (int)$row[4];
-			$data[] = $row;
-		}
-		
-		$people = array();
-		$result = mysql_query("select username, user_rating from contests_registrants where contest_id = {$contest['id']} and has_participated = 1");
-		while ($row = mysql_fetch_array($result, MYSQL_NUM)) {
-			$row[1] = (int)$row[1];
-			$people[] = $row;
-		}
-
-		return array('problems' => $problems, 'data' => $data, 'people' => $people);
+	
+	$tabs_info = array(
+		'dashboard' => array(
+			'name' => UOJLocale::get('contests::contest dashboard'),
+			'url' => "/contest/{$contest['id']}"
+		),
+		'submissions' => array(
+			'name' => UOJLocale::get('contests::contest submissions'),
+			'url' => "/contest/{$contest['id']}/submissions"
+		),
+		'standings' => array(
+			'name' => UOJLocale::get('contests::contest standings'),
+			'url' => "/contest/{$contest['id']}/standings"
+		)
+	);
+	
+	if (hasContestPermission(Auth::user(), $contest)) {
+		$tabs_info['backstage'] = array(
+			'name' => UOJLocale::get('contests::contest backstage'),
+			'url' => "/contest/{$contest['id']}/backstage"
+		);
 	}
-
-	function calcStandings($contest_data, &$score, &$standings, $update_contests_submissions = false) {
-		global $contest;
-		
-		// score: username, problem_pos => score, penalty, id
-		$score = array();
-		$n_people = count($contest_data['people']);
-		$n_problems = count($contest_data['problems']);
-		foreach ($contest_data['people'] as $person) {
-			$score[$person[0]] = array();
-		}
-		foreach ($contest_data['data'] as $submission) {		
-			$penalty = (new DateTime($submission[1]))->getTimestamp() - $contest['start_time']->getTimestamp();
-			if ($contest['extra_config']['standings_version'] >= 2) {
-				if ($submission[4] == 0) {
-					$penalty = 0;
+	
+	if (!isset($tabs_info[$cur_tab])) {
+		become404Page();
+	}
+	
+	if (isset($_POST['check_notice'])) {
+		$result = mysql_query("select * from contests_notice where contest_id = '${contest['id']}' order by time desc limit 10");
+		$ch = array();
+		$flag = false;
+		try {
+			while ($row = mysql_fetch_array($result)) {
+				if (new DateTime($row['time']) > new DateTime($_POST['last_time'])) {
+					$ch[] = $row['title'].': '.$row['content'];
 				}
 			}
-			$score[$submission[2]][$submission[3]] = array($submission[4], $penalty, $submission[0]);
+		} catch (Exception $e) {
 		}
-
-		// standings: rank => score, penalty, [username, user_rating], virtual_rank
-		$standings = array();
-		foreach ($contest_data['people'] as $person) {
-			$cur = array(0, 0, $person);
-			for ($i = 0; $i < $n_problems; $i++) {
-				if (isset($score[$person[0]][$i])) {
-					$cur_row = $score[$person[0]][$i];
-					$cur[0] += $cur_row[0];
-					$cur[1] += $cur_row[1];
-					if ($update_contests_submissions) {
-						DB::insert("insert into contests_submissions (contest_id, submitter, problem_id, submission_id, score, penalty) values ({$contest['id']}, '{$person[0]}', {$contest_data['problems'][$i]}, {$cur_row[2]}, {$cur_row[0]}, {$cur_row[1]})");
-					}
+		global $myUser;
+		$result=mysql_query("select * from contests_asks where contest_id='${contest['id']}' and username='${myUser['username']}' order by reply_time desc limit 10");
+		try {
+			while ($row = mysql_fetch_array($result)) {
+				if (new DateTime($row['reply_time']) > new DateTime($_POST['last_time'])) {
+					$ch[] = $row['question'].': '.$row['answer'];
 				}
 			}
-			$standings[] = $cur;
+		} catch (Exception $e) {
 		}
-
-		usort($standings, function($lhs, $rhs) {
-			if ($lhs[0] != $rhs[0]) {
-				return $rhs[0] - $lhs[0];
-			} else if ($lhs[1] != $rhs[1]) {
-				return $lhs[1] - $rhs[1];
-			} else {
-				return strcmp($lhs[2][0], $rhs[2][0]);
-			}
-		});
-
-		$is_same_rank = function($lhs, $rhs) {
-			return $lhs[0] == $rhs[0] && $lhs[1] == $rhs[1];
-		};
-
-		for ($i = 0; $i < $n_people; $i++) {
-			if ($i == 0 || !$is_same_rank($standings[$i - 1], $standings[$i])) {
-				$standings[$i][] = $i + 1;
-			} else {
-				$standings[$i][] = $standings[$i - 1][3];
-			}
+		if ($ch) {
+			die(json_encode(array('msg' => $ch, 'time' => UOJTime::$time_now_str)));
+		} else {
+			die(json_encode(array('time' => UOJTime::$time_now_str)));
 		}
 	}
 	
@@ -172,8 +118,8 @@
 				ignore_user_abort(true);
 
 				global $contest;
-				$contest_data = queryContestData();
-				calcStandings($contest_data, $score, $standings, true);
+				$contest_data = queryContestData($contest);
+				calcStandings($contest, $contest_data, $score, $standings, true);
 				if (!isset($contest['extra_config']['unrated'])) {
 					$rating_k = isset($contest['extra_config']['rating_k']) ? $contest['extra_config']['rating_k'] : 400;
 					$ratings = calcRating($standings, $rating_k);
@@ -215,71 +161,206 @@ EOD;
 		}
 	}
 	
-	function echoDashboard() {
-		global $myUser, $contest, $post_notice;
-		
-		echo '<div class="table-responsive">';
-		echo '<table class="table table-bordered table-hover table-striped table-text-center">';
-		echo '<thead>';
-		echo '<th style="width:5em">#</th>';
-		echo '<th>', UOJLocale::get('problems::problem'), '</th>';
-		echo '</thead>';
-		echo '<tbody>';
-		$contest_problems = DB::selectAll("select contests_problems.problem_id, best_ac_submissions.submission_id from contests_problems left join best_ac_submissions on contests_problems.problem_id = best_ac_submissions.problem_id and submitter = '{$myUser['username']}' where contest_id = {$contest['id']} order by contests_problems.problem_id asc");
-		for ($i = 0; $i < count($contest_problems); $i++) {
-			$problem = queryProblemBrief($contest_problems[$i]['problem_id']);
-			echo '<tr>';
-			if ($contest_problems[$i]['submission_id']) {
-				echo '<td class="success">';
-			} else {
-				echo '<td>';
-			}
-			echo chr(ord('A') + $i), '</td>';
-			echo '<td>', getContestProblemLink($problem, $contest['id']), '</td>';
-			echo '</tr>';
+	if ($cur_tab == 'dashboard') {
+		if ($contest['cur_progress'] <= CONTEST_IN_PROGRESS) {
+			$post_question = new UOJForm('post_question');
+			$post_question->addVTextArea('qcontent', '问题', '', 
+				function($content) {
+					if (!Auth::check()) {
+						return '您尚未登录';
+					}
+					if (!$content || strlen($content) == 0) {
+						return '问题不能为空';
+					}
+					if (strlen($content) > 140 * 4) {
+						return '问题太长';
+					}
+					return '';
+				},
+				null
+			);
+			$post_question->handle = function() {
+				global $contest;
+				$content = DB::escape($_POST['qcontent']);
+				$username = Auth::id();
+				mysql_query("insert into contests_asks (contest_id, question, username, post_time, is_hidden) values ('{$contest['id']}', '$content', '$username', now(), 1)");
+			};
+			$post_question->runAtServer();
+		} else {
+			$post_question = null;
 		}
-		echo '</tbody>';
-		echo '</table>';
-		echo '</div>';
-		
-		echo '<h3>', UOJLocale::get('contests::contest notice'), '</h3>';
-		$header = '';
-		$header .= '<tr>';
-		$header .= '<th style="width:10em">'.UOJLocale::get('title').'</th>';
-		$header .= '<th>'.UOJLocale::get('content').'</th>';
-		$header .= '<th style="width:12em">'.UOJLocale::get('time').'</th>';
-		$header .= '</tr>';
-		echoLongTable(array('*'), 'contests_notice', "contest_id = '{$contest['id']}'", "order by time desc", $header,
-			function($notice) {
-				echo '<tr>';
-				echo '<td>', HTML::escape($notice['title']), '</td>';
-				echo '<td style="white-space:pre-wrap; text-align: left">', $notice['content'], '</td>';
-				echo '<td>', $notice['time'], '</td>';
-				echo '</tr>';
-			},
-			array(
-				'table_classes' => array('table', 'table-bordered', 'table-hover', 'table-striped', 'table-vertical-middle', 'table-text-center'),
-				'echo_full' => true
-			)
-		);
-		
+	} elseif ($cur_tab == 'backstage') {
 		if (isSuperUser(Auth::user())) {
-			echo '<div class="text-center">';
-			echo '<button id="button-display-post-notice" type="button" class="btn btn-danger btn-xs">发布比赛公告</button>';
-			echo '</div>';
-			echo '<div id="div-form-post-notice" style="display:none" class="bot-buffer-md">';
-			$post_notice->printHTML();
-			echo '</div>';
-			echo <<<EOD
-<script type="text/javascript">
-$(document).ready(function() {
-	$('#button-display-post-notice').click(function() {
-		$('#div-form-post-notice').toggle('fast');
-	});
-});
-</script>
-EOD;
+			$post_notice = new UOJForm('post_notice');
+			$post_notice->addInput('title', 'text', '标题', '',
+				function($title) {
+					if (!$title) {
+						return '标题不能为空';
+					}
+					return '';
+				},
+				null
+			);
+			$post_notice->addTextArea('content', '正文', '', 
+				function($content) {
+					if (!$content) {
+						return '公告不能为空';
+					}
+					return '';
+				},
+				null
+			);
+			$post_notice->handle = function() {
+				global $contest;
+				$title = DB::escape($_POST['title']);
+				$content = DB::escape($_POST['content']);
+				DB::insert("insert into contests_notice (contest_id, title, content, time) values ('{$contest['id']}', '$title', '$content', now())");
+			};
+			$post_notice->runAtServer();
+		} else {
+			$post_notice = null;
 		}
+		
+		if (hasContestPermission(Auth::user(), $contest)) {
+			$reply_question = new UOJForm('reply_question');
+			$reply_question->addHidden('rid', '0',
+				function($id) {
+				    global $contest;
+				    
+					if (!validateUInt($id)) {
+						return '无效ID';
+					}
+					$q = DB::selectFirst("select * from contests_asks where id = $id");
+					if ($q['contest_id'] != $contest['id']) {
+					    return '无效ID';
+					}
+					return '';
+				},
+				null
+			);
+			$reply_question->addVSelect('rtype', [
+				'public' => '公开',
+				'private' => '非公开',
+				'statement' => '请仔细阅读题面（非公开）',
+				'no_comment' => '无可奉告（非公开）',
+				'no_play' => '请认真比赛（非公开）',
+			], '回复类型', 'private');
+			$reply_question->addVTextArea('rcontent', '回复', '', 
+				function($content) {
+				    if (!Auth::check()) {
+				        return '您尚未登录';
+				    }
+				    switch ($_POST['rtype']) {
+				    	case 'public':
+				    	case 'private':
+				    		if (strlen($content) == 0) {
+								return '回复不能为空';
+							}
+							break;
+				    }
+					return '';
+				},
+				null
+			);
+			$reply_question->handle = function() {
+				global $contest;
+				$content = DB::escape($_POST['rcontent']);
+				$is_hidden = 1;
+				switch ($_POST['rtype']) {
+					case 'statement':
+						$content = '请仔细阅读题面';
+						break;
+					case 'no_comment':
+						$content = '无可奉告 ╮(╯▽╰)╭ ';
+						break;
+					case 'no_play':
+						$content = '请认真比赛 (￣口￣)!!';
+						break;
+					case 'public':
+						$is_hidden = 0;
+						break;
+					default:
+						break;
+				}
+				DB::update("update contests_asks set answer = '$content', reply_time = now(), is_hidden = {$is_hidden} where id = {$_POST['rid']}");
+			};
+			$reply_question->runAtServer();
+		} else {
+			$reply_question = null;
+		}
+	}
+	
+	function echoDashboard() {
+		global $contest, $post_notice, $post_question, $reply_question;
+		
+		$myname = Auth::id();
+		$contest_problems = DB::selectAll("select contests_problems.problem_id, best_ac_submissions.submission_id from contests_problems left join best_ac_submissions on contests_problems.problem_id = best_ac_submissions.problem_id and submitter = '{$myname}' where contest_id = {$contest['id']} order by contests_problems.problem_id asc");
+		
+		for ($i = 0; $i < count($contest_problems); $i++) {
+			$contest_problems[$i]['problem'] = queryProblemBrief($contest_problems[$i]['problem_id']);
+		}
+		
+		$contest_notice = DB::selectAll("select * from contests_notice where contest_id = {$contest['id']} order by time desc");
+		
+		if (Auth::check()) {
+			$my_questions = DB::selectAll("select * from contests_asks where contest_id = {$contest['id']} and username = '{$myname}' order by post_time desc");
+			$my_questions_pag = new Paginator([
+				'data' => $my_questions
+			]);
+		} else {
+			$my_questions_pag = null;
+		}
+		
+		$others_questions_pag = new Paginator([
+			'col_names' => array('*'),
+			'table_name' => 'contests_asks',
+			'cond' => "contest_id = {$contest['id']} and username != '{$myname}' and is_hidden = 0",
+			'tail' => 'order by reply_time desc',
+			'page_len' => 10
+		]);
+		
+		uojIncludeView('contest-dashboard', [
+			'contest' => $contest,
+			'contest_notice' => $contest_notice,
+			'contest_problems' => $contest_problems,
+			'post_question' => $post_question,
+			'my_questions_pag' => $my_questions_pag,
+			'others_questions_pag' => $others_questions_pag
+		]);
+	}
+	
+	function echoBackstage() {
+		global $contest, $post_notice, $reply_question;
+		
+		$questions_pag = new Paginator([
+			'col_names' => array('*'),
+			'table_name' => 'contests_asks',
+			'cond' => "contest_id = {$contest['id']}",
+			'tail' => 'order by post_time desc',
+			'page_len' => 50
+		]);
+		
+		if ($contest['cur_progress'] < CONTEST_TESTING) {
+			$contest_data = queryContestData($contest, ['pre_final' => true]);
+			calcStandings($contest, $contest_data, $score, $standings);
+			
+			$standings_data = [
+				'contest' => $contest,
+				'standings' => $standings,
+				'score' => $score,
+				'contest_data' => $contest_data
+			];
+		} else {
+			$standings_data = null;
+		}
+		
+		uojIncludeView('contest-backstage', [
+			'contest' => $contest,
+			'post_notice' => $post_notice,
+			'reply_question' => $reply_question,
+			'questions_pag' => $questions_pag,
+			'standings_data' => $standings_data
+		]);
 	}
 	
 	function echoMySubmissions() {
@@ -312,27 +393,15 @@ EOD;
 	function echoStandings() {
 		global $contest;
 		
-		$contest_data = queryContestData();
-		calcStandings($contest_data, $score, $standings);
-
-		echo '<div id="standings">';
-		echo '</div>';
-
-		/*
-		echo '<div class="table-responsive">';
-		echo '<table id="standings-table" class="table table-bordered table-striped table-text-center table-vertical-middle">';
-		echo '</table>';
-		echo '</div>';
-		 */
-
-		echo '<script type="text/javascript">';
-		echo 'standings_version=', $contest['extra_config']['standings_version'], ';';
-		echo 'contest_id=', $contest['id'], ';';
-		echo 'standings=', json_encode($standings), ';';
-		echo 'score=', json_encode($score), ';';
-		echo 'problems=', json_encode($contest_data['problems']), ';';
-		echo '$(document).ready(showStandings());';
-		echo '</script>';
+		$contest_data = queryContestData($contest);
+		calcStandings($contest, $contest_data, $score, $standings);
+		
+		uojIncludeView('contest-standings', [
+			'contest' => $contest,
+			'standings' => $standings,
+			'score' => $score,
+			'contest_data' => $contest_data
+		]);
 	}
 	
 	function echoContestCountdown() {
@@ -389,52 +458,6 @@ EOD;
 EOD;
 	}
 	
-	$post_notice = new UOJForm('post_notice');
-	$post_notice->addInput('title', 'text', '标题', '',
-		function($title) {
-			if (!$title) {
-				return '标题不能为空';
-			}
-			return '';
-		},
-		null
-	);
-	$post_notice->addTextArea('content', '正文', '', 
-		function($content) {
-			if (!$content) {
-				return '公告不能为空';
-			}
-			return '';
-		},
-		null
-	);
-	$post_notice->handle = function() {
-		global $contest;
-		$title = DB::escape($_POST['title']);
-		$content = DB::escape($_POST['content']);
-		mysql_query("insert into contests_notice (contest_id, title, content, time) values ('{$contest['id']}', '$title', '$content', now())");
-	};
-	$post_notice->runAtServer();
-	
-	$tabs_info = array(
-		'dashboard' => array(
-			'name' => UOJLocale::get('contests::contest dashboard'),
-			'url' => "/contest/{$contest['id']}"
-		),
-		'submissions' => array(
-			'name' => UOJLocale::get('contests::contest submissions'),
-			'url' => "/contest/{$contest['id']}/submissions"
-		),
-		'standings' => array(
-			'name' => UOJLocale::get('contests::contest standings'),
-			'url' => "/contest/{$contest['id']}/standings"
-		)
-	);
-	
-	if (!isset($tabs_info[$cur_tab])) {
-		become404Page();
-	}
-	
 	$page_header = HTML::stripTags($contest['name']) . ' - ';
 ?>
 <?php echoUOJPageHeader(HTML::stripTags($contest['name']) . ' - ' . $tabs_info[$cur_tab]['name'] . ' - ' . UOJLocale::get('contests::contest')) ?>
@@ -457,6 +480,8 @@ EOD;
 				echoMySubmissions();
 			} elseif ($cur_tab == 'standings') {
 				echoStandings();
+			} elseif ($cur_tab == 'backstage') {
+				echoBackstage();
 			}
 		?>
 		</div>

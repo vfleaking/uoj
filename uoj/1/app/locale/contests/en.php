@@ -18,6 +18,7 @@ return [
 	'contest dashboard' => 'Dashboard',
 	'contest submissions' => 'Submissions',
 	'contest standings' => 'Standings',
+	'contest backstage' => 'Backstage',
 	'contest notice' => 'Notice',
 	'show all submissions' => 'Show all submissions',
 	'contest ends in' => 'Contest ends in',

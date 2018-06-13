@@ -952,9 +952,10 @@ Parser.prototype.tok = function() {
         + '</li>\n';
     }
     case 'html': {
-      return !this.token.pre && !this.options.pedantic
+      return this.token.text;
+      /*return !this.token.pre && !this.options.pedantic
         ? this.inline.output(this.token.text)
-        : this.token.text;
+        : this.token.text;*/
     }
     case 'paragraph': {
       return '<p' + tok_class + '>'

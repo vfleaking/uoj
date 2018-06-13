@@ -25,16 +25,19 @@ EXE_CHECKER = \
 EXE = main_judger \
 	run/formatter \
 	run/run_program \
+	run/run_interaction \
 	builtin/judger/judger \
 	$(EXE_CHECKER)
 
 all: $(EXE)
 
 % : %.cpp
-	$(CXX) $(CXXFLAGS) $< -o $@
+	$(CXX) $(CXXFLAGS) $(EXTRA_CXXFLAGS) $< -o $@
 
 run/run_program: include/uoj_env.h run/run_program_conf.h
 run/formatter  : include/testlib.h
+run/run_interaction: run/run_interaction.cpp include/uoj_env.h
+	$(CXX) $(CXXFLAGS) --std=c++11 -pthread $< -o $@
 
 builtin/judger/judger: include
 main_judger: include

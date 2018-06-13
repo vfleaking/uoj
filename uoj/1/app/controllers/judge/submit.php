@@ -198,7 +198,7 @@
 	
 	$submission['id'] = (int)$submission['id'];
 	$submission['problem_id'] = (int)$submission['problem_id'];
-	$submission['problem_mtime'] = filemtime("/var/uoj_data/{$submission['problem_id']}.zip");
+	$submission['problem_mtime'] = filemtime("/var/uoj_data/{$submission['problem_id']}");
 	$submission['content'] = json_decode($submission['content']);
 	
 	if ($hack) {

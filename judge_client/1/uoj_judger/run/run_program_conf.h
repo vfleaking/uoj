@@ -311,6 +311,9 @@ void init_conf(const RunProgramConfig &config) {
 	for (vector<string>::const_iterator it = config.extra_readable_files.begin(); it != config.extra_readable_files.end(); it++) {
 		add_file_permission(*it, 'r');
 	}
+	for (vector<string>::const_iterator it = config.extra_writable_files.begin(); it != config.extra_writable_files.end(); it++) {
+		add_file_permission(*it, 'w');
+	}
 
 	writable_file_name_set.insert("/dev/null");
 
