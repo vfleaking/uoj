@@ -8,7 +8,7 @@ Route::pattern('rand_str_id', '[0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL
 Route::pattern('upgrade_name', '[a-zA-Z0-9_]{1,50}');
 
 Route::group([
-		'domain' => UOJConfig::$data['web']['main']['host']."|127.0.0.1"
+		'domain' => '('.UOJConfig::$data['web']['main']['host'].'|127.0.0.1'.')'
 	], function() {
 		Route::any('/', '/index.php');
 		Route::any('/problems', '/problem_set.php');
