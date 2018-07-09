@@ -1,5 +1,15 @@
 #include "uoj_judger.h"
 
+struct SubtaskInfo {
+	bool passed;
+	int score;
+
+	SubtaskInfo() {
+	}
+	SubtaskInfo(const bool &_p, const int &_s)
+		: passed(_p), score(_s){}
+};
+
 void ordinary_test() {
 	int n = conf_int("n_tests", 10);
 	int m = conf_int("n_ex_tests", 0);
@@ -39,12 +49,15 @@ void ordinary_test() {
 			}
 		}
 	} else {
-		set<int> passedSubtasks;
+		map<int, SubtaskInfo> subtasks;
+		map<int,int> minScore;
 		for (int t = 1; t <= nT; t++) {
+			string subtaskType = conf_str("subtask_type", t, "packed");
 			int startI = conf_int("subtask_end", t - 1, 0) + 1;
 			int endI = conf_int("subtask_end", t, 0);
 
 			vector<PointInfo> points;
+			minScore[t] = 100;
 
 			vector<int> dependences;
 			if (conf_str("subtask_dependence", t, "none") == "many") {
@@ -59,9 +72,13 @@ void ordinary_test() {
 			}
 			bool skipped = false;
 			for (vector<int>::iterator it = dependences.begin(); it != dependences.end(); it++) {
-				if (!passedSubtasks.count(*it)) {
-					skipped = true;
-					break;
+				if (subtaskType == "packed") {
+					if (!subtasks[*it].passed) {
+						skipped = true;
+						break;
+					}
+				} else if (subtaskType == "min") {
+					minScore[t] = min(minScore[t], minScore[*it]);
 				}
 			}
 			if (skipped) {
@@ -70,28 +87,41 @@ void ordinary_test() {
 			}
 
 			int tfull = conf_int("subtask_score", t, 100 / nT);
-			int tscore = tfull;
+			int tscore = scale_score(minScore[t], tfull);
 			string info = "Accepted";
 			for (int i = startI; i <= endI; i++) {
 				report_judge_status_f("Judging Test #%d of Subtask #%d", i, t);
 				PointInfo po = test_point("answer", i);
-				if (po.scr != 100) {
-					passed = false;
-					po.scr = i == startI ? 0 : -tfull;
-					tscore = 0;
-					points.push_back(po);
-					info = po.info;
-					break;
-				} else {
-					po.scr = i == startI ? tfull : 0;
-					tscore = tfull;
-					points.push_back(po);
+				if (subtaskType == "packed") {
+					if (po.scr != 100) {
+						passed = false;
+						po.scr = i == startI ? 0 : -tfull;
+						tscore = 0;
+						points.push_back(po);
+						info = po.info;
+						break;
+					} else {
+						po.scr = i == startI ? tfull : 0;
+						tscore = tfull;
+						points.push_back(po);
+					}
+				} else if (subtaskType == "min") {
+					minScore[t] = min(minScore[t], po.scr);
+					if (po.scr != 100) {
+						passed = false;
+					}
+					po.scr = scale_score(po.scr, tfull);
+					if (po.scr <= tscore) {
+						tscore = po.scr;
+						points.push_back(po);
+						info = po.info;
+					} else {
+						points.push_back(po);
+					}
 				}
 			}
 
-			if (info == "Accepted") {
-				passedSubtasks.insert(t);
-			}
+			subtasks[t] = SubtaskInfo(info == "Accepted", tscore);
 
 			add_subtask_info(t, tscore, info, points);
 		}

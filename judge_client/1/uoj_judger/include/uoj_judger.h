@@ -294,151 +294,6 @@ map<string, string> config;
 
 /*==================== parameter End ================== */
 
-/*====================== info print =================== */
-
-template <class T>
-inline string vtos(const T &v) {
-	ostringstream sout;
-	sout << v;
-	return sout.str();
-}
-
-inline string htmlspecialchars(const string &s) {
-	string r;
-	for (int i = 0; i < (int)s.length(); i++) {
-		switch (s[i]) {
-		case '&' : r += "&amp;"; break;
-		case '<' : r += "&lt;"; break;
-		case '>' : r += "&gt;"; break;
-		case '"' : r += "&quot;"; break;
-		case '\0': r += "<b>\\0</b>"; break;
-		default  : r += s[i]; break;
-		}
-	}
-	return r;
-}
-
-inline string info_str(int id)  {
-	switch (id) {
-	case RS_MLE: return "Memory Limit Exceeded";
-	case RS_TLE: return "Time Limit Exceeded";
-	case RS_OLE: return "Output Limit Exceeded";
-	case RS_RE : return "Runtime Error";
-	case RS_DGS: return "Dangerous Syscalls";
-	case RS_JGF: return "Judgment Failed";
-	default    : return "Unknown Result";
-	}
-}
-inline string info_str(const RunResult &p)  {
-	return info_str(p.type);
-}
-
-void add_point_info(const PointInfo &info) {
-	if (info.num >= 0) {
-		if(info.ust >= 0) {
-			tot_time += info.ust;
-		}
-		if(info.usm >= 0) {
-			max_memory = max(max_memory, info.usm);
-		}
-	}
-	tot_score += info.scr;
-
-	details_out << "<test num=\"" << info.num << "\""
-		<< " score=\"" << info.scr << "\""
-		<< " info=\"" << htmlspecialchars(info.info) << "\""
-		<< " time=\"" << info.ust << "\""
-		<< " memory=\"" << info.usm << "\">" << endl;
-	details_out << "<in>" << htmlspecialchars(info.in) << "</in>" << endl;
-	details_out << "<out>" << htmlspecialchars(info.out) << "</out>" << endl;
-	details_out << "<res>" << htmlspecialchars(info.res) << "</res>" << endl;
-	details_out << "</test>" << endl;
-}
-void add_custom_test_info(const CustomTestInfo &info) {
-	if(info.ust >= 0) {
-		tot_time += info.ust;
-	}
-	if(info.usm >= 0) {
-		max_memory = max(max_memory, info.usm);
-	}
-
-	details_out << "<custom-test info=\"" << htmlspecialchars(info.info) << "\""
-		<< " time=\"" << info.ust << "\""
-		<< " memory=\"" << info.usm << "\">" << endl;
-	if (!info.exp.empty()) {
-		details_out << info.exp << endl;
-	}
-	details_out << "<out>" << htmlspecialchars(info.out) << "</out>" << endl;
-	details_out << "</custom-test>" << endl;
-}
-void add_subtask_info(const int &num, const int &scr, const string &info, const vector<PointInfo> &points) {
-	details_out << "<subtask num=\"" << num << "\""
-		<< " score=\"" << scr << "\""
-		<< " info=\"" << htmlspecialchars(info) << "\">" << endl;
-	for (vector<PointInfo>::const_iterator it = points.begin(); it != points.end(); it++) {
-		add_point_info(*it);
-	}
-	details_out << "</subtask>" << endl;
-}
-void end_judge_ok() {
-	FILE *fres = fopen((result_path + "/result.txt").c_str(), "w");
-	fprintf(fres, "score %d\n", tot_score);
-	fprintf(fres, "time %d\n", tot_time);
-	fprintf(fres, "memory %d\n", max_memory);
-	fprintf(fres, "details\n");
-	fprintf(fres, "<tests>\n");
-	fprintf(fres, "%s", details_out.str().c_str());
-	fprintf(fres, "</tests>\n");
-	fclose(fres);
-	exit(0);
-}
-void end_judge_judgement_failed(const string &info) {
-	FILE *fres = fopen((result_path + "/result.txt").c_str(), "w");
-	fprintf(fres, "error Judgment Failed\n");
-	fprintf(fres, "details\n");
-	fprintf(fres, "<error>%s</error>\n", htmlspecialchars(info).c_str());
-	fclose(fres);
-	exit(1);
-}
-void end_judge_compile_error(const RunCompilerResult &res) {
-	FILE *fres = fopen((result_path + "/result.txt").c_str(), "w");
-	fprintf(fres, "error Compile Error\n");
-	fprintf(fres, "details\n");
-	fprintf(fres, "<error>%s</error>\n", htmlspecialchars(res.info).c_str());
-	fclose(fres);
-	exit(0);
-}
-
-void report_judge_status(const char *status) {
-	FILE *f = fopen((result_path + "/cur_status.txt").c_str(), "a");
-	if (f == NULL) {
-		return;
-	}
-	if (flock(fileno(f), LOCK_EX) != -1) {
-		if (ftruncate(fileno(f), 0) != -1) {
-			fprintf(f, "%s\n", status);
-			fflush(f);
-		}
-		flock(fileno(f), LOCK_UN);
-	}
-	fclose(f);
-}
-bool report_judge_status_f(const char *fmt, ...) {
-	const int MaxL = 512;
-	char status[MaxL];
-	va_list ap;
-	va_start(ap, fmt);
-	int res = vsnprintf(status, MaxL, fmt, ap);
-	if (res < 0 || res >= MaxL) {
-		return false;
-	}
-	report_judge_status(status);
-	va_end(ap);
-	return true;
-}
-
-/*==================== info print End ================= */
-
 /*====================== config set =================== */
 
 void print_config() {
@@ -533,6 +388,160 @@ bool conf_is(const string &key, const string &val)  {
 }
 
 /*==================== config set End ================= */
+
+/*====================== info print =================== */
+
+template <class T>
+inline string vtos(const T &v) {
+	ostringstream sout;
+	sout << v;
+	return sout.str();
+}
+
+inline string htmlspecialchars(const string &s) {
+	string r;
+	for (int i = 0; i < (int)s.length(); i++) {
+		switch (s[i]) {
+		case '&' : r += "&amp;"; break;
+		case '<' : r += "&lt;"; break;
+		case '>' : r += "&gt;"; break;
+		case '"' : r += "&quot;"; break;
+		case '\0': r += "<b>\\0</b>"; break;
+		default  : r += s[i]; break;
+		}
+	}
+	return r;
+}
+
+inline string info_str(int id)  {
+	switch (id) {
+	case RS_MLE: return "Memory Limit Exceeded";
+	case RS_TLE: return "Time Limit Exceeded";
+	case RS_OLE: return "Output Limit Exceeded";
+	case RS_RE : return "Runtime Error";
+	case RS_DGS: return "Dangerous Syscalls";
+	case RS_JGF: return "Judgment Failed";
+	default    : return "Unknown Result";
+	}
+}
+inline string info_str(const RunResult &p)  {
+	return info_str(p.type);
+}
+
+void add_point_info(const PointInfo &info, bool update_tot_score = true) {
+	if (info.num >= 0) {
+		if(info.ust >= 0) {
+			tot_time += info.ust;
+		}
+		if(info.usm >= 0) {
+			max_memory = max(max_memory, info.usm);
+		}
+	}
+	if (update_tot_score) {
+		tot_score += info.scr;
+	}
+
+	details_out << "<test num=\"" << info.num << "\""
+		<< " score=\"" << info.scr << "\""
+		<< " info=\"" << htmlspecialchars(info.info) << "\""
+		<< " time=\"" << info.ust << "\""
+		<< " memory=\"" << info.usm << "\">" << endl;
+	if (conf_str("show_in", "on") == "on") {
+		details_out << "<in>" << htmlspecialchars(info.in) << "</in>" << endl;
+	}
+	if (conf_str("show_out", "on") == "on") {
+		details_out << "<out>" << htmlspecialchars(info.out) << "</out>" << endl;
+	}
+	if (conf_str("show_res", "on") == "on") {
+		details_out << "<res>" << htmlspecialchars(info.res) << "</res>" << endl;
+	}
+	details_out << "</test>" << endl;
+}
+void add_custom_test_info(const CustomTestInfo &info) {
+	if(info.ust >= 0) {
+		tot_time += info.ust;
+	}
+	if(info.usm >= 0) {
+		max_memory = max(max_memory, info.usm);
+	}
+
+	details_out << "<custom-test info=\"" << htmlspecialchars(info.info) << "\""
+		<< " time=\"" << info.ust << "\""
+		<< " memory=\"" << info.usm << "\">" << endl;
+	if (!info.exp.empty()) {
+		details_out << info.exp << endl;
+	}
+	details_out << "<out>" << htmlspecialchars(info.out) << "</out>" << endl;
+	details_out << "</custom-test>" << endl;
+}
+void add_subtask_info(const int &num, const int &scr, const string &info, const vector<PointInfo> &points) {
+	details_out << "<subtask num=\"" << num << "\""
+		<< " score=\"" << scr << "\""
+		<< " info=\"" << htmlspecialchars(info) << "\">" << endl;
+	tot_score += scr;
+	for (vector<PointInfo>::const_iterator it = points.begin(); it != points.end(); it++) {
+		add_point_info(*it, false);
+	}
+	details_out << "</subtask>" << endl;
+}
+void end_judge_ok() {
+	FILE *fres = fopen((result_path + "/result.txt").c_str(), "w");
+	fprintf(fres, "score %d\n", tot_score);
+	fprintf(fres, "time %d\n", tot_time);
+	fprintf(fres, "memory %d\n", max_memory);
+	fprintf(fres, "details\n");
+	fprintf(fres, "<tests>\n");
+	fprintf(fres, "%s", details_out.str().c_str());
+	fprintf(fres, "</tests>\n");
+	fclose(fres);
+	exit(0);
+}
+void end_judge_judgement_failed(const string &info) {
+	FILE *fres = fopen((result_path + "/result.txt").c_str(), "w");
+	fprintf(fres, "error Judgment Failed\n");
+	fprintf(fres, "details\n");
+	fprintf(fres, "<error>%s</error>\n", htmlspecialchars(info).c_str());
+	fclose(fres);
+	exit(1);
+}
+void end_judge_compile_error(const RunCompilerResult &res) {
+	FILE *fres = fopen((result_path + "/result.txt").c_str(), "w");
+	fprintf(fres, "error Compile Error\n");
+	fprintf(fres, "details\n");
+	fprintf(fres, "<error>%s</error>\n", htmlspecialchars(res.info).c_str());
+	fclose(fres);
+	exit(0);
+}
+
+void report_judge_status(const char *status) {
+	FILE *f = fopen((result_path + "/cur_status.txt").c_str(), "a");
+	if (f == NULL) {
+		return;
+	}
+	if (flock(fileno(f), LOCK_EX) != -1) {
+		if (ftruncate(fileno(f), 0) != -1) {
+			fprintf(f, "%s\n", status);
+			fflush(f);
+		}
+		flock(fileno(f), LOCK_UN);
+	}
+	fclose(f);
+}
+bool report_judge_status_f(const char *fmt, ...) {
+	const int MaxL = 512;
+	char status[MaxL];
+	va_list ap;
+	va_start(ap, fmt);
+	int res = vsnprintf(status, MaxL, fmt, ap);
+	if (res < 0 || res >= MaxL) {
+		return false;
+	}
+	report_judge_status(status);
+	va_end(ap);
+	return true;
+}
+
+/*==================== info print End ================= */
 
 /*========================== run ====================== */
 
