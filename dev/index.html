@@ -1,180 +1,844 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="vfleaking">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.4">
+    
+    
+      
+        <title>开发 - UOJ 文档</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.bb3983ee.min.css">
+      
         
+        <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
         
+      
+    
+    
+    
+      
         
-        <link rel="shortcut icon" href="../img/favicon.ico">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
 
-	<title>开发 - UOJ Documentation</title>
-
-        <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
-        <link href="../css/font-awesome-4.0.3.css" rel="stylesheet">
-        <link rel="stylesheet" href="../css/highlight.css">
-        <link href="../css/base.css" rel="stylesheet">
-        <link href="../extra.css" rel="stylesheet">
-
-        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-        <!--[if lt IE 9]>
-            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-        <![endif]-->
-
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
         
-    </head>
-
-    <body>
-
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
-
-        <!-- Collapsed navigation -->
-        <div class="navbar-header">
-            <!-- Expander button -->
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-
-            <!-- Main title -->
-            <a class="navbar-brand" href="..">UOJ Documentation</a>
-        </div>
-
-        <!-- Expanded navigation -->
-        <div class="navbar-collapse collapse">
-            <!-- Main navigation -->
-            <ul class="nav navbar-nav">
-            
-            
-                <li >
-                    <a href="..">主页</a>
-                </li>
-            
-            
-            
-                <li >
-                    <a href="../install/">安装</a>
-                </li>
-            
-            
-            
-                <li >
-                    <a href="../maintain/">维护</a>
-                </li>
-            
-            
-            
-                <li >
-                    <a href="../problem/">题目</a>
-                </li>
-            
-            
-            
-                <li >
-                    <a href="../contest/">比赛</a>
-                </li>
-            
-            
-            
-                <li class="active">
-                    <a href="./">开发</a>
-                </li>
-            
-            
-            
-                <li >
-                    <a href="../about/">关于</a>
-                </li>
-            
-            
-            </ul>
-
-            <!-- Search, Navigation and Repo links -->
-            <ul class="nav navbar-nav navbar-right">
-                <li >
-                    <a rel="next" href="../contest/">
-                        <i class="fa fa-arrow-left"></i> Previous
-                    </a>
-                </li>
-                <li >
-                    <a rel="prev" href="../about/">
-                        Next <i class="fa fa-arrow-right"></i>
-                    </a>
-                </li>
-                
-            </ul>
-        </div>
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
     </div>
-</div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
 
-        <div class="container">
-            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href=".." title="UOJ 文档" class="md-header__button md-logo" aria-label="UOJ 文档" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            UOJ 文档
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              开发
+            
+          </span>
+        </div>
+      </div>
+    </div>
     
-        <li class="main active"><a href="#_1">开发</a></li>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
         
+        <button type="reset" class="md-search__icon md-icon" aria-label="清空当前内容" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
     
+    
+      <div class="md-header__source">
+        <a href="https://github.com/vfleaking/uoj/" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="UOJ 文档" class="md-nav__button md-logo" aria-label="UOJ 文档" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    UOJ 文档
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/vfleaking/uoj/" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        主页
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/" class="md-nav__link">
+        安装
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../maintain/" class="md-nav__link">
+        维护
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../problem/" class="md-nav__link">
+        题目
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contest/" class="md-nav__link">
+        比赛
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          开发
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        开发
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    一、基本工作原理
+  </a>
+  
+    <nav class="md-nav" aria-label="一、基本工作原理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1. 网页端
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2. 测评端
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    二、网页端代码简介
+  </a>
+  
+    <nav class="md-nav" aria-label="二、网页端代码简介">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    1. 网页后端
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    2. 数据库
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3. 网页前端
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4. 重要文件目录
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    三、测评端代码简介
+  </a>
+  
+    <nav class="md-nav" aria-label="三、测评端代码简介">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_2" class="md-nav__link">
+    1. 通信部分
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_2" class="md-nav__link">
+    2. 测评部分
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    3. 沙箱
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4_1" class="md-nav__link">
+    4. 重要文件目录
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    四、如何修改代码
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrader" class="md-nav__link">
+    五、更新工具：Upgrader
+  </a>
+  
+</li>
+      
     </ul>
-</div></div>
-            <div class="col-md-9" role="main">
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/" class="md-nav__link">
+        关于
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    一、基本工作原理
+  </a>
+  
+    <nav class="md-nav" aria-label="一、基本工作原理">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    1. 网页端
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    2. 测评端
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    二、网页端代码简介
+  </a>
+  
+    <nav class="md-nav" aria-label="二、网页端代码简介">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    1. 网页后端
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    2. 数据库
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    3. 网页前端
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    4. 重要文件目录
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    三、测评端代码简介
+  </a>
+  
+    <nav class="md-nav" aria-label="三、测评端代码简介">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_2" class="md-nav__link">
+    1. 通信部分
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_2" class="md-nav__link">
+    2. 测评部分
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    3. 沙箱
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4_1" class="md-nav__link">
+    4. 重要文件目录
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    四、如何修改代码
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrader" class="md-nav__link">
+    五、更新工具：Upgrader
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+<a href="https://github.com/vfleaking/uoj/edit/master/docs/dev.md" title="编辑此页" class="md-content__button md-icon">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+</a>
+
 
 <h1 id="_1">开发</h1>
-<p>听说你想写代码？</p>
-<p>svn://local_uoj.ac/uoj 和 svn://local_uoj.ac/judge_client 欢迎你（如果你没改 UOJ 的 hostname 的话），这是两个 svn 仓库，至于 svn 仓库权限问题……你需要手工加一下……</p>
-<p>在 /var/svn/uoj/conf/passwd 这个文件中你可以加一行
+<p>无论你有多少工程开发上的基础，我们都很欢迎你参与 UOJ 的开发！</p>
+<p>开发 UOJ 主要使用的语言有 PHP、C++、SQL，此外你还需要知道一点 HTML、JavaScript、CSS。如果你有些不会的，没关系！只要你会 C++，其他都很好学！</p>
+<p>当然，你并不需要读懂所有 UOJ 的代码。如果你只想改一改测评端，那么你只用熟练使用 C++ 就足够了。比如你在搞 OI 的时候，未必知道 printf 或者 cout 的内部实现，也照样可以正常使用，因为你知道他们的使用方式。同样，阅读 UOJ 代码的时候，首先要搞清楚的是每个部分的用途，然后再深入阅读你感兴趣的部分，尝试作出修改。</p>
+<p>下面我们从零开始讲讲 UOJ 的基本工作原理。如果你已经有一定工程开发的基础了，可以跳过那些有关基础知识的介绍。</p>
+<h3 id="_2">一、基本工作原理</h3>
+<p>UOJ 主要由两部分组成：<strong>网页端</strong>和<strong>测评端</strong>。顾名思义，网页端就是用来通过网页与用户交互的，测评端则是在用户发出测评请求时负责测评并将结果发送给网页端的。</p>
+<h4 id="1">1. 网页端</h4>
+<p>什么是网页端？顾名思义，就是管网页的部分。网页端又分为<strong>网页前端</strong>和<strong>网页后端</strong>。所谓网页前端，就是你打开浏览器能看到的那部分。不过浏览器是如何知道自己要显示什么东西的呢？这就是因为服务器上还有网页后端，会以 HTML 代码的形式告诉浏览器它要显示些什么。</p>
+<p>下面我们来理一下你从输入网址到看到网页的全过程。首先，你输入了 UOJ 的网址，然后浏览器就会根据你的网址去找到对应的服务器，并发一个消息给该服务器。这种消息称为 <strong>HTTP 请求</strong>（HTTP Request）。当然了，这取决于你的网址是以什么开头的。如果是 https 开头那么就是个加了密的 HTTP 请求，称为 <strong>HTTPS 请求</strong>。一个 HTTP 请求报文会包含很多很多信息，例如你输入的网址啦，例如你的 IP 啦。</p>
+<p>服务器收到 HTTP 请求之后，会根据请求的内容进行相应的处理，并生成一个 <strong>HTTP 响应</strong>（HTTP Response），然后发回给你的浏览器。HTTP 响应报文也会包括很多信息。比如会包括状态码，正常情况下是 200，但如果对应的网址上没有东西可显示，那么会返回一个喜闻乐见的 404。当然最重要的是 HTTP 响应报文里面会包含一份 HTML 代码，这份代码会指示你的浏览器如何渲染出一个完整的网页。只要你在浏览器里鼠标右键，点击审查元素，就能看到这份 HTML 代码了。实际上，HTML 代码中可能还会内嵌有其他的元素，例如内嵌一些 JavaScript 代码就可以做一些动态的页面效果，内嵌一些 CSS 代码就可以更好的控制网页的排版。</p>
+<p>总而言之，想要理解网页端，就得理解两部分：第一，浏览器是如何把 HTML 代码变成你所看到的网页的；第二，服务器是如何根据 HTTP 请求报文生成 HTML 代码的。前者属于网页前端的范畴，而后者属于网页后端的范畴。</p>
+<h4 id="2">2. 测评端</h4>
+<p>光有网页端是不够的，因为如果用户提交了一份代码，UOJ 就得负责评测，而这往往不是几秒钟内能完成的，所以不能用 HTTP 响应的方式快速返回结果。因此，UOJ 的网页端服务器得把该测评请求发给另一个被我们称之为<strong>测评端</strong>的服务器，让它测评之后将测评结果发回，再通过网页端告知用户。</p>
+<p>UOJ 官网的网页端和测评端服务器是分别部署在两台机器上的，不过为了方便起见，在我们发布的这版 UOJ 里网页端和测评端是放在同一台机器上的。</p>
+<p>测评端又分为负责<strong>通信</strong>的部分和（真正）负责<strong>测评</strong>的部分。顾名思义，负责通信的代码控制的是和网页端服务器的交互，而负责测评的代码则是给选手交过来的文件打分的，最后负责通信的部分会将测评结果发回网页端。</p>
+<h3 id="_3">二、网页端代码简介</h3>
+<p>下面我们稍微展开讲一讲 UOJ 网页前端和网页后端分别是如何实现的。</p>
+<h4 id="1_1">1. 网页后端</h4>
+<p>UOJ 使用了一款开源的网页服务器软件，叫作 <strong>Apache</strong>。Apache 支持使用 PHP 语言来实现网页后端。进入 UOJ 的 docker，网页后端的代码就位于 <code>/opt/uoj/web/</code> 目录下。Apache 收到一个 HTTP 请求之后，会运行 <code>index.php</code>（这一行为其实是由同目录下的 <code>.htaccess</code> 指定的）。<code>index.php</code> 会加载所需的函数库和类库，然后根据<strong>路由文件</strong>（route file） 去给请求中的网址匹配用于生成响应报文的 PHP 代码。所谓路由文件其实也是 PHP 代码，只不过这种文件记录了一个从网址到代码文件路径的映射。控制主站路由的是 <code>app/route.php</code>，控制博客路由的是 <code>app/controllers/subdomain/blog/route.php</code>。</p>
+<p>我们称路由文件中被映射到的代码为<strong>控制器</strong>（controller），位于 <code>app/controllers</code> 目录下。<code>index.php</code> 给请求中的网址匹配到对应的控制器后，控制器会根据用户的 HTTP 请求报文的具体内容生成一个 HTTP 响应报文，交由 Apache 负责发回给作出 HTTP 请求的浏览器。</p>
+<p>早期 UOJ 的网页后端是我们一点一点自己写的，架构上没有参考任何的现有开源项目。后来我们发现有些架构的设计思路理不太清楚，于是去学习了一下著名的 <a href="https://learnku.com/docs/laravel">Laravel 框架</a>。所以代码架构实则是介于早期 UOJ 架构和 Laravel 之间的一种架构，没有像早期架构那么乱，也没用像专业的 Laravel 那样包装得很深，希望这样能兼顾代码的可维护性和可阅读性吧。</p>
+<h4 id="2_1">2. 数据库</h4>
+<p>数据库是网页后端的一部分，但又是较为独立的一部分。通常我们在 OI 中会使用数组来存储数据，但一旦你把程序掐了，或者电脑关机了，数组里的内容就丢失了。这是因为数组通常是存储在内存里的，而非机械硬盘、固态硬盘等可持久存储的介质上。那么如何把数据保存在硬盘上呢？你可能已经开始摩拳擦掌准备写个 B 树了，但是且慢 —— 如今有很多<strong>数据库</strong>软件已经帮你写好了。</p>
+<p>UOJ 使用的是 <a href="https://www.runoob.com/mysql/mysql-tutorial.html">MySQL 数据库</a>。在 UOJ 的后端 PHP 代码里，你可以通过访问 <code>DB</code> 这个静态类来跟数据库进行交互。交互使用的是 SQL 语言，一种专门为数据库中数据的查询、修改、插入、删除而设计的语言，你可能需要稍微学习一番这种特殊的语言。<code>DB</code> 是对 SQL 的一种简单包装，请参照现有代码调用 <code>DB</code> 的方式来更好的理解其用法。</p>
+<h4 id="3">3. 网页前端</h4>
+<p>大部分的网页前端代码实际上是由 PHP 一行一行输出出来的。负责这种输出的代码一部分位于各个控制器代码中，一部分 <code>app/views</code> 目录下。理想情况下，如果一段 PHP 代码能生成一长段 HTML 代码，且生成的过程不包含任何控制逻辑或者数据库查询，那么该 PHP 代码就应该放在 <code>app/views</code> 里作为一种<strong>视图</strong>（view）；否则就应该放在 <code>app/controllers</code> 下作为一种控制器。例如，每个页面都会包含的页头和页尾就写在了 <code>app/views/page-header.php</code> 和 <code>app/views/page-footer.php</code> 这两个视图文件里。当然了，严格遵守这样的规则会让一些简单的代码变得结构很复杂，所以目前的 UOJ 代码并没有严格遵守这一点。</p>
+<p>其实，并非所有前端代码都是 PHP 一行行输出出来的。HTML 代码中通常会内嵌一些 CSS 和 JavaScript 来控制页面排版和制造一些动态页面效果，而这些部分往往是跟页面具体内容独立的。所以有很多优秀的前端框架，例如 <a href="https://v3.bootcss.com/">Bootstrap</a>。UOJ 目前使用的是 Bootstrap 3。所以，要想完全理解前端的代码，你不仅需要阅读对应的控制器和视图的内容，还要学习一下 Bootstrap 的使用方式。如果你尚未接触过前端开发，不妨先找点<a href="https://www.w3schools.cn/">前端开发教程</a>，试着做一点不需要 PHP 的静态小网站，然后再回过头来阅读 UOJ 的代码。</p>
+<h4 id="4">4. 重要文件目录</h4>
+<p>网页端的代码和相关文件主要在 <code>/opt/uoj/web/</code> 目录下。下面列出了一些重要的文件和子目录：</p>
+<ul>
+<li><code>app/</code>：UOJ 主要的后端 PHP 代码目录<ul>
+<li><code>controllers/</code>：存放控制器文件的目录</li>
+<li><code>locale/</code>：存放页面上的文字在不同语言下的翻译的目录</li>
+<li><code>models/</code>：UOJ 运行所需的一些 PHP 类</li>
+<li><code>storage/</code>：存储一些文件数据的目录<ul>
+<li><code>submissions/</code>：存放用户提交的测评请求中附带的文件的目录</li>
+<li><code>tmp/</code>：存放临时文件的目录</li>
+</ul>
+</li>
+<li><code>views/</code>：存放视图文件的目录</li>
+<li><code>route.php</code>：主站路由文件</li>
+<li><code>uoj-*-lib.php</code>：一些 UOJ 运行所需的函数库文件</li>
+</ul>
+</li>
+<li><code>vendor/</code>：一些 UOJ 使用的第三方 PHP 代码库，由 <a href="https://getcomposer.org/">Composer</a> 管理。</li>
+<li><code>public/</code>：一些可以不经过 PHP 直接访问的资源<ul>
+<li><code>css/</code>：存放部分 CSS 代码文件的目录</li>
+<li><code>fonts/</code>：存放字体文件的目录</li>
+<li><code>js/</code>：存放部分 JavaScript 代码文件的目录</li>
+<li><code>libs/</code>：一些 UOJ 使用的前端库，例如 Bootstrap，jQuery 等等</li>
+<li><code>pictures/</code>：存放部分图片文件的目录</li>
+</ul>
+</li>
+</ul>
+<h3 id="_4">三、测评端代码简介</h3>
+<p>下面我们稍微展开讲一讲 UOJ 测评端的通信部分和测评部分是如何实现的。</p>
+<h4 id="1_2">1. 通信部分</h4>
+<p>测评端使用的是<strong>轮询机制</strong>（polling）与网页端通信的：每隔一段时间（默认是 2s），测评端会给网页端发送一个 HTTP 请求，询问是否有新的测评请求；如果有的话网页端会返回相应的信息，否则返回为空。</p>
+<p>具体负责通信部分的代码由 Python 编写。进入 UOJ 的 docker，测评端所有代码就位于 <code>/opt/uoj/judger/judge_client/1</code> 目录下，其中 <code>judge_client</code> 这一没有后缀名的可执行文件就是负责通信部分的 Python 脚本。启动 UOJ 的 docker 容器后，该脚本就会自动运行，对网页端进行轮询。</p>
+<p>网页端响应轮询的代码在 <code>app/controllers/judge/submit.php</code> 这个文件里。主要做的事情是依次扫描各种类型的提交记录（包括 Hack、包括自定义测试等等），如果发现有待测评的，就以 JSON 格式返回相应的信息。</p>
+<p>测评请求通常会包含一些附加的文件，如选手提交的代码文件。网页端返回的 JSON 里并不会包含这些文件本身，而是给了一个下载链接。测评端收到 JSON 之后会根据指定的下载链接去下载这些附加文件。</p>
+<p>最后，测评端会启动实际负责测评的程序 <code>uoj_judger/main_judger</code>，在测评完成后再跟网页端发送一个 HTTP 请求，提交测评结果。</p>
+<h4 id="2_2">2. 测评部分</h4>
+<p>测评部分的启动程序是<strong>主测评器</strong>（main judger），位置在 <code>uoj_judger/main_judger</code>。给定一个测评请求，主测评器会进行一系列运算，最后给出一个评分。其中，输入测评请求与输出评分均是通过文件输入输出实现的。</p>
+<p>具体来说，运行主测评器前需要先切换到一个空的工作目录（具体实现中我们选择了 <code>/tmp/</code> 下的临时文件夹，例如 <code>/tmp/local_main_judger/0</code>），我们暂且称之为<strong>主测评目录</strong>。然后，在主测评目录下建立子文件夹 <code>work/</code> 和 <code>result/</code>，我们分别称之为<strong>测评工作目录</strong>和<strong>测评结果目录</strong>。最后，将待测评请求的相关文件放在测评工作目录下，其中包括元信息文件 <code>submission.conf</code>、选手提交的代码文件等等。当主测评器启动时，它会从测评工作目录下读取这些文件，最后将评分输出到测评结果目录下的 <code>result.txt</code> 中。</p>
+<p>实际上，主测评器的主要任务是启动题目所指定的<strong>测评器</strong>（judger）。元信息文件 <code>submission.conf</code> 会包含题号、测评类型（是不是 Hack？是不是自定义测试？）、选手代码语言等等。主测评器会在 <code>uoj_judger/data/</code> 下找到与元信息文件中记录的题号对应的题目数据文件夹，读取该题的数据配置文件 <code>problem.conf</code>。根据数据配置文件的内容，主测评器要么会运行默认的内置测评器 <code>uoj_judger/builtin/judger/judger</code>，要么会运行该题指定的自定义测评器。</p>
+<p>关于测评器的具体功能，可以参见<a href="../problem/">题目上传教程</a>。测评器在运行结束后应把评分输出到测评结果目录下的 <code>result.txt</code> 中，如果没有，那么主测评器将会代为输出一份，并标记为 <code>Judgment Failed</code>（测评失败）。</p>
+<h4 id="3_1">3. 沙箱</h4>
+<p>测评器运行时，不可避免地会需要涉及到运行选手程序的操作。但直接运行是十分危险的，因为选手有可能会提交恶意代码。</p>
+<p>所以，UOJ 自己实现了一个基于 seccomp 和 ptrace 技术的<strong>沙箱</strong>，能够运行选手程序并在该程序做出可疑行为时果断杀死。沙箱位置在 <code>uoj_judger/run/run_program</code>。每当测评器想要运行选手程序时，都会交由沙箱代为执行。</p>
+<p>如果你想研究沙箱的实现方式，可以先了解 seccomp 和 ptrace 技术，然后再来仔细阅读代码。如果你只是想写一个自定义的测评器，只要搞清楚沙箱的输入输出方式即可。你可以不加参数地运行该沙箱来查看一个关于命令行参数的简单文档。同时，我们在头文件 <code>uoj_judger/include/uoj_judger.h</code> 中也将其封装为了一个 C++ 函数，可以直接调用。</p>
+<h4 id="4_1">4. 重要文件目录</h4>
+<p>测评端的代码和相关文件主要在 <code>/opt/uoj/judger/judge_client/1</code> 目录下。下面列出了一些重要的文件和子目录：</p>
+<ul>
+<li>
+<p><code>judge_client</code>：控制通信部分的 Python 脚本</p>
+</li>
+<li>
+<p><code>Makefile</code>：用于生成测评端所有可执行文件的 Makefile，主要功能是直接调用子目录下的 Makefile</p>
+</li>
+<li>
+<p><code>log/</code>：存放测评端日志的目录</p>
+</li>
+<li>
+<p><code>uoj_judger/</code>：测评部分的主目录</p>
+<ul>
+<li><code>main_judger</code>：主测评器（main judger）</li>
+<li><code>builtin/</code>：存放内置的答案检查器（checker）和测评器（judger）的目录</li>
+<li><code>include/</code>：测评相关的头文件</li>
+<li><code>Makefile</code>：用于生成测评部分的可执行文件的 Makefile</li>
+<li><code>data/</code>：一个链接到存放所有题目数据的文件夹的符号链接</li>
+<li><code>run/</code>：<ul>
+<li><code>run_program</code>：用于安全地运行程序的沙箱</li>
+<li><code>run_interaction</code>：一个用于辅助测评通信题的程序，运行多个程序并通过管道连接不同程序的输入输出</li>
+<li><code>compile</code>：根据给定的程序语言，通过调用其他编译器进行编译的“总”编译器</li>
+<li><code>formatter</code>：用于去掉行末空格、文末回车的程序</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="_5">四、如何修改代码</h3>
+<p>听说你想写代码？不错不错。</p>
+<p>对于网页端代码，你可以直接修改 <code>/opt/uoj/web/</code> 下的代码。PHP 代码不需要编译，所以如果是修改 PHP 代码的话，改完了就立马能看到效果了。</p>
+<p>如果是测评端，那么稍微复杂一点。如果你只有一个测评端（默认情况也只有一个），那么建议你先通过 <code>su local_main_judger</code> 切换到 <code>local_main_judger</code> 用户，然后再修改修改 <code>/opt/uoj/judger/judge_client/1</code> 目录下的代码。修改完成后在该目录下运行 <code>make</code> 命令编译生成所有可执行文件，最后重新启动测评端。</p>
+<p>如果你配置了多个测评端，那么你需要通过 SVN 来同时更新所有测评端代码。首先你需要给自己加上操作测评端 SVN 仓库的权限。在 <code>/var/svn/judge_client/conf/passwd</code> 这个文件中加一行：</p>
 <pre>
 uoj = 666666
 </pre>
-来增加一位名为 "<samp>uoj</samp>"，密码为 "<samp>666666</samp>" 的 svn 仓库管理员。</p>
-<p>之后你就可以随意用 svn 玩耍了哇咔咔……</p>
-<p>在本地写完之后，如果你想与别人分享，你可以把代码再放到 git 中（什么鬼？）再 push 到 github。</p>
+<p>来增加一位名为 "<code>uoj</code>"，密码为 "<code>666666</code>" 的 svn 仓库管理员。</p>
+<p>然后你可以自己 checkout 一个工作副本，修改代码，最后 commit。commit 时 UOJ 会分发到所有测评端，并自动编译。</p>
+<p>在本地写完代码之后，如果你想与别人分享，你可以把修改后的代码复制到你的 git 的工作副本里，再 push 到 github。</p>
+<h3 id="upgrader">五、更新工具：Upgrader</h3>
+<p>虽然这个功能没什么人用，但文档还是要写写的。</p>
 <p>如果你想更新的东西已经不局限于网站代码，还想对数据库、文件系统之类的折腾一番，请在 app/upgrade 目录下建立文件夹，举个例子，叫 <code>2333_create_table_qaq</code>。即，以一串数字开头，后面加一个下划线，再后面随便取名字吧，仅能包含数字字母和下划线。</p>
-<p>在这个文件夹下你可以放一些小脚本。大概 UOJ 运行这些小脚本是这么个逻辑：</p>
-<pre><code class="php">if (is_file(&quot;{$dir}/upgrade.php&quot;)) {
-    $fun = include &quot;{$dir}/upgrade.php&quot;;
-    $fun(&quot;up&quot;);
-}
-if (is_file(&quot;{$dir}/up.sql&quot;)) {
-    runSQL(&quot;{$dir}/up.sql&quot;);
-}
-if (is_file(&quot;{$dir}/upgrade.sh&quot;)) {
-    runShell(&quot;/bin/bash {$dir}/upgrade.sh up&quot;);
-}
-</code></pre>
-
-<p>你只需要在 /var/www/uoj/app 下执行 <code>php cli.php upgrade:up 2333_create_table_qaq</code> 就可以运行了，这个运行过程我们称为 <code>up</code>。</p>
-<p>请务必再写一下还原的小脚本，我们称为 <code>down</code>。写完代码后你需要保证 <code>up</code> 再 <code>down</code> 能回到原来的系统。与 <code>up</code> 类似，你需要执行 <code>php cli.php upgrade:down 2333_create_table_qaq</code>，执行 <code>down</code> 的逻辑如下：</p>
-<pre><code class="php">if (is_file(&quot;{$dir}/upgrade.php&quot;)) {
-    $fun = include &quot;{$dir}/upgrade.php&quot;;
-    $fun(&quot;down&quot;);
-}
-if (is_file(&quot;{$dir}/down.sql&quot;)) {
-    runSQL(&quot;{$dir}/down.sql&quot;);
-}
-if (is_file(&quot;{$dir}/upgrade.sh&quot;)) {
-    runShell(&quot;/bin/bash {$dir}/upgrade.sh down&quot;);
-}
-</code></pre>
-
+<p>在这个文件夹下你可以放一些小脚本。大概 UOJ 运行这些小脚本是这么个逻辑：
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="__codelineno-0-1"></a><span class="cp">&lt;?php</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="__codelineno-0-2"></a><span class="k">if</span> <span class="p">(</span><span class="nb">is_file</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{</span><span class="nv">$dir</span><span class="si">}</span><span class="s2">/upgrade.php&quot;</span><span class="p">))</span> <span class="p">{</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="__codelineno-0-3"></a>    <span class="nv">$fun</span> <span class="o">=</span> <span class="k">include</span> <span class="s2">&quot;</span><span class="si">{</span><span class="nv">$dir</span><span class="si">}</span><span class="s2">/upgrade.php&quot;</span><span class="p">;</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="__codelineno-0-4"></a>    <span class="nv">$fun</span><span class="p">(</span><span class="s2">&quot;up&quot;</span><span class="p">);</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="__codelineno-0-5"></a><span class="p">}</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="__codelineno-0-6"></a><span class="k">if</span> <span class="p">(</span><span class="nb">is_file</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{</span><span class="nv">$dir</span><span class="si">}</span><span class="s2">/up.sql&quot;</span><span class="p">))</span> <span class="p">{</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="__codelineno-0-7"></a>    <span class="nx">runSQL</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{</span><span class="nv">$dir</span><span class="si">}</span><span class="s2">/up.sql&quot;</span><span class="p">);</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="__codelineno-0-8"></a><span class="p">}</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="__codelineno-0-9"></a><span class="k">if</span> <span class="p">(</span><span class="nb">is_file</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{</span><span class="nv">$dir</span><span class="si">}</span><span class="s2">/upgrade.sh&quot;</span><span class="p">))</span> <span class="p">{</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="__codelineno-0-10"></a>    <span class="nx">runShell</span><span class="p">(</span><span class="s2">&quot;/bin/bash </span><span class="si">{</span><span class="nv">$dir</span><span class="si">}</span><span class="s2">/upgrade.sh up&quot;</span><span class="p">);</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="__codelineno-0-11"></a><span class="p">}</span>
+</code></pre></div>
+你只需要在 <code>/var/www/uoj/app</code> 下执行 <code>php cli.php upgrade:up 2333_create_table_qaq</code> 就可以运行了，这个运行过程我们称为 <code>up</code>。</p>
+<p>请务必再写一下还原的小脚本，我们称为 <code>down</code>。写完代码后你需要保证 <code>up</code> 再 <code>down</code> 能回到原来的系统。与 <code>up</code> 类似，你需要执行 <code>php cli.php upgrade:down 2333_create_table_qaq</code>，执行 <code>down</code> 的逻辑如下：
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="__codelineno-1-1"></a><span class="cp">&lt;?php</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="__codelineno-1-2"></a><span class="k">if</span> <span class="p">(</span><span class="nb">is_file</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{</span><span class="nv">$dir</span><span class="si">}</span><span class="s2">/upgrade.php&quot;</span><span class="p">))</span> <span class="p">{</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="__codelineno-1-3"></a>    <span class="nv">$fun</span> <span class="o">=</span> <span class="k">include</span> <span class="s2">&quot;</span><span class="si">{</span><span class="nv">$dir</span><span class="si">}</span><span class="s2">/upgrade.php&quot;</span><span class="p">;</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="__codelineno-1-4"></a>    <span class="nv">$fun</span><span class="p">(</span><span class="s2">&quot;down&quot;</span><span class="p">);</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="__codelineno-1-5"></a><span class="p">}</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="__codelineno-1-6"></a><span class="k">if</span> <span class="p">(</span><span class="nb">is_file</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{</span><span class="nv">$dir</span><span class="si">}</span><span class="s2">/down.sql&quot;</span><span class="p">))</span> <span class="p">{</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="__codelineno-1-7"></a>    <span class="nx">runSQL</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{</span><span class="nv">$dir</span><span class="si">}</span><span class="s2">/down.sql&quot;</span><span class="p">);</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="__codelineno-1-8"></a><span class="p">}</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="__codelineno-1-9"></a><span class="k">if</span> <span class="p">(</span><span class="nb">is_file</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{</span><span class="nv">$dir</span><span class="si">}</span><span class="s2">/upgrade.sh&quot;</span><span class="p">))</span> <span class="p">{</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="__codelineno-1-10"></a>    <span class="nx">runShell</span><span class="p">(</span><span class="s2">&quot;/bin/bash </span><span class="si">{</span><span class="nv">$dir</span><span class="si">}</span><span class="s2">/upgrade.sh down&quot;</span><span class="p">);</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="__codelineno-1-11"></a><span class="p">}</span>
+</code></pre></div></p>
 <p>在数据库中，UOJ 会记录自己已经加载了哪些 upgrade，当你执行 <code>php cli.php upgrade:latest</code> 的时候，UOJ 会把所有已经在 app/upgrade 文件夹下但还没有加载的 upgrade 都给 <code>up</code> 一下，并且是按前缀上的那一串数字从小到大执行。所以写好了这种小 upgrade 之后，你就可以跟别人分享了！</p>
-<p>不过关于架构什么的介绍我还是先
-<p style="font-size:233px">坑着</p></p></div>
+
+              
+            </article>
+          </div>
         </div>
-
-        <footer class="col-md-12">
-            <hr>
-            
-            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
-        </footer>
-
-        <script src="../js/jquery-1.10.2.min.js"></script>
-        <script src="../js/bootstrap-3.0.3.min.js"></script>
-        <script src="../js/highlight.pack.js"></script>
-        <script src="../js/base.js"></script>
-    </body>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="页脚">
+      
+        
+        <a href="../contest/" class="md-footer__link md-footer__link--prev" aria-label="上一页: 比赛" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              比赛
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../about/" class="md-footer__link md-footer__link--next" aria-label="下一页: 关于" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              关于
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "\u590d\u5236", "clipboard.copied": "\u5df2\u590d\u5236", "search.config.lang": "ja", "search.config.pipeline": "trimmer, stemmer", "search.config.separator": "[\\uff0c\\u3002]+", "search.placeholder": "\u641c\u7d22", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.term.missing": "\u7f3a\u5c11", "select.version.title": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "search": "../assets/javascripts/workers/search.361d90f1.min.js"}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.289a2a4b.min.js"></script>
+      
+    
+  </body>
 </html>
