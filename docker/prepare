@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# part of the code is from UOJ-System
+
+installAptPackages() {
+	printf "\n\n==> Getting environment packages\n"
+    # Update apt sources and install
+    export DEBIAN_FRONTEND=noninteractive
+    dpkg -s gnupg 2>/dev/null || (apt-get update && apt-get install -y gnupg)
+    if [ $? -ne 0 ]; then
+        echo -e "\033[1;91m"
+        echo "UOJ ERROR: FAILED to install gnupg."
+        echo -e "\033[0m"
+        return 1
+    fi
+
+    # if you change the versions of python, gcc, g++, openjdk,
+    # be sure to change them also on the judge client!
+    local phpver=7.4
+    local php=php$phpver
+    apt-get update &&
+    apt-get upgrade -y &&
+    apt-get install -y apt-utils &&
+    apt-get install -y \
+        systemctl ntp sudo locales \
+        vim zip unzip curl wget apache2 mysql-server-8.0 libapache2-mod-xsendfile subversion \
+        g++ cmake re2c libyaml-dev libseccomp-dev \
+        python2 python3.9 gcc-10 g++-10 fpc python3-pip \
+        openjdk-11-jdk \
+        $php $php-dev php-pear libapache2-mod-$php $php-mysql $php-zip $php-mbstring $php-curl
+    
+    if [ $? -ne 0 ]; then
+        echo -e "\033[1;91m"
+        echo "UOJ ERROR: Some packages cannot be installed via apt-get."
+        echo -e "\033[0m"
+        return 1
+    fi
+
+    python3.9 -m pip install pip --upgrade
+    python3.9 -m pip install requests --upgrade
+
+    if [ $? -ne 0 ]; then
+        echo -e "\033[1;91m"
+        echo "UOJ ERROR: Some python packages cannot be installed via pip."
+        echo -e "\033[0m"
+        return 1
+    fi
+
+    # Install PHP extensions
+    pecl channel-update pecl.php.net &&
+    pear update-channels &&
+    pecl update-channels &&
+    pear upgrade --force &&
+    pecl upgrade &&
+    pecl install yaml &&
+    echo extension=yaml >/etc/php/$phpver/mods-available/yaml.ini &&
+    ln -s /etc/php/$phpver/mods-available/yaml.ini /etc/php/$phpver/apache2/conf.d/20-yaml.ini
+
+    if [ $? -ne 0 ]; then
+        echo -e "\033[1;91m"
+        echo "UOJ ERROR: FAILED to install PHP extensions."
+        echo -e "\033[0m"
+        return 1
+    fi
+}
+
+mkdir -p /var/svn/problem /var/svn/judge_client /var/uoj_data /var/uoj_data_copy /opt/uoj/judger &&
+adduser local_main_judger --gecos "" --ingroup www-data --home /home/local_main_judger --disabled-password &&
+installAptPackages &&
+svnadmin create /var/svn/judge_client &&
+usermod -d /var/lib/mysql/ mysql &&
+php gen-uoj-config.php &&
+chmod +x setup

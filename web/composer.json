@@ -1,0 +1,8 @@
+{
+    "require": {
+        "phpmailer/phpmailer": "^6.4",
+        "google/recaptcha": "^1.2",
+        "ezyang/htmlpurifier": "^4.13",
+        "aliyuncs/oss-sdk-php": "^2.4"
+    }
+}

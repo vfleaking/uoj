@@ -21,6 +21,7 @@ cat >$path/conf/passwd <<EOD
 [users]
 $svnusr = $svnpwd
 EOD
+chmod 600 $path/conf/passwd
 
 mkdir $path/cur
 cd $path/cur

@@ -19,12 +19,13 @@ function translate($filename, $target, $tab) {
 
 $svn_pwd = rand_str(32);
 $svn_cert = '--username root --password '.$svn_pwd;
+$mysql_pwd = rand_str(32);
 
 $config = [
 	'database' => [
 		'database'  => 'app_uoj233',
 		'username' => 'root',
-		'password' => 'root',
+		'password' =>  $mysql_pwd,
 		'host' => '127.0.0.1'
 	],
 	'web' => [
@@ -79,6 +80,7 @@ $judge_client_config = [
 $translate_table = [
 	'svn_cert' => $svn_cert,
 	'svn_pwd' => $svn_pwd,
+	'mysql_pwd' => $mysql_pwd,
 	'our_root_password' => $config['svn']['our-root']['password'],
 	'main_judger_password' => $judge_client_config['judger_password']
 ];
@@ -86,8 +88,7 @@ $translate_table = [
 translate('new_problem.sh', '/var/svn/problem/new_problem.sh', $translate_table);
 translate('post-commit.sh', '/var/svn/problem/post-commit.sh', $translate_table);
 
-translate('uoj-passwd', '/var/svn/uoj/conf/passwd', $translate_table);
-translate('uoj-post-commit', '/var/svn/uoj/hooks/post-commit', $translate_table);
+translate('uoj-passwd', '/var/svn/judge_client/conf/passwd', $translate_table);
 file_put_contents('uoj_config.php', "<?php\nreturn ".var_export($config, true).";\n");
 file_put_contents('judge_client_config.json', json_encode($judge_client_config, JSON_PRETTY_PRINT));
-translate('install', 'install', $translate_table);
+translate('setup', 'setup', $translate_table);

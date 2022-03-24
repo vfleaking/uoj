@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  all:
+    build: .
+    container_name: uoj_all
+    restart: always
+    stdin_open: true
+    tty: true
+    cap_add:
+      - SYS_PTRACE
+    volumes:
+      - mysql:/var/lib/mysql
+      - data_main:/var/uoj_data
+      - data_copy:/var/uoj_data_copy
+      - web:/opt/uoj/web
+      - var_log:/var/log
+      - judger:/opt/uoj/judger
+      - svn:/var/svn
+    ports:
+     - "80:80"
+     - "3690:3690"
+
+volumes:
+  mysql:
+  data_main:
+  data_copy:
+  web:
+  var_log:
+  judger:
+  svn:

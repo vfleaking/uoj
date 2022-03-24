@@ -1,0 +1,151 @@
+#!/bin/bash
+
+# part of the code is from UOJ-System
+
+setLAMPConf() {
+    printf "\n\n==> Setting LAMP configs\n"
+    # Set Apache UOJ site conf
+    cat >/etc/apache2/sites-available/000-uoj.conf <<UOJEOF
+<VirtualHost *:80>
+    #ServerName local_uoj.ac
+    ServerAdmin admin@none
+    DocumentRoot /var/www/uoj
+    SetEnvIf Request_URI "^/judge/.*$" judgelog
+    #LogLevel info ssl:warn
+    ErrorLog \${APACHE_LOG_DIR}/uoj_error.log
+    CustomLog \${APACHE_LOG_DIR}/uoj_judge.log common env=judgelog
+    CustomLog \${APACHE_LOG_DIR}/uoj_access.log combined env=!judgelog
+    XSendFile On
+    XSendFilePath /var/uoj_data
+    XSendFilePath /opt/uoj/web/app/storage
+    XSendFilePath /opt/uoj/judger/judge_client/cur/judge_client/1/uoj_judger/include/
+    XSendFilePath /var/svn/problem
+</VirtualHost>
+UOJEOF
+    # Enable modules and make UOJ site conf enabled
+    a2ensite 000-uoj.conf && a2dissite 000-default.conf &&
+    a2enmod rewrite headers && sed -i -e '172s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
+	if [ $? -ne 0 ]; then
+		echo -e "\033[1;91m"
+		echo "UOJ ERROR: FAILED to setup apache confs and modules."
+		echo -e "\033[0m"
+		return 1
+	fi
+
+    # Create UOJ session save dir and make PHP extensions available
+    mkdir --mode=733 /var/lib/php/uoj_sessions && chmod +t /var/lib/php/uoj_sessions
+	if [ $? -ne 0 ]; then
+		echo -e "\033[1;91m"
+		echo "UOJ ERROR: FAILED to setup uoj sessions."
+		echo -e "\033[0m"
+		return 1
+	fi
+}
+
+initUOJ() {
+    printf "\n\n==> Setting UOJ web\n"
+
+	mv uoj_config.php /opt/uoj/web/app/.config.php &&
+	ln -sf /opt/uoj/web /var/www/uoj
+	if [ $? -ne 0 ]; then
+		echo -e "\033[1;91m"
+		echo "UOJ ERROR: FAILED to create the website."
+		echo -e "\033[0m"
+		return 1
+	fi
+
+	cd /opt/uoj/web && chmod +x /root/composer-setup.sh && /root/composer-setup.sh
+	if [ $? -ne 0 ]; then
+		return 1
+	fi
+	
+	chown -R www-data /var/svn/problem /opt/uoj/web/app/storage &&
+	chown -R www-data:www-data /var/uoj_data &&
+	chown -R local_main_judger:www-data /var/uoj_data_copy
+	if [ $? -ne 0 ]; then
+		echo -e "\033[1;91m"
+		echo "UOJ ERROR: FAILED to call chown for certain folders."
+		echo -e "\033[0m"
+		return 1
+	fi
+
+    printf "\n\n==> Setting UOJ database\n"
+
+	cd /root &&
+	echo "alter user root@localhost identified with caching_sha2_password by '__mysql_pwd__'" | mysql -u root &&
+	mysql -u root --password=__mysql_pwd__ <app_uoj233.sql
+	if [ $? -ne 0 ]; then
+		echo -e "\033[1;91m"
+		echo "UOJ ERROR: FAILED to create the database."
+		echo -e "\033[0m"
+		return 1
+	fi
+
+    printf "\n\n==> Setting UOJ judger\n"
+	cat >/var/svn/judge_client/conf/svnserve.conf <<EOD
+[general]
+anon-access = none
+auth-access = write
+password-db = passwd
+EOD
+	chmod 600 /var/svn/judge_client/conf/passwd
+
+	cd /opt/uoj/judger &&
+	svn co svn://127.0.0.1/judge_client __svn_cert__ &&
+	cd judge_client &&
+	mv /root/judge_client 1 &&
+	svn add 1 -q &&
+	svn ci -m "first commit" __svn_cert__ -q &&
+	mv /root/judge-repo-post-commit.sh /var/svn/judge_client/hooks/post-commit &&
+	chmod +x /var/svn/judge_client/hooks/post-commit &&
+	mv /root/judge_client_config.json 1/.conf.json &&
+	chown -R local_main_judger:www-data . &&
+	su local_main_judger <<EOD
+cd ~
+ln -sf /opt/uoj/judger/judge_client/1 judge_client
+cd ~/judge_client &&
+chmod 600 .conf.json &&
+chmod +x judge_client &&
+ln -sf /var/uoj_data_copy uoj_judger/data &&
+./judge_client self-update
+EOD
+
+	if [ $? -ne 0 ]; then
+		echo -e "\033[1;91m"
+		echo "UOJ ERROR: FAILED to initialize local_main_judger."
+		echo -e "\033[0m"
+		return 1
+	fi
+
+	echo 'insert into judger_info (judger_name, password, ip, display_name, description) values ("main_judger", "__main_judger_password__", "", "JUDGER NAME (change it in the database!)", "AMD YES! CPU 2.33GHz; Memory 666GB (change it in the database!)")' | mysql app_uoj233 -u root --password=__mysql_pwd__
+	if [ $? -ne 0 ]; then
+		echo -e "\033[1;91m"
+		echo "UOJ ERROR: FAILED to update the judger_info table."
+		echo -e "\033[0m"
+		return 1
+	fi
+
+	php /var/www/uoj/app/cli.php upgrade:latest
+	if [ $? -ne 0 ]; then
+		echo -e "\033[1;91m"
+		echo "UOJ ERROR: FAILED to run cli.php."
+		echo -e "\033[0m"
+		return 1
+	fi
+}
+
+chmod +x /var/svn/problem/new_problem.sh &&
+chmod +x /var/svn/problem/post-commit.sh &&
+setLAMPConf &&
+svnserve -d -r /var/svn &&
+service mysql start &&
+initUOJ &&
+service mysql stop &&
+killall svnserve &&
+cd /root &&
+rm * -rf &&
+printf "\n\n==> Installation finished!\n" &&
+echo -e "\033[1;91m" &&
+echo "UOJ NOTICE: If you want to use blog editor, PLEASE INSTALL jsv8 BY YOURSELF." &&
+echo "UOJ NOTICE: If you want to support Java 14, PLEASE INSTALL openjdk-14-jdk BY YOURSELF (or you can simply delete this language)." &&
+echo -e "\033[0m"

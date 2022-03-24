@@ -1,83 +1,25 @@
 # Universal Online Judge
 
-## Dependence
-This is a dockerized version of UOJ. Before installation, please make sure that [Docker](https://www.docker.com/) has already been installed on your OS.
+<p align="center"><img src="https://github.com/vfleaking/uoj/blob/master/uoj/1/pictures/UOJ.png?raw=true"></p>
 
-The docker image of UOJ is **64-bit**, so a **32-bit** host OS may cause installation failure.
+> #### 一款通用的在线评测系统。
 
-## Installation
-First please download [JDK7u76](http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase7-521261.html#jdk-7u76-oth-JPR) and [JDK8u31](http://www.oracle.com/technetwork/java/javase/downloads/java-archive-javase8-2177648.html#jdk-8u31-oth-JPR), and put them to `docker/jdk-7u76-linux-x64.tar.gz` and `docker/jdk-8u31-linux-x64.tar.gz`. These two compressed files are used by judge\_client for judging Java program. If you are too lazy to download these two huge files, you can simply place two empty .tar.gz files there.
+本仓库存放了 UOJ 官网（ https://uoj.ac ）的主要代码，供大家学习参考。
 
-Next, you can run the following command in your terminal: (not the one in the `docker/` directory!)
-```sh
-./install
-```
-If everything goes well, you will see `Successfully built <image-id>` in the last line of the output.
+为了尽可能复现官网的运行环境，我们将整个网站用 docker 容器技术进行了封装。不过目前的复现方法仍不完美，比如有些运行库还需要手动安装。所以，如果你想将 UOJ 部署于正式场合，请勿直接使用本仓库代码。正式场合下建议使用[UOJ 开源社区维护的版本](https://github.com/UniversalOJ/UOJ-System)。
 
-To start your UOJ main server, please run:
-```sh
-docker run -it -p 80:80 -p 3690:3690 <image-id>
-```
-If you are using docker on Mac OS or having 'std: compile error. no comment' message on uploading problem data, you could possibly use this alternative command:
-```sh
-docker run -it -p 80:80 -p 3690:3690 --cap-add SYS_PTRACE <image-id>
-```
+当前这版官网版代码具有一些开源社区版没有的功能。如果你想让你的开源社区版也支持这些功能，可以参考官网版自行修改。修改完成后，欢迎向开源社区版提交 pull request！
 
-The default hostname of UOJ is `local_uoj.ac`, so you need to modify your host file in your OS in order to map `127.0.0.1` to `local_uoj.ac`. (It is `/etc/hosts` on Linux.) After that, you can access UOJ in your web browser.
+如果你想为 UOJ 官网贡献代码，你可以直接向本仓库提交 pull request。审核通过后我们将会同步更新至  https://uoj.ac ！
 
-The first user registered after the installation of UOJ will be a super user. If you need another super user, please register a user and change its `usergroup` to "<samp>S</samp>" in the table `user_info`. Run
-```sh
-mysql app_uoj233 -u root -p
-```
-to login mysql in the terminal.
+感谢大家支持！欢迎加入官方 QQ 群交流讨论：`590822951`。
 
-Notice that if you want only one judge client, then everything is ok now. Cheers!
+### 文档
 
-However, if you want more judge clients, you need to set up them one by one. First run:
-```sh
-./config_judge_client
-```
-and answer the questions.
+* 安装教程：https://vfleaking.github.io/uoj/install/
+* 上传题目：https://vfleaking.github.io/uoj/problem/
+* 开发指南：https://vfleaking.github.io/uoj/dev/
 
-* uoj container id: the container id of the main server.
-* uoj ip: the ip address of the main server.
-* judger name: you can take a name you like, such as judger, judger\_2, very\_strong\_judger. (containing special characters may cause  unforeseeable consequence.)
+### 版权声明
 
-After that, a sql command is given, we will talk about it later.
-
-Next, we need to run:
-```sh
-./install_judge_client
-```
-to build the docker image. If you want to run judger at the same server, you just need to run
-```sh
-docker run -it <image-id>
-```
-And, you need to complete the sql command given just now with the ip address of the judger docker, and modify the database. To someone who do not know how to get the ip address of a docker container, here is the answer:
-```sh
-docker inspect --format '{{ .NetworkSettings.IPAddress }}' <container-id>
-```
-
-Or, if you want to run judger at different server, you need to copy the image to the other server, and run
-```sh
-docker run -p 2333 -it <image-id>
-```
-Similarly, you need to complete the sql command and modify the database. This time, you need to fill with the ip address of the host machine of the judger docker.
-
-You may meet many difficulties during the installation. Good luck and have fun!
-
-## Notes
-
-mysql default password: root
-
-local\_main\_judger password: judger
-
-You can change the default hostname and something else in `/var/www/uoj/app/.config.php`. However, not all the config is here, haha.
-
-## More Documentation
-As you know, my Yingyu is not very hao. Suoyi only the README file is En(Chi)nglish for internationalization.
-
-More documentation is here: [https://vfleaking.github.io/uoj/](https://vfleaking.github.io/uoj/)
-
-## License
-MIT License.
+MIT 协议

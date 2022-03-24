@@ -1,0 +1,30 @@
+Options -Indexes
+
+php_value session.save_path /var/lib/php/uoj_sessions
+php_value session.gc_maxlifetime 172800
+php_value session.cookie_lifetime 31536000
+
+php_value memory_limit 512M
+php_value post_max_size 50M
+php_value upload_max_filesize 50M
+
+php_value session.gc_probability 1
+php_value session.gc_divisor 1000
+
+Header set Access-Control-Allow-Origin "*"
+
+DirectorySlash Off
+
+DirectoryIndex
+
+RewriteEngine On
+
+RewriteCond %{QUERY_STRING} ^$
+RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+RewriteRule ^myadmin233/(.*)$ %{REQUEST_URI} [END]
+
+RewriteCond %{DOCUMENT_ROOT}/public%{REQUEST_URI} -f
+RewriteRule ^ /public%{REQUEST_URI} [END]
+
+RewriteRule ^ index.php [END]

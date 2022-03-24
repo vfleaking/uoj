@@ -1,10 +1,35 @@
-#!/bin/sh
+#!/bin/bash
 
-service ntp start
-service apache2 start
-service mysql start
-svnserve -d -r /var/svn
+if ! service ntp start; then
+    echo -e "\033[1;91m"
+	echo "UOJ ERROR: ntp did not start successfully!"
+    echo -e "\033[0m"
+fi
 
-su local_main_judger -c '~/judge_client/judge_client start'
+if ! service mysql start; then
+    echo -e "\033[1;91m"
+	echo "UOJ ERROR: mysql did not start successfully!"
+    echo -e "\033[0m"
+fi
+
+if ! service apache2 start; then
+    echo -e "\033[1;91m"
+	echo "UOJ ERROR: apache2 did not start successfully!"
+    echo -e "\033[0m"
+fi
+
+if ! svnserve -d -r /var/svn; then
+    echo -e "\033[1;91m"
+	echo "UOJ ERROR: svn did not start successfully!"
+    echo -e "\033[0m"
+fi
+
+if ! su local_main_judger -c '~/judge_client/judge_client start'; then
+    echo -e "\033[1;91m"
+	echo "UOJ ERROR: judger did not start successfully!"
+    echo -e "\033[0m"
+fi
+
+echo "UOJ starts successfully!"
 
 exec bash

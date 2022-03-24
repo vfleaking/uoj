@@ -1,0 +1,22 @@
+site_name: UOJ 文档
+repo_url: https://github.com/vfleaking/uoj
+site_author: vfleaking
+nav:
+  - 主页: 'index.md'
+  - 安装: 'install.md'
+  - 维护: 'maintain.md'
+  - 题目: 'problem.md'
+  - 比赛: 'contest.md'
+  - 开发: 'dev.md'
+  - 关于: 'about.md'
+theme:
+  name: material
+  language: zh
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.keys
+extra_css: [extra.css]
