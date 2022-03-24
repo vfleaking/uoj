@@ -1,6 +1,6 @@
 # Universal Online Judge
 
-<p align="center"><img src="https://github.com/vfleaking/uoj/blob/master/uoj/1/pictures/UOJ.png?raw=true"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/vfleaking/uoj/master/web/public/pictures/UOJ.png"></p>
 
 > #### 一款通用的在线评测系统。
 
