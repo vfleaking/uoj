@@ -8,7 +8,7 @@ return [
 	'title' => 'Title',
 	'ac' => 'AC',
 	'submit' => 'Submit',
-	'ac ratio' => 'AC Ratio',
+	'ac ratio' => 'AC Rate',
 	'show tags' => 'Show tags',
 	'show statistics' => 'Show statistics',
 	'statement' => 'Statement',
