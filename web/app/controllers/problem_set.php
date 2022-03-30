@@ -113,7 +113,7 @@
 	if (isset($_COOKIE['show_submit_mode'])) {
 		$header .= '<th class="text-center" style="width:5em;">'.UOJLocale::get('problems::ac').'</th>';
 		$header .= '<th class="text-center" style="width:5em;">'.UOJLocale::get('problems::submit').'</th>';
-		$header .= '<th class="text-center" style="width:150px;">'.UOJLocale::get('problems::ac ratio').'</th>';
+		$header .= '<th class="text-center" style="width:150px;">'.UOJLocale::get('problems::ac rate').'</th>';
 	}
 	$header .= '<th class="text-center" style="width:180px;">'.UOJLocale::get('appraisal').'</th>';
 	$header .= '</tr>';

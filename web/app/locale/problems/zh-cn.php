@@ -7,7 +7,7 @@ return [
 	'problem title, ID or tag' => '题目名 / ID / 标签',
 	'ac' => 'AC',
 	'submit' => '提交',
-	'ac ratio' => 'AC 率',
+	'ac rate' => 'AC 率',
 	'show tags' => '显示标签',
 	'show statistics' => '显示提交情况',
 	'statement' => '描述',
