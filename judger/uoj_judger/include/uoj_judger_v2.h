@@ -903,7 +903,7 @@ void prepare_interactor() {
 }
 
 // simple: prog <---> interactor <---> data
-run_simple_interaction_result run_simple_interation(
+run_simple_interaction_result run_simple_interaction(
 		const string &input_file_name,
 		const string &answer_file_name,
 		const string &real_input_file_name,
@@ -1667,7 +1667,7 @@ protected:
 
 		// conf_run_limit(num, RL_DEFAULT),
 		// conf_run_limit("interactor", num, RL_INTERACTOR_DEFAULT),
-		run_simple_interaction_result rires = run_simple_interation(
+		run_simple_interaction_result rires = run_simple_interaction(
 			fname["input.raw"],
 			fname["answer"],
 			fname["program_input.raw"],
@@ -1814,7 +1814,7 @@ PointInfo test_point(const string &name, const int &num, TestPointConfig tpc = T
 	} else {
 		string real_output_file_name = tpc.output_file_name + ".real_input.txt";
 		string real_input_file_name = tpc.output_file_name + ".real_output.txt";
-		RunSimpleInteractionResult rires = run_simple_interation(
+		RunSimpleInteractionResult rires = run_simple_interaction(
 				tpc.input_file_name,
 				tpc.answer_file_name,
 				real_input_file_name,
@@ -1890,7 +1890,7 @@ PointInfo test_hack_point(const string &name, TestPointConfig tpc) {
 		rpc.result_file_name = result_path + "/run_standard_program.txt";
 		string real_output_file_name = tpc.answer_file_name;
 		string real_input_file_name = tpc.output_file_name + ".real_output.txt";
-		RunSimpleInteractionResult rires = run_simple_interation(
+		RunSimpleInteractionResult rires = run_simple_interaction(
 				tpc.input_file_name,
 				tpc.answer_file_name,
 				real_input_file_name,

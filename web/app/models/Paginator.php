@@ -105,7 +105,7 @@ class Paginator {
 		} else {
 			$this->n_pages = 1;
 			$this->cur_page = 1;
-			$this->cur_start = ($this->cur_page - 1) * $this->page_len;
+			$this->cur_start = 0;
 			$this->table = DB::selectAll([
                 "select", DB::fields($config['col_names']), "from", DB::query_str($config['table_name']),
                 "where", $config['cond'],

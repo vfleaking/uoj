@@ -22,7 +22,7 @@ class UOJProblemConfigure {
 
     public function __construct(UOJProblem $problem) {
         $this->problem = $problem;
-        $problem_conf = $this->problem->getProblemConf('candidate');
+        $problem_conf = $this->problem->getProblemConfArray('candidate');
         if (!is_array($problem_conf)) {
             $problem_conf = [];
         }

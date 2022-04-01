@@ -85,7 +85,7 @@ class SvnProblemDataManager {
 	}
 	
 	private function check_conf_on($name) {
-		return isset($this->problem_conf[$name]) && $this->problem_conf[$name] == 'on';
+		return (new UOJProblemConf($this->problem_conf))->isOn($name);
 	}
 	
 	private function create_prepare_folder() {
@@ -303,7 +303,7 @@ class SvnProblemDataManager {
 
 			$this->create_upload_folder();
 
-			$new_problem_conf = $this->problem->getProblemConf();
+			$new_problem_conf = $this->problem->getProblemConfArray();
 			if ($new_problem_conf == -1 || $new_problem_conf == -2) {
 				return $new_problem_conf;
 			}

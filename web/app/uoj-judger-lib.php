@@ -39,56 +39,31 @@ function judgerCodeStr($code) {
 }
 
 /**
+ * Better to use UOJProblemConf instead
+ * 
  * @return array|int
  */
 function getUOJConf($file_name) {
-	$reader = new StrictFileReader($file_name);
-	if ($reader->failed()) {
-		return -1;
-	}
-
-	$conf = [];
-	while (!$reader->eof()) {
-		$reader->ignoreWhite();
-		$key = $reader->readString();
-		if ($key === '') {
-			break;
-		}
-		$reader->ignoreWhite();
-		$val = $reader->readString();
-		if ($val === '') {
-			break;
-		}
-
-		if (isset($conf[$key])) {
-			return -2;
-		}
-		$conf[$key] = $val;
-	}
-	$reader->close();
-	return $conf;
-}
-function putUOJConf($file_name, $conf) {
-	$f = fopen($file_name, 'w');
-	foreach ($conf as $key => $val) {
-		fwrite($f, "{$key} {$val}\n");
-	}
-	fclose($f);
-}
-
-function getUOJConfVal($conf, $key, $default_val) {
-	if (is_array($key)) {
-		foreach ($key as $k) {
-			if (isset($conf[$k])) {
-				return $conf[$k];
-			}
-		}
+	$ret = UOJProblemConf::getFromFile($file_name);
+	if ($ret instanceof UOJProblemConf) {
+		return $ret->conf;
 	} else {
-		if (isset($conf[$key])) {
-			return $conf[$key];
-		}
+		return $ret;
 	}
-	return $default_val;
+}
+
+/**
+ * Better to use UOJProblemConf instead
+ */
+function putUOJConf($file_name, $conf) {
+	(new UOJProblemConf($conf))->putToFile($file_name);
+}
+
+/**
+ * Better to use UOJProblemConf instead
+ */
+function getUOJConfVal($conf, $key, $default_val) {
+	return (new UOJProblemConf($conf))->getVal($key, $default_val);
 }
 
 function getUOJProblemInputFileName($problem_conf, $num) {

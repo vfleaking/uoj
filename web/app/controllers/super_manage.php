@@ -360,6 +360,10 @@ $tabs_info = [
 		'name' => '自定义测试',
 		'url' => '/super-manage/custom-test'
 	],
+	'non-trad-problems' => [
+		'name' => '非传统题',
+		'url' => "/super-manage/non-trad-problems"
+	],
 	'click-zan' => [
 		'name' => '点赞管理',
 		'url' => '/super-manage/click-zan'
@@ -502,8 +506,41 @@ requireLib('morris');
 			}
 		?>
 		<?= $submissions_pag->pagination() ?>
+
+		<?php elseif ($cur_tab === 'non-trad-problems'): ?>
+		<h2 class="text-center">非传统题列表</h2>
+		<?php
+
+		$non_trad_type_map = [];
+		
+		echoLongTable(['*'], 'problems', "1", 'order by id asc',
+			'<tr><th>ID</th><th>标题</th><th>非传统类型</th><tr>',
+			function($info) {
+				global $non_trad_type_map;
+
+				$problem = new UOJProblem($info);
+				echo '<tr>';
+				echo '<td>', "#{$problem->info['id']}", '</td>';
+				echo '<td>', $problem->getLink(), '</td>';
+				echo '<td>', $non_trad_type_map[$problem->info['id']], '</td>';
+				echo '</tr>';
+			}, [
+				'echo_full' => true,
+				'post_filter' => function(&$info) {
+					global $non_trad_type_map;
+
+					$problem = new UOJProblem($info);
+					$type = $problem->getNonTraditionalJudgeType();
+					$non_trad_type_map[$info['id']] = $type;
+					return $type !== false && $type !== 'traditional';
+				}
+			]);
+
+		?>
+
 		<?php elseif ($cur_tab === 'click-zan'): ?>
 		没写好QAQ
+
 		<?php elseif ($cur_tab === 'search'): ?>
 		<h2 class="text-center">一周搜索情况</h2>
 		<div id="search-distribution-chart-week" style="height: 250px;"></div>
@@ -551,6 +588,7 @@ requireLib('morris');
 				echo '</tr>';
 			}, ['page_len' => 1000])
 		?>
+
 		<?php elseif ($cur_tab === 'meta'): ?>
 		<h4>活跃用户判定标准</h4>
 		<p><?= UOJLocale::get('active rule', 'M') ?></p>

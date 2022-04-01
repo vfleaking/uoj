@@ -1,5 +1,9 @@
 <?php
 
+// this class depends on getUOJConf from uoj-judger-lib.php sometimes
+// be sure to include the lib
+// TODO: move getUOJConf into a static class independent of uoj-judger-lib.php
+
 class UOJProblem {
     use UOJDataTrait;
 	use UOJArticleTrait;
@@ -294,7 +298,7 @@ class UOJProblem {
         return $path;
     }
 
-    public function getProblemConf(string $where = 'data') {
+    public function getProblemConfArray(string $where = 'data') {
         if ($where === 'data') {
             return getUOJConf($this->getDataFilePath('problem.conf'));
         } elseif ($where === 'candidate') {
@@ -303,6 +307,25 @@ class UOJProblem {
             return null;
         }
     }
+
+    public function getProblemConf(string $where = 'data') {
+        if ($where === 'data') {
+            return UOJProblemConf::getFromFile($this->getDataFilePath('problem.conf'));
+        } elseif ($where === 'candidate') {
+            return UOJProblemConf::getFromFile($this->getCandidateDataFilePath('problem.conf'));
+        } else {
+            return null;
+        }
+    }
+
+    public function getNonTraditionalJudgeType() {
+        $conf = $this->getProblemConf();
+        if (!($conf instanceof UOJProblemConf)) {
+            return false;
+        }
+        return $conf->getNonTraditionalJudgeType();
+    }
+
 }
 
 UOJProblem::$table_for_content = 'problems_contents';

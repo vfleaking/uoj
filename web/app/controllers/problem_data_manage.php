@@ -208,7 +208,7 @@ function addSrcTab(UOJProblemDataDisplayer $disp, $tab_name, string $name) {
 function getDataDisplayer() {
 	$disp = new UOJProblemDataDisplayer(UOJProblem::cur());
 
-	$problem_conf = UOJProblem::cur()->getProblemConf();
+	$problem_conf = UOJProblem::cur()->getProblemConfArray();
 	if ($problem_conf === -1) {
 		return $disp->addTab('problem.conf', function($self) {
 			global $info_form;
