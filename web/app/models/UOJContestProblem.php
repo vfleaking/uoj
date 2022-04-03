@@ -74,11 +74,11 @@ class UOJContestProblem extends UOJProblem {
         }
     }
 
-    public function getUri() {
+    public function getUri($where = '') {
         if (!$this->contest) {
             return false;
         }
-	    return '/contest/'.$this->contest->info['id'].'/problem/'.$this->info['id'];
+	    return "/contest/{$this->contest->info['id']}/problem/{$this->info['id']}{$where}";
     }
 
     public function queryUserSubmissionCountInContest(array $user = null) {
