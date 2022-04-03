@@ -389,7 +389,7 @@ all: chk judger
 1. 你可以先从 UOJ 内置的测评器读起，在 `uoj_judger/builtin/judger/judger.cpp`；
 2. 你会发现它引用了头文件 `uoj_judger.h`，大概读一读；
 3. `uoj_judger.h` 调用了沙箱 `uoj_judger/run/run_program.cpp`，大概理解一下沙箱的参数和输入输出方式；
-4. `uoj_judger.h` 还会用 `uoj_judger/run/compile.cpp` 来编译程序，用 `uoj_judger/run/run_interation.cpp` 来处理程序间的通信，大概读一读；
+4. `uoj_judger.h` 还会用 `uoj_judger/run/compile.cpp` 来编译程序，用 `uoj_judger/run/run_interaction.cpp` 来处理程序间的通信，大概读一读；
 5. 回过头来仔细理解一下 `uoj_judger.h` 的代码逻辑。
 
 不过说实话 `uoj_judger.h` 封装得并不是很好。所以有计划重写一个封装得更好的库 `uoj_judger_v2.h`，这个库拖拖拉拉写了一半，但暂且还是先放了出来，供大家参考。期待神犇来造一造轮子！
