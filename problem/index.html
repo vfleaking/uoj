@@ -998,20 +998,24 @@
 <p>如果你想配置这样的题目，只需要在 <code>problem.conf</code> 中加一行
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="__codelineno-13-1"></a>interaction_mode on
 </code></pre></div>
-然后编写程序 interactor.cpp，跟输入输出文件放在一起即可。interactor 也属于辅助测评程序，可以参照 “辅助测评程序” 这一小节的内容进行配置。如通过添加一行 <code>interactor_time_limit 2</code> 可将 interactor 的时间限制设为 2s。</p>
+然后编写程序 interactor.cpp，跟输入输出文件放在一起即可。interactor 也属于辅助测评程序，可以参照 “辅助测评程序” 这一小节的内容进行配置。比如，通过添加一行 <code>interactor_time_limit 2</code> 可将 interactor 的时间限制设为 2s。</p>
+<p>UOJ 的交互器 interactor 与 Codeforces 的交互器有一点点不同。在 Codeforces 的测评逻辑里，交互器与选手程序交互后，会把一些信息输出到文件，然后再交由答案检查器 chk 作出最终评分。但是 UOJ 里的交互器相当于 interactor + chk，也就是说交互器需要直接给出最终评分。所以，当你在使用 <a href="http://codeforces.com/testlib">testlib</a> 库编写交互器时，需要按照编写答案检查器的方式，在 <code class="highlight"><span class="n">main</span><span class="w"></span></code> 函数里第一句写上
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="__codelineno-14-1"></a><span class="n">registerTestlibCmd</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="n">argv</span><span class="p">);</span><span class="w"></span>
+</code></pre></div>
+之后你就可以通过 <code class="highlight"><span class="n">ouf</span><span class="w"></span></code> 获取选手程序输出，通过 <code class="highlight"><span class="n">cout</span><span class="w"></span></code> 或者 <code class="highlight"><span class="n">printf</span><span class="w"></span></code> 向选手程序输出信息（不要忘了刷新缓冲区），通过 <code class="highlight"><span class="n">quitf</span><span class="w"></span></code> 或者 <code class="highlight"><span class="n">quitp</span><span class="w"></span></code> 打分。注意，<strong>不要按照 Codeforces 的习惯</strong>调用 <code>registerInteraction</code>。</p>
 <p>如果你想实现更复杂一点通信，比如多个程序相互之间通信，那么你可能需要参考下一节 “意想不到的非传统题” 的内容自己编写 judger 了。</p>
 <h3 id="_14">⮞ 意想不到的非传统题</h3>
 <p>假如你有一道题不属于上述任何一种题目类型 —— 那你就得自己写测评器了！</p>
 <p>测评器（judger）的任务是：给你选手提交的文件，输出一个测评结果。</p>
 <p>把 problem.conf 里的 <code>use_builtin_judger on</code> 这行去掉，放一个 judger 程序的源代码放在题目数据目录下，就好了。</p>
 <p>但怎么编写 judger 呢。。。？首先你需要写个 Makefile，UOJ 会根据你的 Makefile 和 judger 源代码生成 judger。如果你要使用自定义答案检查器 chk，那么你也需要在 Makefile 里面指定 chk 的编译方式。比如下面这个例子：
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="__codelineno-14-1"></a><span class="k">export</span> <span class="nv">INCLUDE_PATH</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="__codelineno-14-2"></a><span class="nv">CXXFLAGS</span> <span class="o">=</span> -I<span class="k">$(</span>INCLUDE_PATH<span class="k">)</span> -O2
-<a id="__codelineno-14-3" name="__codelineno-14-3" href="__codelineno-14-3"></a>
-<a id="__codelineno-14-4" name="__codelineno-14-4" href="__codelineno-14-4"></a><span class="nf">all</span><span class="o">:</span> <span class="n">chk</span> <span class="n">judger</span>
-<a id="__codelineno-14-5" name="__codelineno-14-5" href="__codelineno-14-5"></a>
-<a id="__codelineno-14-6" name="__codelineno-14-6" href="__codelineno-14-6"></a><span class="nf">% </span><span class="o">:</span> %.<span class="n">cpp</span>
-<a id="__codelineno-14-7" name="__codelineno-14-7" href="__codelineno-14-7"></a>    <span class="k">$(</span>CXX<span class="k">)</span> <span class="k">$(</span>CXXFLAGS<span class="k">)</span> $&lt; -o <span class="nv">$@</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="__codelineno-15-1"></a><span class="k">export</span> <span class="nv">INCLUDE_PATH</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="__codelineno-15-2"></a><span class="nv">CXXFLAGS</span> <span class="o">=</span> -I<span class="k">$(</span>INCLUDE_PATH<span class="k">)</span> -O2
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="__codelineno-15-3"></a>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="__codelineno-15-4"></a><span class="nf">all</span><span class="o">:</span> <span class="n">chk</span> <span class="n">judger</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="__codelineno-15-5"></a>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="__codelineno-15-6"></a><span class="nf">% </span><span class="o">:</span> %.<span class="n">cpp</span>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="__codelineno-15-7"></a>    <span class="k">$(</span>CXX<span class="k">)</span> <span class="k">$(</span>CXXFLAGS<span class="k">)</span> $&lt; -o <span class="nv">$@</span>
 </code></pre></div></p>
 <p>什么？你问 judger 应该怎么写？</p>
 <p>这部分文档我只能先【坑着】。不过这里有一点有助于你自己看懂代码的指南：</p>
