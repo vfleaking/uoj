@@ -353,7 +353,13 @@ UOJ 内部并没有显式地支持交互式，而是提供了 require、implemen
 ```text
 interaction_mode on
 ```
-然后编写程序 interactor.cpp，跟输入输出文件放在一起即可。interactor 也属于辅助测评程序，可以参照 “辅助测评程序” 这一小节的内容进行配置。如通过添加一行 `interactor_time_limit 2` 可将 interactor 的时间限制设为 2s。
+然后编写程序 interactor.cpp，跟输入输出文件放在一起即可。interactor 也属于辅助测评程序，可以参照 “辅助测评程序” 这一小节的内容进行配置。比如，通过添加一行 `interactor_time_limit 2` 可将 interactor 的时间限制设为 2s。
+
+UOJ 的交互器 interactor 与 Codeforces 的交互器有一点点不同。在 Codeforces 的测评逻辑里，交互器与选手程序交互后，会把一些信息输出到文件，然后再交由答案检查器 chk 作出最终评分。但是 UOJ 里的交互器相当于 interactor + chk，也就是说交互器需要直接给出最终评分。所以，当你在使用 [testlib](http://codeforces.com/testlib) 库编写交互器时，需要按照编写答案检查器的方式，在 `#!c++ main` 函数里第一句写上
+```c++
+registerTestlibCmd(argc, argv);
+```
+之后你就可以通过 `#!c++ ouf` 获取选手程序输出，通过 `#!c++ cout` 或者 `#!c++ printf` 向选手程序输出信息（不要忘了刷新缓冲区），通过 `#!c++ quitf` 或者 `#!c++ quitp` 打分。注意，**不要按照 Codeforces 的习惯**调用 `registerInteraction`。
 
 如果你想实现更复杂一点通信，比如多个程序相互之间通信，那么你可能需要参考下一节 “意想不到的非传统题” 的内容自己编写 judger 了。
 
