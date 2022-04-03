@@ -1023,7 +1023,7 @@
 <li>你可以先从 UOJ 内置的测评器读起，在 <code>uoj_judger/builtin/judger/judger.cpp</code>；</li>
 <li>你会发现它引用了头文件 <code>uoj_judger.h</code>，大概读一读；</li>
 <li><code>uoj_judger.h</code> 调用了沙箱 <code>uoj_judger/run/run_program.cpp</code>，大概理解一下沙箱的参数和输入输出方式；</li>
-<li><code>uoj_judger.h</code> 还会用 <code>uoj_judger/run/compile.cpp</code> 来编译程序，用 <code>uoj_judger/run/run_interation.cpp</code> 来处理程序间的通信，大概读一读；</li>
+<li><code>uoj_judger.h</code> 还会用 <code>uoj_judger/run/compile.cpp</code> 来编译程序，用 <code>uoj_judger/run/run_interaction.cpp</code> 来处理程序间的通信，大概读一读；</li>
 <li>回过头来仔细理解一下 <code>uoj_judger.h</code> 的代码逻辑。</li>
 </ol>
 <p>不过说实话 <code>uoj_judger.h</code> 封装得并不是很好。所以有计划重写一个封装得更好的库 <code>uoj_judger_v2.h</code>，这个库拖拖拉拉写了一半，但暂且还是先放了出来，供大家参考。期待神犇来造一造轮子！</p>
