@@ -23,6 +23,7 @@ EXE_CHECKER = \
 	builtin/checker/yesno
 
 EXE = main_judger \
+	tests/test \
 	run/formatter \
 	run/run_program \
 	run/run_interaction \
@@ -30,15 +31,15 @@ EXE = main_judger \
 	builtin/judger/judger \
 	$(EXE_CHECKER)
 
+OBJ = tests/catch_amalgamated.o tests/test.o
+
 all: $(EXE)
 
 % : %.cpp
 	$(CXX) $(CXXFLAGS) $(EXTRA_CXXFLAGS) $< -o $@
 
 run/formatter       : include/testlib.h
-
-run/compile         : run/compile.cpp include/uoj_run.h
-	$(CXX) $(CXXFLAGS) $< -o $@
+run/compile         : include/uoj_run.h
 
 run/run_program     : run/run_program.cpp run/run_program_conf.h run/run_program_sandbox.h include/uoj_run.h
 	$(CXX) $(CXXFLAGS) $< -o $@ -lseccomp -pthread
@@ -49,7 +50,12 @@ run/run_interaction : run/run_interaction.cpp include/uoj_run.h
 builtin/judger/judger: include/*.h
 main_judger: include/*.h
 
+tests/test.o: include/*.h
+
+tests/test: tests/catch_amalgamated.o tests/test.o
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
 $(EXE_CHECKER): include/testlib.h
 
 clean:
-	rm -f $(EXE)
+	rm -f $(EXE) $(OBJ)

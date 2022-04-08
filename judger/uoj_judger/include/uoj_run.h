@@ -58,6 +58,9 @@ template <typename... Args>
 int execute(const Args& ...args) {
     std::ostringstream sout;
     spaced_out(sout, args...);
+#ifdef UOJ_SHOW_EVERY_CMD
+	std::cerr << sout.str() << std::endl;
+#endif
 	int status = system(sout.str().c_str());
     if (status == -1 || !WIFEXITED(status)) {
         return -1;
@@ -257,7 +260,7 @@ namespace runp {
 		std::string result_file_name;
 		std::string input_file_name;
 		std::string output_file_name;
-		std::string error_file_name;
+		std::string error_file_name = "/dev/null";
 		std::string type = "default";
 		std::string work_path;
 		limits_t limits;

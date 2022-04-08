@@ -30,10 +30,28 @@ public:
         : std::invalid_argument(what) {}
 };
 
+const std::vector<std::pair<const char *, const char *>> suffix_search_list = {
+    {".code"  , ""         },
+    {"20.cpp" , "C++20"    },
+    {"17.cpp" , "C++17"    },
+    {"14.cpp" , "C++14"    },
+    {"11.cpp" , "C++11"    },
+    {".cpp"   , "C++03"    },
+    {".c"     , "C"        },
+    {".pas"   , "Pascal"   },
+    {"2.7.py" , "Python2.7"},
+    {".py"    , "Python3"  },
+    {"7.java" , "Java7"    },
+    {"8.java" , "Java8"    },
+    {"11.java", "Java11"   },
+    {"14.java", "Java14"   },
+};
+
 struct compile_config {
     std::string name;
     std::string src;
-    std::string lang;
+    std::string lang = "auto";
+    std::string opt;
     std::string implementer;
     std::string custom_compiler_path;
     std::vector<std::string> cinclude_dirs;
@@ -42,27 +60,10 @@ struct compile_config {
         if (!src.empty()) {
             return;
         }
-
-        std::pair<const char *, const char *> search_list[] = {
-            {".code"  , ""         },
-            {"20.cpp" , "C++20"    },
-            {"17.cpp" , "C++17"    },
-            {"14.cpp" , "C++14"    },
-            {"11.cpp" , "C++11"    },
-            {".cpp"   , "C++03"    },
-            {".c"     , "C"        },
-            {".pas"   , "Pascal"   },
-            {"2.7.py" , "Python2.7"},
-            {".py"    , "Python3"  },
-            {"7.java" , "Java7"    },
-            {"8.java" , "Java8"    },
-            {"11.java", "Java11"   },
-            {"14.java", "Java14"   },
-        };
-        for (auto &p : search_list) {
+        for (auto &p : suffix_search_list) {
             if (fs::is_regular_file(name + p.first)) {
                 src = fs::canonical(name + p.first);
-                if (lang.empty()) {
+                if (lang == "auto") {
                     lang = p.second;
                 }
                 return;
@@ -76,6 +77,9 @@ error_t compile_argp_parse_opt(int key, char *arg, struct argp_state *state) {
 
 	try {
 		switch (key) {
+        case 's':
+            config->src = arg;
+            break;
         case 'i':
             config->implementer = arg;
             break;
@@ -483,208 +487,3 @@ int main(int argc, char **argv) {
         return 1;
     }
 }
-
-/* old code */
-/*
-RunCompilerResult compile_c(const string &name, const string &path = work_path) {
-	return run_compiler(
-		path,
-		"/usr/bin/gcc-4.8", "-o", name, "-x", "c", name + ".code",
-		"-lm", "-O2", "-DONLINE_JUDGE"
-	);
-}
-RunCompilerResult compile_pas(const string &name, const string &path = work_path) {
-	return run_compiler(
-		path,
-		"/usr/bin/fpc-2.6.2", name + ".code",
-		"-O2"
-	);
-}
-RunCompilerResult compile_cpp(const string &name, const string &path = work_path) {
-	return run_compiler(
-		path,
-		"/usr/bin/g++-4.8", "-o", name, "-x", "c++", name + ".code",
-		"-lm", "-O2", "-DONLINE_JUDGE"
-	);
-}
-RunCompilerResult compile_cpp11(const string &name, const string &path = work_path) {
-	return run_compiler(
-		path,
-		"/usr/bin/g++-4.8", "-o", name, "-x", "c++", name + ".code",
-		"-lm", "-O2", "-DONLINE_JUDGE", "-std=c++11"
-	);
-}
-RunCompilerResult compile_python2_7(const string &name, const string &path = work_path) {
-	string compiler_code =
-		"import py_compile\n"
-		"import sys\n"
-		"try:\n"
-		"    py_compile.compile('" + name + ".code', '" + name + "', doraise=True)\n"
-		"    sys.exit(0)\n"
-		"except Exception as e:\n"
-		"    print e\n"
-		"    sys.exit(1)\n";
-
-	return run_compiler(
-		path,
-		"/usr/bin/python2.7", "-E", "-s", "-B", "-O", "-c", compiler_code
-	);
-}
-RunCompilerResult compile_python3(const string &name, const string &path = work_path) {
-	string compiler_code =
-		"import py_compile\n"
-		"import sys\n"
-		"try:\n"
-		"    py_compile.compile('" + name + ".code', '" + name + "', doraise=True)\n"
-		"    sys.exit(0)\n"
-		"except Exception as e:\n"
-		"    print e\n"
-		"    sys.exit(1)\n";
-
-	return run_compiler(
-		path,
-		"/usr/bin/python3.4", "-I", "-B", "-O", "-c", compiler_code
-	);
-}
-RunCompilerResult compile_java7(const string &name, const string &path = work_path) {
-	RunCompilerResult ret = prepare_java_source(name, path);
-	if (!ret.succeeded)
-		return ret;
-
-	string main_class = conf_str(name + "_main_class");
-
-	executef("rm %s/%s -rf 2>/dev/null; mkdir %s/%s", path.c_str(), name.c_str(), path.c_str(), name.c_str());
-	executef("echo package %s\\; | cat - %s/%s.code >%s/%s/%s.java", name.c_str(), path.c_str(), name.c_str(), path.c_str(), name.c_str(), main_class.c_str());
-
-	return run_compiler(
-		path + "/" + name,
-		main_path + "/run/runtime/jdk1.7.0_76/bin/javac", main_class + ".java"
-	);
-}
-RunCompilerResult compile_java8(const string &name, const string &path = work_path) {
-	RunCompilerResult ret = prepare_java_source(name, path);
-	if (!ret.succeeded)
-		return ret;
-
-	string main_class = conf_str(name + "_main_class");
-
-	executef("rm %s/%s -rf 2>/dev/null; mkdir %s/%s", path.c_str(), name.c_str(), path.c_str(), name.c_str());
-	executef("echo package %s\\; | cat - %s/%s.code >%s/%s/%s.java", name.c_str(), path.c_str(), name.c_str(), path.c_str(), name.c_str(), main_class.c_str());
-
-	return run_compiler(
-		path + "/" + name,
-		main_path + "/run/runtime/jdk1.8.0_31/bin/javac", main_class + ".java"
-	);
-}
-
-RunCompilerResult compile(const char *name)  {
-	string lang = conf_str(string(name) + "_language");
-
-	if ((lang == "C++" || lang == "C++11" || lang == "C") && has_illegal_keywords_in_file(work_path + "/" + name + ".code"))
-	{
-		RunCompilerResult res;
-		res.type = RS_DGS;
-		res.ust = -1;
-		res.usm = -1;
-		res.succeeded = false;
-		res.info = "Compile Failed";
-		return res;
-	}
-
-	if (lang == "C++") {
-		return compile_cpp(name);
-	}
-	if (lang == "C++11") {
-		return compile_cpp11(name);
-	}
-	if (lang == "Python2.7") {
-		return compile_python2_7(name);
-	}
-	if (lang == "Python3") {
-		return compile_python3(name);
-	}
-	if (lang == "Java7") {
-		return compile_java7(name);
-	}
-	if (lang == "Java8") {
-		return compile_java8(name);
-	}
-	if (lang == "C") {
-		return compile_c(name);
-	}
-	if (lang == "Pascal") {
-		return compile_pas(name);
-	}
-
-	RunCompilerResult res = RunCompilerResult::failed_result();
-	res.info = "This language is not supported yet.";
-	return res;
-}
-
-RunCompilerResult compile_c_with_implementer(const string &name, const string &path = work_path, const string &implementer="implementer") {
-	return run_compiler(
-		path, 
-		"/usr/bin/gcc-4.8", "-o", name,
-		implementer + ".c",
-		"-x", "c", name + ".code",
-		"-lm", "-O2", "-DONLINE_JUDGE"
-	);
-}
-RunCompilerResult compile_pas_with_implementer(const string &name, const string &path = work_path, const string &implementer="implementer") {
-	executef("cp %s %s", (path + "/" + name + ".code").c_str(), (path + "/" + conf_str(name + "_unit_name") + ".pas").c_str());
-	return run_compiler(
-		path.c_str(),
-		"/usr/bin/fpc-2.6.2", implementer + ".pas", "-o" + name,
-		"-O2"
-	);
-}
-RunCompilerResult compile_cpp_with_implementer(const string &name, const string &path = work_path, const string &implementer="implementer") {
-	return run_compiler(
-		path.c_str(),
-		"/usr/bin/g++-4.8", "-o", name,
-		implementer + ".cpp",
-		"-x", "c++", name + ".code",
-		"-lm", "-O2", "-DONLINE_JUDGE"
-	);
-}
-RunCompilerResult compile_cpp11_with_implementer(const string &name, const string &path = work_path, const string &implementer="implementer") {
-	return run_compiler(
-		path.c_str(),
-		"/usr/bin/g++-4.8", "-o", name,
-		implementer + ".cpp",
-		"-x", "c++", name + ".code",
-		"-lm", "-O2", "-DONLINE_JUDGE", "-std=c++11"
-	);
-}
-
-RunCompilerResult compile_with_implementer(const char *name, const string &implementer="implementer")  {
-	string lang = conf_str(string(name) + "_language");
-
-	if (has_illegal_keywords_in_file(work_path + "/" + name + ".code")) {
-		RunCompilerResult res;
-		res.type = RS_DGS;
-		res.ust = -1;
-		res.usm = -1;
-		res.succeeded = false;
-		res.info = "Compile Failed";
-		return res;
-	}
-
-	if (lang == "C++") {
-		return compile_cpp_with_implementer(name, work_path, implementer);
-	}
-	if (lang == "C++11") {
-		return compile_cpp11_with_implementer(name, work_path, implementer);
-	}
-	if (lang == "C") {
-		return compile_c_with_implementer(name, work_path, implementer);
-	}
-	if (lang == "Pascal") {
-		return compile_pas_with_implementer(name, work_path, implementer);
-	}
-
-	RunCompilerResult res = RunCompilerResult::failed_result();
-	res.info = "This language is not supported yet.";
-	return res;
-}
-*/

@@ -876,19 +876,23 @@ struct RunProgramConfig {
 
 	void set_submission_program_name(const string &name) {
 		string lang = conf_str(name + "_language");
-		type = "default";
-		if (lang == "Python2.7") {
-			type = "python2.7";
-		} else if (lang == "Python3") {
-			type = "python3";
-		} else if (lang == "Java7") {
-			type = "java7";
-		} else if (lang == "Java8") {
-			type = "java8";
-		} else if (lang == "Java11") {
-			type = "java11";
-		} else if (lang == "Java14") {
-			type = "java14";
+		if (lang.empty()) {
+			type = conf_str(name + "_run_type", "default");
+		} else {
+			type = "default";
+			if (lang == "Python2.7") {
+				type = "python2.7";
+			} else if (lang == "Python3") {
+				type = "python3";
+			} else if (lang == "Java7") {
+				type = "java7";
+			} else if (lang == "Java8") {
+				type = "java8";
+			} else if (lang == "Java11") {
+				type = "java11";
+			} else if (lang == "Java14") {
+				type = "java14";
+			}
 		}
 		set_argv(name.c_str(), NULL);
 	}
@@ -906,6 +910,14 @@ struct RunProgramConfig {
 			<< " " << "--type=" << type
 			<< " " << "--work-path=" << work_path
 			/*<< " " << "--show-trace-details"*/;
+		
+		if (limit.real_time != -1) {
+			sout << " " << "--rtl=" << limit.real_time;
+		}
+		if (limit.stack != -1) {
+			sout << " " << "--sl=" << limit.stack;
+		}
+
 		for (vector<string>::const_iterator it = readable_file_names.begin(); it != readable_file_names.end(); it++) {
 			sout << " " << "--add-readable=" << escapeshellarg(*it);
 		}
@@ -1087,19 +1099,49 @@ RunResult run_submission_program(
 	return res;
 }
 
-void prepare_interactor() {
-	static bool prepared = false;
-	if (prepared) {
+/**
+ * prepare_run_standard_program(): do some preparation operations for the std.
+ * For the current version, it only moves the std to the work dir if it has not been done yet.
+ * 
+ * @param prepared if it is not -1, set the internal variable as if the preparation operations have been done or not (depending on prepared is non-zero or not)
+ */
+void prepare_run_standard_program(int prepared = -1) {
+	static int _prepared = 0;
+	if (prepared != -1) {
+		_prepared = prepared;
+	}
+	if (_prepared) {
+		return;
+	}
+	string data_path_std = data_path + "/std";
+	string work_path_std = work_path + "/std";
+	executef("cp %s %s", data_path_std.c_str(), work_path_std.c_str());
+	_prepared = 1;
+}
+
+/**
+ * prepare_interactor(): do some preparation operations for the interactor.
+ * For the current version, it only moves the interactor to the work dir if it has not been done yet.
+ * 
+ * @param prepared if it is not -1, set the internal variable as if the preparation operations have been done or not (depending on prepared is non-zero or not)
+ */
+void prepare_interactor(int prepared = -1) {
+	static int _prepared = 0;
+	if (prepared != -1) {
+		_prepared = prepared;
+	}
+	if (_prepared) {
 		return;
 	}
 	string data_path_std = data_path + "/interactor";
 	string work_path_std = work_path + "/interactor";
 	executef("cp %s %s", data_path_std.c_str(), work_path_std.c_str());
-	conf_add("interactor_language", "C++");
-	prepared = true;
+	_prepared = 1;
 }
 
-// simple: prog <---> interactor <---> data
+/**
+ * @brief simple: prog <---> interactor <---> data
+ */
 RunSimpleInteractionResult run_simple_interaction(
 		const string &input_file_name,
 		const string &answer_file_name,
@@ -1126,12 +1168,11 @@ RunSimpleInteractionResult run_simple_interaction(
 	irpc.output_file_name = "stdout";
 	irpc.error_file_name = result_path + "/interactor_error.txt";
 	irpc.limit = ilimit;
-	irpc.set_submission_program_name("interactor");
-	irpc.argv.push_back(input_file_name);
-	irpc.argv.push_back("/dev/stdin");
-	irpc.argv.push_back(answer_file_name);
+	irpc.set_argv("interactor", input_file_name.c_str(), "/dev/stdin", answer_file_name.c_str(), NULL);
+	irpc.type = conf_str("interactor_run_type", "default");
 
-	irpc.limit.real_time = rpc.limit.real_time = rpc.limit.time + irpc.limit.time + 1;
+	rpc.limit.real_time = rpc.limit.time + irpc.limit.time + 1;
+	irpc.limit.real_time = rpc.limit.real_time + 1; // one more second to prevent interactor from TLE
 
 	RunInteractionConfig ric;
 	ric.cmds.push_back(rpc.get_cmd());
@@ -1164,17 +1205,6 @@ RunSimpleInteractionResult run_simple_interaction(
 	return rires;
 }
 
-void prepare_run_standard_program() {
-	static bool prepared = false;
-	if (prepared) {
-		return;
-	}
-	string data_path_std = data_path + "/std";
-	string work_path_std = work_path + "/std";
-	executef("cp %s %s", data_path_std.c_str(), work_path_std.c_str());
-	conf_add("std_language", "C++");
-	prepared = true;
-}
 
 // @deprecated
 // will be removed in the future
@@ -1198,7 +1228,7 @@ RunResult run_standard_program(
 /*======================== compile ==================== */
 
 run_compiler_result compile(const string &name)  {
-	string lang = conf_str(name + "_language");
+	string lang = conf_str(name + "_language", "auto");
 	runp::config rpc(main_path + "/run/compile", {
 		"--custom", main_path + "/run/runtime",
 		"--lang", lang,
@@ -1209,7 +1239,7 @@ run_compiler_result compile(const string &name)  {
 }
 
 run_compiler_result compile_with_implementer(const string &name, const string &implementer = "implementer")  {
-	string lang = conf_str(name + "_language");
+	string lang = conf_str(name + "_language", "auto");
 	if (conf_has(name + "_unit_name")) {
 		file_put_contents(work_path + "/" + name + ".unit_name", conf_str(name + "_unit_name"));
 	}

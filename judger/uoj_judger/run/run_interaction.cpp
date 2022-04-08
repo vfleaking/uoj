@@ -20,23 +20,34 @@
 
 using namespace std;
 
-struct RunCmdData {
+struct run_cmd_data {
 	string cmd;
 	pid_t pid;
 
 	vector<int> ipipes, opipes;
 };
-struct PipeData {
+struct pipe_data {
 	runp::interaction::pipe_config config;
 	int ipipefd[2], opipefd[2];
 	thread io_thread;
 	exception_ptr eptr;
 };
 
-class RunInteraction {
+void write_all_or_throw(int fd, char *buf, int n) {
+	int wcnt = 0;
+	while (wcnt < n) {
+		int ret = write(fd, buf + wcnt, n - wcnt);
+		if (ret == -1) {
+			throw system_error(errno, system_category());
+		}
+		wcnt += ret;
+	}
+}
+
+class interaction_runner {
 private:
-	vector<RunCmdData> cmds;
-	vector<PipeData> pipes;
+	vector<run_cmd_data> cmds;
+	vector<pipe_data> pipes;
 
 	void prepare_fd() { // me
 		for (int i = 0; i < (int)pipes.size(); i++) {
@@ -80,39 +91,54 @@ private:
 	}
 
 	void wait_pipe_io(int pipe_id) {
-		FILE *sf = NULL;
+		FILE *sf = nullptr;
 		if (!pipes[pipe_id].config.saving_file_name.empty()) {
 			sf = fopen(pipes[pipe_id].config.saving_file_name.c_str(), "w");
 		}
-
 		int ifd = pipes[pipe_id].ipipefd[0];
 		int ofd = pipes[pipe_id].opipefd[1];
+		int sfd = sf ? fileno(sf) : -1;
 
-		FILE *inf = fdopen(ifd, "r");
-		FILE *ouf = fdopen(ofd, "w");
+		int iflags = fcntl(ifd, F_GETFL);
+
+		const int L = 4096;
+		char buf[L];
+
+		int sbuf_len = 0;
+		char sbuf[L * 2];
 
 		try {
 			pipes[pipe_id].eptr = nullptr;
 
-			// const int L = 4096;
-			// char buf[L];
-
 			while (true) {
-				int c = fgetc(inf);
-				if (c == EOF) {
-					if (errno) {
-						throw system_error(errno, system_category());
-					}
+				int cnt1 = read(ifd, buf, 1);
+				if (cnt1 == -1) {
+					throw system_error(errno, system_category());
+				}
+				if (cnt1 == 0) {
 					break;
 				}
 
-				if (fputc(c, ouf) == EOF) {
-					throw system_error(errno, system_category());
-				}
-				fflush(ouf);
+				fcntl(ifd, F_SETFL, iflags | O_NONBLOCK);
+				int cnt2 = read(ifd, buf + 1, L - 1);
+				fcntl(ifd, F_SETFL, iflags);
 
-				if (fputc(c, sf) == EOF) {
-					throw system_error(errno, system_category());
+				if (cnt2 == -1) {
+					if (errno != EAGAIN) {
+						throw system_error(errno, system_category());
+					}
+					cnt2 = 0;
+				}
+
+				write_all_or_throw(ofd, buf, cnt2 + 1);
+
+				if (sf) {
+					memcpy(sbuf + sbuf_len, buf, cnt2 + 1);
+					sbuf_len += cnt2 + 1;
+					if (sbuf_len > L) {
+						write_all_or_throw(sfd, sbuf, sbuf_len);
+						sbuf_len = 0;
+					}
 				}
 			}
 		} catch (exception &e) {
@@ -121,17 +147,18 @@ private:
 		}
 
 		if (sf) {
+			if (sbuf_len > 0) {
+				write_all_or_throw(sfd, sbuf, sbuf_len);
+				sbuf_len = 0;
+			}
 			fclose(sf);
 		}
-		if (inf) {
-			fclose(inf);
-		}
-		if (ouf) {
-			fclose(ouf);
-		}
+
+		close(ifd);
+		close(ofd);
 	}
 public:
-	RunInteraction(const runp::interaction::config &config) {
+	interaction_runner(const runp::interaction::config &config) {
 		cmds.resize(config.cmds.size());
 		for (int i = 0; i < (int)config.cmds.size(); i++) {
 			cmds[i].cmd = config.cmds[i];
@@ -162,7 +189,7 @@ public:
 		
 		prepare_fd();
 		for (int i = 0; i < (int)pipes.size(); i++) {
-			pipes[i].io_thread = thread(&RunInteraction::wait_pipe_io, this, i);
+			pipes[i].io_thread = thread(&interaction_runner::wait_pipe_io, this, i);
 		}
 	}
 
@@ -234,7 +261,7 @@ runp::interaction::config parse_args(int argc, char **argv) {
 int main(int argc, char **argv) {
 	signal(SIGPIPE, SIG_IGN);
 
-	RunInteraction ri(parse_args(argc, argv));
+	interaction_runner ri(parse_args(argc, argv));
 	ri.join();
 
 	return 0;
