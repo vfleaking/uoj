@@ -879,20 +879,7 @@ struct RunProgramConfig {
 		if (lang.empty()) {
 			type = conf_str(name + "_run_type", "default");
 		} else {
-			type = "default";
-			if (lang == "Python2.7") {
-				type = "python2.7";
-			} else if (lang == "Python3") {
-				type = "python3";
-			} else if (lang == "Java7") {
-				type = "java7";
-			} else if (lang == "Java8") {
-				type = "java8";
-			} else if (lang == "Java11") {
-				type = "java11";
-			} else if (lang == "Java14") {
-				type = "java14";
-			}
+			type = runp::get_type_from_lang(lang);
 		}
 		set_argv(name.c_str(), NULL);
 	}

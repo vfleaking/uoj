@@ -174,5 +174,5 @@ cd /root &&
 rm * -rf &&
 printf "\n\n==> Installation finished!\n" &&
 echo -e "\033[1;91m" &&
-echo "UOJ NOTICE: If you want to support Java 14, PLEASE INSTALL openjdk-14-jdk BY YOURSELF (or you can simply delete this language)." &&
+echo "UOJ NOTICE: If you want to support Java 8, PLEASE INSTALL Oracle JDK 8 BY YOURSELF (or you can simply delete this language)." &&
 echo -e "\033[0m"

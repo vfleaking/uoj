@@ -13,10 +13,9 @@
 #define UOJ_PYTHON2_7 "/usr/bin/python2.7"
 #define UOJ_PYTHON3 "/usr/bin/python3.9"
 #define UOJ_FPC "/usr/bin/fpc"
-#define UOJ_JDK7 "jdk1.7.0_80"
 #define UOJ_JDK8 "jdk1.8.0_202"
 #define UOJ_OPEN_JDK11 "/usr/lib/jvm/java-11-openjdk-amd64"
-#define UOJ_OPEN_JDK14 "/usr/lib/jvm/java-14-openjdk-amd64"
+#define UOJ_OPEN_JDK17 "/usr/lib/jvm/java-17-openjdk-amd64"
 
 std::string escapeshellarg(int arg) {
 	return std::to_string(arg);
@@ -119,6 +118,15 @@ bool put_class_name_to_file(const std::string &fname, const std::string &class_n
 	return true;
 }
 
+std::map<std::string, std::string> lang_upgrade_map = {
+    {"Java7" , "Java8"    },
+    {"Java14", "Java17"   },
+};
+
+std::string upgraded_lang(const std::string &lang) {
+	return lang_upgrade_map.count(lang) ? lang_upgrade_map[lang] : lang;
+}
+
 namespace runp {
 	namespace fs = std::filesystem;
 	fs::path run_path;
@@ -159,6 +167,23 @@ namespace runp {
 		case RS_DGS: return "Dangerous Syscalls";
 		case RS_JGF: return "Judgment Failed";
 		default    : return "Unknown Result";
+		}
+	}
+
+	inline std::string get_type_from_lang(std::string lang) {
+		lang = upgraded_lang(lang);
+		if (lang == "Python2.7") {
+			return "python2.7";
+		} else if (lang == "Python3") {
+			return "python3";
+		} else if (lang == "Java8") {
+			return "java8";
+		} else if (lang == "Java11") {
+			return "java11";
+		} else if (lang == "Java17") {
+			return "java17";
+		} else {
+			return "default";
 		}
 	}
 
@@ -335,30 +360,27 @@ namespace runp {
 			full_args.push_back(program_name);
 			full_args.insert(full_args.end(), rest_args.begin(),rest_args.end());
 
-			if (type == "java7" || type == "java8") {
+			if (type == "java8") {
 				full_args[0] = get_class_name_from_file(fs::path(full_args[0]) / ".main_class_name");
 
-				std::string jdk;
-				if (type == "java7") {
-					jdk = UOJ_JDK7;
-				} else { // if (type == "java8") {
-					jdk = UOJ_JDK8;
-				}
+				std::string jdk = UOJ_JDK8;
 				full_args.insert(full_args.begin(), {
 					fs::canonical(run_path / "runtime" / jdk / "bin" / "java"), "-Xmx2048m", "-Xss1024m",
+					"-XX:ActiveProcessorCount=1",
 					"-classpath", program_name
 				});
-			} else if (type == "java11" || type == "java14") {
+			} else if (type == "java11" || type == "java17") {
 				full_args[0] = get_class_name_from_file(fs::path(full_args[0]) / ".main_class_name");
 
 				std::string jdk;
 				if (type == "java11") {
 					jdk = UOJ_OPEN_JDK11;
-				} else { // if (type == "java14") {
-					jdk = UOJ_OPEN_JDK14;
+				} else { // if (type == "java17") {
+					jdk = UOJ_OPEN_JDK17;
 				}
 				full_args.insert(full_args.begin(), {
 					fs::canonical(fs::path(jdk) / "bin" / "java"), "-Xmx2048m", "-Xss1024m",
+					"-XX:ActiveProcessorCount=1",
 					"-classpath", program_name
 				});
 			} else if (type == "python2.7") {

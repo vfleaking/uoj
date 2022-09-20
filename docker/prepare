@@ -26,7 +26,7 @@ installAptPackages() {
         vim zip unzip curl wget apache2 mysql-server-8.0 libapache2-mod-xsendfile subversion \
         g++ cmake re2c libyaml-dev libseccomp-dev \
         python2 python3.9 gcc-10 g++-10 fpc python3-pip \
-        openjdk-11-jdk \
+        openjdk-11-jdk openjdk-17-jdk \
         $php $php-dev php-pear libapache2-mod-$php $php-mysql $php-zip $php-mbstring $php-curl
     
     if [ $? -ne 0 ]; then

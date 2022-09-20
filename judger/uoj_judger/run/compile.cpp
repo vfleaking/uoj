@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <map>
 #include <utility>
 #include <stdexcept>
 #include <argp.h>
@@ -36,7 +37,7 @@ const std::vector<std::pair<const char *, const char *>> suffix_search_list = {
     {"17.cpp" , "C++17"    },
     {"14.cpp" , "C++14"    },
     {"11.cpp" , "C++11"    },
-    {".cpp"   , "C++03"    },
+    {".cpp"   , "C++"    },
     {".c"     , "C"        },
     {".pas"   , "Pascal"   },
     {"2.7.py" , "Python2.7"},
@@ -45,6 +46,7 @@ const std::vector<std::pair<const char *, const char *>> suffix_search_list = {
     {"8.java" , "Java8"    },
     {"11.java", "Java11"   },
     {"14.java", "Java14"   },
+    {"17.java", "Java17"   },
 };
 
 struct compile_config {
@@ -448,31 +450,31 @@ int compile(const compile_config &conf) {
         return 1;
 	}
 
-    if (conf.lang == "C++" || conf.lang == "C++03") {
+    std::string lang = upgraded_lang(conf.lang);
+
+    if (lang == "C++" || lang == "C++03") {
         return compile_cpp(conf, "c++03");
-    } else if (conf.lang == "C++11") {
+    } else if (lang == "C++11") {
         return compile_cpp(conf, "c++11");
-    } else if (conf.lang == "C++14") {
+    } else if (lang == "C++14") {
         return compile_cpp(conf, "c++14");
-    } else if (conf.lang == "C++17") {
+    } else if (lang == "C++17") {
         return compile_cpp(conf, "c++17");
-    } else if (conf.lang == "C++20") {
+    } else if (lang == "C++20") {
         return compile_cpp(conf, "c++20");
-    } else if (conf.lang == "C") {
+    } else if (lang == "C") {
         return compile_c(conf);
-    } else if (conf.lang == "Python2.7") {
+    } else if (lang == "Python2.7") {
         return compile_python2_7(conf);
-    } else if (conf.lang == "Python3") {
+    } else if (lang == "Python3") {
         return compile_python3(conf);
-    } else if (conf.lang == "Java7") {
-        return compile_java(conf, conf.custom_compiler_path + "/" + UOJ_JDK7);
-    } else if (conf.lang == "Java8") {
+    } else if (lang == "Java8") {
         return compile_java(conf, conf.custom_compiler_path + "/" + UOJ_JDK8);
-    } else if (conf.lang == "Java11") {
+    } else if (lang == "Java11") {
         return compile_java(conf, UOJ_OPEN_JDK11);
-    } else if (conf.lang == "Java14") {
-        return compile_java(conf, UOJ_OPEN_JDK14);
-    } else if (conf.lang == "Pascal") {
+    } else if (lang == "Java17") {
+        return compile_java(conf, UOJ_OPEN_JDK17);
+    } else if (lang == "Pascal") {
         return compile_pas(conf);
     } else {
         throw language_not_supported_error();

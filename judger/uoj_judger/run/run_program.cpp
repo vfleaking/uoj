@@ -131,15 +131,6 @@ argp run_program_argp = {
 	run_program_argp_doc
 };
 
-string get_java_main_class(const string &program_name) {
-	string class_name = get_class_name_from_file(program_name + "/.main_class_name");
-	if (class_name.empty()) {
-		// invalid class name
-		runp::result(runp::RS_JGF, "error code: INVJCAL").dump_and_exit();
-	}
-	return class_name;
-}
-
 void parse_args(int argc, char **argv) {
 	run_program_config.limits.time = 1;
 	run_program_config.limits.real_time = -1;

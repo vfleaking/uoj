@@ -222,7 +222,7 @@ class SvnProblemDataManager {
 		if (!$this->candidate_data_manager->start_update()) {
 			return false;
 		}
-		$ret = UOJLocalRun::exec(['cp', '-rlf', $this->upload_dir, $this->svn_data_dir_outer]);
+		$ret = UOJLocalRun::exec(['cp', '-rf', $this->upload_dir, $this->svn_data_dir_outer]); # for uoj.ac, we use -rlf
 		if (!$this->candidate_data_manager->end_update($msg)) {
 			$ret = false;
 		}

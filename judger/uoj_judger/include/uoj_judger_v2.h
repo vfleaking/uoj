@@ -708,20 +708,6 @@ bool report_judge_status_f(const char *fmt, ...) {
 
 // namespace for run_program
 namespace runp {
-	inline string get_type_from_lang(const string &lang) {
-		if (lang == "Python2.7") {
-			return "python2.7";
-		} else if (lang == "Python3") {
-			return "python3";
-		} else if (lang == "Java7") {
-			return "java7";
-		} else if (lang == "Java8") {
-			return "java8";
-		} else {
-			return "default";
-		}
-	}
-
 	// internal programs for run_program
 	namespace internal {
 		result nonempty(const config &rpc) {

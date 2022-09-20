@@ -10,15 +10,25 @@ class UOJLang {
         'C'         => 'C',
         'Python3'   => 'Python 3',
         'Python2.7' => 'Python 2.7',
-        'Java7'     => 'Java 7',
+        # 'Java7'     => 'Java 7',
         'Java8'     => 'Java 8',
         'Java11'     => 'Java 11',
-        'Java14'     => 'Java 14',
+        # 'Java14'     => 'Java 14',
+        'Java17'     => 'Java 17',
         'Pascal'    => 'Pascal',
     ];
 
-    public static $default_preferred_language = 'C++11';
+    public static $lang_upgrade_map = [
+        'Java7' => 'Java8',
+        'Java14' => 'Java17'
+    ];
 
+    public static $default_preferred_language = 'C++14';
+
+    /**
+     * a map from suffix to language code
+     * be sure to make it the same as the one in uoj_judger/include/uoj_run.h on judgers
+     */
     public static $suffix_map = [
         '.code'  => null,
         '20.cpp' => 'C++20',
@@ -34,7 +44,12 @@ class UOJLang {
         '8.java' => 'Java8',
         '11.java' => 'Java11',
         '14.java' => 'Java14',
+        '17.java' => 'Java17',
     ];
+
+    public static function getUpgradedLangCode($lang) {
+        return isset(static::$lang_upgrade_map[$lang]) ? static::$lang_upgrade_map[$lang] : $lang;
+    }
 
     public static function getAvailableLanguages($list = null): array {
         if ($list === null) {
@@ -46,9 +61,10 @@ class UOJLang {
         $is_avail = [];
         $dep_list = [
             ['C++', 'C++11', 'C++14', 'C++17', 'C++20'],
-            ['Java7', 'Java8', 'Java11', 'Java14']
+            ['Java8', 'Java11', 'Java17']
         ];
         foreach ($list as $lang) {
+            $lang = static::getUpgradedLangCode($lang);
             foreach ($dep_list as $dep) {
                 $ok = false;
                 foreach ($dep as $d) {
@@ -71,6 +87,7 @@ class UOJLang {
     }
 
     public static function getLanguageDisplayName(string $lang): string {
+        $lang = static::getUpgradedLangCode($lang);
         if (isset(static::$supported_languages[$lang])) {
             return static::$supported_languages[$lang];
         } elseif ($lang === '/') {
@@ -81,25 +98,25 @@ class UOJLang {
     }
 
     public static function getRunTypeFromLanguage(string $lang): string {
+        $lang = static::getUpgradedLangCode($lang);
         switch ($lang) {
             case "Python2.7":
                 return "python2.7";
 		    case "Python3":
                 return "python3";
-		    case "Java7":
-                return "java7";
 		    case "Java8":
                 return "java8";
 		    case "Java11":
                 return "java11";
-		    case "Java14":
-                return "java14";
+		    case "Java17":
+                return "java17";
             default:
                 return "default";
         }
     }
 
     public static function getLanguagesCSSClass(string $lang): string {
+        $lang = static::getUpgradedLangCode($lang);
         switch ($lang) {
             case 'C++':
             case 'C++11':
@@ -110,10 +127,9 @@ class UOJLang {
             case 'Python2.7':
             case 'Python3':
                 return 'sh_python';
-            case 'Java7':
             case 'Java8':
             case 'Java11':
-            case 'Java14':
+            case 'Java17':
                 return 'sh_java';
             case 'C':
                 return 'sh_c';
@@ -124,6 +140,10 @@ class UOJLang {
         }
     }
 
+    /**
+     * return a list of currently supported languages that match with a given language query string
+     * if a language is outdated, be sure to change the "language" field in various submissions tables!
+     */
     public static function getMatchedLanguages(string $lang): array {
         $lang = strtolower(preg_replace('/\s+/', '', $lang));
         if ($lang == 'c++') {
@@ -133,7 +153,7 @@ class UOJLang {
         } elseif ($lang == 'python') {
             return ['Python2.7', 'Python3'];
         } elseif ($lang == 'java') {
-            return ['Java7', 'Java8', 'Java11', 'Java14'];
+            return ['Java8', 'Java11', 'Java17'];
         } else {
             foreach (static::$supported_languages as $lang_code => $lang_display) {
                 if ($lang === strtolower(preg_replace('/\s+/', '', $lang_display))) {
@@ -153,7 +173,7 @@ class UOJLang {
         } 
         foreach (static::$suffix_map as $suf => $lang) {
             if ($is_file("{$root}{$name}{$suf}")) {
-                return ['path' => "{$name}{$suf}", 'lang' => $lang];
+                return ['path' => "{$name}{$suf}", 'lang' => static::getUpgradedLangCode($lang)];
             }
         }
         return false;

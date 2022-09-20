@@ -1,0 +1,192 @@
+import java.util.*;
+
+public class MyClass {
+    
+    public static class Graph {
+        int nodes;
+        ArrayList<ArrayList<Integer>> adj;
+        int[] match;
+        int[] parents;
+        int[] base;
+        boolean[] used;
+        boolean[] been;
+        Queue<Integer> queue;
+        
+        
+        public Graph(int nodes) {
+            this.nodes = nodes;
+            adj = new ArrayList<>(nodes);
+            match = new int[nodes];
+            parents = new int[nodes];
+            base = new int[nodes];
+            used = new boolean[nodes];
+            been = new boolean[nodes]; 
+            for (int i = 0; i < nodes; i++) {
+                adj.add(new ArrayList<>());
+                match[i] = -1;
+                been[i] = false;
+            }
+        }
+        
+        public void addEdge(int v, int u) {
+            adj.get(v).add(u);
+            adj.get(u).add(v);
+        }
+        
+        public int LCA(int start, int node, int nextNode) {
+            boolean[] visited = new boolean[nodes];
+            for (int i = 0; i < nodes; i++) {
+                visited[i] = false;
+            }
+            while (true) {
+                node = base[node];
+                visited[node] = true;
+                if (node == start) {
+                    break;
+                }
+                node = parents[match[node]];
+            }
+            while (true) {
+                nextNode = base[nextNode];
+                if (visited[nextNode]) {
+                    return nextNode;
+                } else {
+                    nextNode = parents[match[nextNode]];
+                }
+            }
+        }
+        
+        
+        public void markBlossom(int lca, int node) {
+            while (base[node] != lca) {
+                int next = match[node];
+                been[base[node]] = true;
+                been[base[next]] = true;
+                node = parents[next];
+                if (base[node] != lca) {
+                    parents[node] = node;
+                }
+            }
+        }
+        
+        public void blossomContraction(int start, int node, int nextNode) {
+            int lca = LCA(start, node, nextNode);
+            for (int i = 0; i < nodes; i++) {
+                been[i] = false;
+            }
+            markBlossom(lca, node);
+            markBlossom(lca, nextNode);
+            if (base[node] != lca) {
+                parents[node] = nextNode;
+            }
+            if (base[nextNode] != lca) {
+                parents[nextNode] = node;
+            }
+            for (int i = 0; i < nodes; i++) {
+                if (been[base[i]]) {
+                    base[i] = lca;
+                    if (!used[i]) {
+                        used[i] = true;
+                        queue.add(i);
+                    }
+                }
+            }
+        }
+        
+        public int findAugmentingPath(int start) {
+            queue = new LinkedList();
+            for (int i = 0; i < nodes; i++) {
+                used[i] = false;
+                base[i] = i;
+                parents[i] = -1;
+            }
+            used[start] = true;
+            queue.add(start);
+            while (!queue.isEmpty()) {
+                int node = queue.poll();
+                for (int nextNode : adj.get(node)) {
+                    if (base[node] != base[nextNode] && match[node] != nextNode) {
+                        if ((nextNode == start) || (match[nextNode] != -1 && parents[match[nextNode]] != -1)) {
+                            blossomContraction(start, node, nextNode);
+                        } else if (parents[nextNode] == -1) {
+                            parents[nextNode] = node;
+                            if (match[nextNode] == -1) {
+                                return nextNode;
+                            } else if (!used[match[nextNode]]) {
+                                queue.add(match[nextNode]);
+                                used[match[nextNode]] = true;
+                            }
+                        }
+                    } 
+                }
+            }
+            return -1;
+        }
+        
+        public boolean augmentPath(int vertex) {
+            int u = vertex;
+            int v, w;
+            while (u != -1) {
+                v = parents[u];
+                w = match[v];
+                match[v] = u;
+                match[u] = v;
+                u = w;
+            }
+            return (vertex != -1);
+        }
+        
+        public int blossom() {
+            int result = 0;
+            for (int i = 0; i < nodes; i++) {
+                if (match[i] == -1) {
+                    if (augmentPath(findAugmentingPath(i))) {
+                        result++;
+                    }
+                }
+            }
+            return result;
+        }
+    }
+    
+    public static int gcd(int a, int b) {
+        if (b == 0) return a;
+        return gcd(b, a % b);
+    }
+    
+    public static boolean willLoop(int x, int y) {
+        if (x == y) {
+            return false;
+        } else if ((x + y) % 2 == 1) {
+            return true;
+        }
+        int _gcd = gcd(x, y);
+        x /= _gcd;
+        y /= _gcd;
+        int max = Math.max(x, y);
+        int min = Math.min(x, y);
+        return willLoop(max - min, min * 2);
+    
+    }
+    
+    public static void main(String args[]) {
+         Scanner sc = new Scanner(System.in);
+int V = sc.nextInt();
+         int E =  sc.nextInt();
+        Graph graph = new Graph(V);
+for (int i = 0; i < E; i++) {
+	int u = sc.nextInt(); 
+	int v = sc.nextInt();
+	graph.addEdge(u - 1, v - 1);
+}
+
+        System.out.println(graph.blossom());
+
+for (int x : graph.match) {
+System.out.print(x + 1);
+	System.out.print(" ");
+}
+System.out.println();
+
+    }
+} 

@@ -22,19 +22,20 @@
 #include "uoj_run.h"
 
 enum EX_CHECK_TYPE : unsigned {
-	ECT_NONE             = 0,
-	ECT_CNT              = 1,
-	ECT_FILE_OP          = 1 << 1,                         // it is a file operation
-	ECT_END_AT           = 1 << 2,                         // this file operation ends with "at" (e.g., openat)
-	ECT_FILEAT_OP        = ECT_FILE_OP | ECT_END_AT,       // it is a file operation ended with "at"
-	ECT_FILE_W           = 1 << 3,                         // intend to write
-	ECT_FILE_R           = 1 << 4,                         // intend to read
-	ECT_FILE_S           = 1 << 5,                         // intend to stat
-	ECT_CHECK_OPEN_FLAGS = 1 << 6,                         // check flags to determine whether it is to read/write (for open and openat)
-	ECT_FILE2_W          = 1 << 7,                         // intend to write (2nd file)
-	ECT_FILE2_R          = 1 << 8,                         // intend to read  (2nd file)
-	ECT_FILE2_S          = 1 << 9,                         // intend to stat  (2nd file)
-	ECT_CLONE_THREAD     = 1 << 10,                        // for clone(). Check that clone is making a non-suspicious thread
+	ECT_NONE              = 0,
+	ECT_CNT               = 1,
+	ECT_FILE_OP           = 1 << 1,                         // it is a file operation
+	ECT_END_AT            = 1 << 2,                         // this file operation ends with "at" (e.g., openat)
+	ECT_FILEAT_OP         = ECT_FILE_OP | ECT_END_AT,       // it is a file operation ended with "at"
+	ECT_FILE_W            = 1 << 3,                         // intend to write
+	ECT_FILE_R            = 1 << 4,                         // intend to read
+	ECT_FILE_S            = 1 << 5,                         // intend to stat
+	ECT_CHECK_OPEN_FLAGS  = 1 << 6,                         // check flags to determine whether it is to read/write (for open and openat)
+	ECT_FILE2_W           = 1 << 7,                         // intend to write (2nd file)
+	ECT_FILE2_R           = 1 << 8,                         // intend to read  (2nd file)
+	ECT_FILE2_S           = 1 << 9,                         // intend to stat  (2nd file)
+	ECT_CLONE_THREAD      = 1 << 10,                        // for clone(). Check that clone is making a non-suspicious thread
+	ECT_KILL_SIG0_ALLOWED = 1 << 11,                        // forbid kill but killing with sig0 is allowed
 };
 
 struct syscall_info {
@@ -63,8 +64,11 @@ struct syscall_info {
 		return syscall_info(extra_check, max_cnt);
     }
 
-    static syscall_info kill_type_syscall() {
-        syscall_info res(ECT_CNT, 0);
+    static syscall_info kill_type_syscall(unsigned extra_check = ECT_CNT, int max_cnt = 0) {
+		if (max_cnt != -1) {
+			extra_check |= ECT_CNT;
+		}
+        syscall_info res(extra_check, max_cnt);
         res.is_kill = true;
         return res;
     }
@@ -112,7 +116,7 @@ struct rp_child_proc {
 	bool check_file_permission(const string &op, const string &fn, char mode);
 };
 
-const size_t MAX_PATH_LEN = 500;
+const size_t MAX_PATH_LEN = 512;
 const uint64_t MAX_FD_ID = 1 << 20;
 
 runp::config run_program_config;
@@ -419,9 +423,7 @@ void init_conf() {
 		add_file_permission(name, 'w');
 	}
 
-	if (config.type == "java7") {
-		add_file_permission(runp::run_path.string() + "/runtime/" + UOJ_JDK7 + "/", 'r');
-	} else if (config.type == "java8") {
+	if (config.type == "java8") {
 		add_file_permission(runp::run_path.string() + "/runtime/" + UOJ_JDK8 + "/", 'r');
 	} else if (config.type == "python2.7" || config.type == "python3") {
 		soft_ban_file_name_set.insert(dirname(realpath(config.program_name)) + "/__pycode__/");
@@ -510,12 +512,7 @@ void rp_child_proc::set_error_for_suspicious(const string &error) {
 
 void rp_child_proc::set_error_for_kill() {
 	this->suspicious = false;
-	reg_val_t sig;
-	if (this->syscall == __NR_tgkill) {
-		sig = this->reg.REG_ARG2;
-	} else {
-		sig = this->reg.REG_ARG1;
-	}
+	reg_val_t sig = this->syscall == __NR_tgkill ? this->reg.REG_ARG2 : this->reg.REG_ARG1;
 	this->error = "signal sent via " + syscall_name[this->syscall] + ": ";
 	if (sig != (unsigned)sig) {
 		this->error += "Unknown signal " + to_string(sig);
@@ -628,6 +625,14 @@ bool rp_child_proc::check_safe_syscall() {
 			}
 		}
 		cursc.max_cnt--; 
+	}
+
+	if (cursc.extra_check & ECT_KILL_SIG0_ALLOWED) {
+		reg_val_t sig = this->syscall == __NR_tgkill ? this->reg.REG_ARG2 : this->reg.REG_ARG1;
+		if (sig != 0) {
+			this->set_error_for_kill();
+			return false;
+		}
 	}
 
 	if (cursc.extra_check & ECT_FILE_OP) {

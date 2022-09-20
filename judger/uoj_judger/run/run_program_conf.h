@@ -23,14 +23,14 @@ std::vector<int> supported_soft_ban_errno_list = {
 };
 
 std::set<std::string> available_program_type_set = {
-	"default", "python2.7", "python3", "java7", "java8", "java11", "java14", "compiler"
+	"default", "python2.7", "python3", "java8", "java11", "java17", "compiler"
 };
 
 /*
  * folder program: the program to run is a folder, not a single regular file
  */
 std::set<std::string> folder_program_type_set = {
-	"java7", "java8", "java11", "java14"
+	"java8", "java11", "java17"
 };
 
 std::map<std::string, std::vector<std::pair<int, syscall_info>>> allowed_syscall_list = {
@@ -166,21 +166,9 @@ std::map<std::string, std::vector<std::pair<int, syscall_info>>> allowed_syscall
 		{__NR_getdents64     , syscall_info::unlimited()},
 	}},
 
-	{"java7", {
-		{__NR_set_tid_address  , syscall_info::count_based(1)},
-		{__NR_clone            , syscall_info::with_extra_check(ECT_CLONE_THREAD)},
-
-		{__NR_futex            , syscall_info::unlimited()},
-		{__NR_getdents         , syscall_info::unlimited()},
-		{__NR_getdents64       , syscall_info::unlimited()},
-
-		{__NR_sched_getaffinity, syscall_info::unlimited()},
-		{__NR_sched_yield      , syscall_info::unlimited()},
-	}},
-
 	{"java8", {
 		{__NR_set_tid_address  , syscall_info::count_based(1)},
-		{__NR_clone            , syscall_info::with_extra_check(ECT_CLONE_THREAD)},
+		{__NR_clone            , syscall_info::with_extra_check(ECT_CLONE_THREAD, 9)},
 
 		{__NR_futex            , syscall_info::unlimited()},
 		{__NR_getdents         , syscall_info::unlimited()},
@@ -192,7 +180,7 @@ std::map<std::string, std::vector<std::pair<int, syscall_info>>> allowed_syscall
 
 	{"java11", {
 		{__NR_set_tid_address  , syscall_info::count_based(1)},
-		{__NR_clone            , syscall_info::with_extra_check(ECT_CLONE_THREAD)},
+		{__NR_clone            , syscall_info::with_extra_check(ECT_CLONE_THREAD, 11)},
 		{__NR_prctl            , syscall_info::unlimited()}, // TODO: add extra checks for prctl
 		{__NR_prlimit64        , syscall_info::unlimited()}, // TODO: add extra checks for prlimit64
 
@@ -207,9 +195,9 @@ std::map<std::string, std::vector<std::pair<int, syscall_info>>> allowed_syscall
 		{__NR_clock_nanosleep  , syscall_info::unlimited()},
 	}},
 
-	{"java14", {
+	{"java17", {
 		{__NR_set_tid_address  , syscall_info::count_based(1)},
-		{__NR_clone            , syscall_info::with_extra_check(ECT_CLONE_THREAD)},
+		{__NR_clone            , syscall_info::with_extra_check(ECT_CLONE_THREAD, 13)},
 		{__NR_prctl            , syscall_info::unlimited()}, // TODO: add extra checks for prctl
 		{__NR_prlimit64        , syscall_info::unlimited()}, // TODO: add extra checks for prlimit64
 
@@ -293,6 +281,9 @@ std::map<std::string, std::vector<std::pair<int, syscall_info>>> allowed_syscall
 		{__NR_sched_getaffinity, syscall_info::unlimited()},
 		{__NR_sched_yield      , syscall_info::unlimited()},
 
+		{__NR_kill           , syscall_info::kill_type_syscall(ECT_KILL_SIG0_ALLOWED, -1)},
+		{__NR_tkill          , syscall_info::kill_type_syscall(ECT_KILL_SIG0_ALLOWED, -1)},
+		{__NR_tgkill         , syscall_info::kill_type_syscall(ECT_KILL_SIG0_ALLOWED, -1)},
 	}},
 };
 
@@ -324,11 +315,6 @@ std::map<std::string, std::vector<std::string>> statable_file_name_list = {
 		"/usr/lib",
 	}},
 
-	{"java7", {
-		"/usr/java/",
-		"/tmp/",
-	}},
-
 	{"java8", {
 		"/usr/java/",
 		"/tmp/",
@@ -338,7 +324,7 @@ std::map<std::string, std::vector<std::string>> statable_file_name_list = {
 		"/tmp/",
 	}},
 
-	{"java14", {
+	{"java17", {
 		"/tmp/",
 	}},
 
@@ -393,9 +379,6 @@ std::map<std::string, std::vector<std::string>> readable_file_name_list = {
 		"/usr/lib/dist-python",
 	}},
 
-	{"java7", {
-	}},
-
 	{"java8", {
 		"/sys/fs/cgroup/",
 	}},
@@ -407,10 +390,10 @@ std::map<std::string, std::vector<std::string>> readable_file_name_list = {
 		"/usr/share/java/",
 	}},
 
-	{"java14", {
-		UOJ_OPEN_JDK14 "/",
+	{"java17", {
+		UOJ_OPEN_JDK17 "/",
 		"/sys/fs/cgroup/",
-		"/etc/java-14-openjdk/",
+		"/etc/java-17-openjdk/",
 		"/usr/share/java/",
 	}},
 
@@ -428,7 +411,7 @@ std::map<std::string, std::vector<std::string>> readable_file_name_list = {
 		"/etc/python3.9/",
 		"/etc/fpc-3.0.4.cfg",
 		"/etc/java-11-openjdk/",
-		"/etc/java-14-openjdk/",
+		"/etc/java-17-openjdk/",
 	}}
 };
 
@@ -436,7 +419,7 @@ std::map<std::string, std::vector<std::string>> writable_file_name_list = {
 	{"default", {
 		"/dev/null",
 
-		// for java11 and java14
+		// for java11 and java17
 		"/proc/self/coredump_filter",
 	}},
 

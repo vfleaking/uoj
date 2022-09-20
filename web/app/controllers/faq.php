@@ -24,7 +24,7 @@
 		<p>C++的编译器是 g++ 10.3.0，编译命令：<code>g++ code.cpp -o code -lm -O2 -DONLINE_JUDGE</code>。如果选择 C++11 会在编译命令后面添加<code>-std=c++11</code>（C++14 / C++17 / C++20 同理）。</p>
 		<p>C的编译器是 gcc 10.3.0，编译命令：<code>gcc code.c -o code -lm -O2 -DONLINE_JUDGE</code>。</p>
 		<p>Pascal的编译器是 fpc 3.0.4，编译命令：<code>fpc code.pas -O2</code>。</p>
-		<p>Java 7, 8, 11, 14使用的JDK分别为 Oracle JDK 7u80, Oracle JDK 8u202, OpenJDK 1.11.0, OpenJDK 1.14.0，编译命令：<code>javac code.java</code>。</p>
+		<p>Java 8, 11, 17 使用的JDK分别为 Oracle JDK 8u202, OpenJDK 1.11.0, OpenJDK 1.17.0，编译命令：<code>javac code.java</code>。</p>
 		<p>Python会先编译为优化过的字节码<samp>.pyo</samp>文件。支持的Python版本分别为 Python 2.7.18 和 3.9.5。</p>
 	</section>
 	<section>

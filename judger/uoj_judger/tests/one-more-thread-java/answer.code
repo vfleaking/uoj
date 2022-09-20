@@ -1,0 +1,14 @@
+import java.lang.reflect.*;
+
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+        Thread thread = new Thread(() -> {
+            System.out.print("thread 2: hacked!");
+        });
+        thread.start();
+        
+        System.out.print("thread 1: ok");
+        thread.join();
+    }
+}

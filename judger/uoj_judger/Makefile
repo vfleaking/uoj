@@ -53,7 +53,7 @@ main_judger: include/*.h
 tests/test.o: include/*.h
 
 tests/test: tests/catch_amalgamated.o tests/test.o
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $^ -o $@ -pthread
 
 $(EXE_CHECKER): include/testlib.h
 

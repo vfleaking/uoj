@@ -1,0 +1,41 @@
+import java.util.Scanner;
+
+public class HarveyTest {
+
+	public int update(String op, int m, int t) {
+		switch (op) {
+		case "AND":
+			m = m & t;
+			break;
+		case "OR":
+			m = m | t;
+			break;
+		case "XOR":
+			m = m ^ t;
+			break;
+		default:
+			break;
+		}
+		return m;
+	}
+
+	public static void main(String[] args) {
+		Scanner in = new Scanner(System.in);
+		HarveyTest util = new HarveyTest();
+		int n = 0;
+		int m = 0;
+		String op = "";
+		int t = 0;
+		while (in.hasNext()) {
+			n = in.nextInt();
+			m = in.nextInt();
+			for (int i = 1; i <= n; i++) {
+				op = in.next();
+				t = in.nextInt();
+				m = util.update(op, m, t);
+			}
+			System.out.println(m);
+		}
+		in.close();
+	}
+}
