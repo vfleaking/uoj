@@ -30,4 +30,8 @@ class UOJLog {
         }
         error_log('[uoj warning] '.$msg);
 	}
+
+    public static function error_meta_val_not_set($name) {
+        UOJLog::error("$name is not set in the meta table");
+    }
 }

@@ -1,0 +1,11 @@
+{
+  "name": "uoj",
+  "version": "1.0.0",
+  "description": "",
+  "author": "vfleaking",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "express": "^4.18.1"
+  }
+}

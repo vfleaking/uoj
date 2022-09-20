@@ -2,7 +2,11 @@
 
 class UOJContext {
     public static $meta_default = [
-		'active_duration_M' => 36
+		'active_duration_M' => 36,
+		'markdown' => [
+			'backend' => 'aux',
+			'timeout' => 5
+		]
 	];
 
 	public static $data = [

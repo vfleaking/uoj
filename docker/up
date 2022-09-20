@@ -1,35 +1,51 @@
 #!/bin/bash
 
+succ=1
 if ! service ntp start; then
     echo -e "\033[1;91m"
 	echo "UOJ ERROR: ntp did not start successfully!"
     echo -e "\033[0m"
+    succ=0
 fi
 
 if ! service mysql start; then
     echo -e "\033[1;91m"
 	echo "UOJ ERROR: mysql did not start successfully!"
     echo -e "\033[0m"
+    succ=0
 fi
 
 if ! service apache2 start; then
     echo -e "\033[1;91m"
 	echo "UOJ ERROR: apache2 did not start successfully!"
     echo -e "\033[0m"
+    succ=0
 fi
 
 if ! svnserve -d -r /var/svn; then
     echo -e "\033[1;91m"
 	echo "UOJ ERROR: svn did not start successfully!"
     echo -e "\033[0m"
+    succ=0
 fi
 
 if ! su local_main_judger -c '~/judge_client/judge_client start'; then
     echo -e "\033[1;91m"
 	echo "UOJ ERROR: judger did not start successfully!"
     echo -e "\033[0m"
+    succ=0
 fi
 
-echo "UOJ starts successfully!"
+cd /opt/uoj/web && sudo -u www-data pm2 start app/aux/index.js --name aux
+if [ $? -ne 0 ]; then
+    echo -e "\033[1;91m"
+	echo "UOJ ERROR: uoj aux server did not start successfully!"
+    echo -e "\033[0m"
+    succ=0
+fi
+
+if [ $succ -eq 1 ]; then
+    echo "UOJ starts successfully!"
+fi
 
 exec bash

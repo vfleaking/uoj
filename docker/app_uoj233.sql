@@ -345,7 +345,7 @@ CREATE TABLE `search_requests` (
   `cache_id` int NOT NULL,
   `q` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `content` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `result` longtext COLLATE utf8mb4_unicode_ci NOT NULL
+  `result` json NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -499,14 +499,17 @@ ALTER TABLE `best_ac_submissions`
 ALTER TABLE `blogs`
   ADD PRIMARY KEY (`id`),
   ADD KEY `post_time` (`post_time`),
-  ADD KEY `active_time` (`active_time`);
+  ADD KEY `active_time` (`active_time`),
+  ADD KEY `poster` (`poster`,`is_hidden`);
 
 --
 -- Indexes for table `blogs_comments`
 --
 ALTER TABLE `blogs_comments`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `blog_id` (`blog_id`,`post_time`);
+  ADD UNIQUE KEY `reply_id` (`reply_id`,`id`),
+  ADD KEY `blog_id` (`blog_id`,`post_time`),
+  ADD KEY `blog_id_2` (`blog_id`,`reply_id`);
 
 --
 -- Indexes for table `blogs_tags`
@@ -527,13 +530,15 @@ ALTER TABLE `click_zans`
 --
 ALTER TABLE `contests`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `status` (`status`);
+  ADD KEY `status` (`status`,`id`) USING BTREE;
 
 --
 -- Indexes for table `contests_asks`
 --
 ALTER TABLE `contests_asks`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `contest_id` (`contest_id`,`is_hidden`,`username`) USING BTREE,
+  ADD KEY `username` (`username`,`contest_id`) USING BTREE;
 
 --
 -- Indexes for table `contests_notice`
@@ -551,7 +556,8 @@ ALTER TABLE `contests_permissions`
 -- Indexes for table `contests_problems`
 --
 ALTER TABLE `contests_problems`
-  ADD PRIMARY KEY (`problem_id`,`contest_id`);
+  ADD PRIMARY KEY (`problem_id`,`contest_id`),
+  ADD KEY `contest_id` (`contest_id`,`problem_id`);
 
 --
 -- Indexes for table `contests_registrants`
@@ -642,7 +648,6 @@ ALTER TABLE `search_requests`
 --
 ALTER TABLE `submissions`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `contest_id` (`contest_id`),
   ADD KEY `status` (`status`,`id`),
   ADD KEY `result_error` (`result_error`),
   ADD KEY `problem_id` (`problem_id`,`id`),
@@ -654,7 +659,8 @@ ALTER TABLE `submissions`
   ADD KEY `problem_score2` (`is_hidden`,`problem_id`,`score`,`id`),
   ADD KEY `contest_submission_status` (`contest_id`,`status`),
   ADD KEY `submitter2` (`is_hidden`,`submitter`,`id`),
-  ADD KEY `submitter` (`submitter`,`id`) USING BTREE;
+  ADD KEY `submitter` (`submitter`,`id`) USING BTREE,
+  ADD KEY `contest_id` (`contest_id`,`is_hidden`) USING BTREE;
 
 --
 -- Indexes for table `submissions_history`
@@ -684,21 +690,25 @@ ALTER TABLE `upgrades`
 --
 ALTER TABLE `user_info`
   ADD PRIMARY KEY (`username`),
-  ADD KEY `rating` (`rating`,`username`),
   ADD KEY `ac_num` (`ac_num`,`username`),
+  ADD KEY `rating` (`username` DESC) USING BTREE,
   ADD KEY `active_in_contest` (`active_in_contest`,`rating`);
 
 --
 -- Indexes for table `user_msg`
 --
 ALTER TABLE `user_msg`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `sender` (`sender`),
+  ADD KEY `receiver` (`receiver`),
+  ADD KEY `read_time` (`receiver`,`read_time`) USING BTREE;
 
 --
 -- Indexes for table `user_system_msg`
 --
 ALTER TABLE `user_system_msg`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `receiver` (`receiver`,`read_time`);
 
 --
 -- AUTO_INCREMENT for dumped tables

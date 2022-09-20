@@ -54,8 +54,36 @@ initUOJ() {
 		return 1
 	fi
 
-	cd /opt/uoj/web && chmod +x /root/composer-setup.sh && /root/composer-setup.sh
+	cd /opt/uoj/web && chmod +x /root/composer-setup.sh
 	if [ $? -ne 0 ]; then
+		echo -e "\033[1;91m"
+		echo "UOJ ERROR: FAILED to setup Composer."
+		echo -e "\033[0m"
+		return 1
+	fi
+	
+	/root/composer-setup.sh
+	if [ $? -ne 0 ]; then
+		return 1
+	fi
+
+	cd /opt/uoj/web &&
+	npm install
+	if [ $? -ne 0 ]; then
+		echo -e "\033[1;91m"
+		echo "UOJ ERROR: FAILED to execute npm install."
+		echo -e "\033[0m"
+		return 1
+	fi
+
+	mkdir /var/www/.pm2 &&
+	chown www-data /var/www/.pm2 &&
+	sudo -u www-data pm2 start app/aux/index.js --name aux &&
+	sudo -u www-data pm2 stop aux
+	if [ $? -ne 0 ]; then
+		echo -e "\033[1;91m"
+		echo "UOJ ERROR: FAILED to setup uoj aux server."
+		echo -e "\033[0m"
 		return 1
 	fi
 	
@@ -146,6 +174,5 @@ cd /root &&
 rm * -rf &&
 printf "\n\n==> Installation finished!\n" &&
 echo -e "\033[1;91m" &&
-echo "UOJ NOTICE: If you want to use blog editor, PLEASE INSTALL jsv8 BY YOURSELF." &&
 echo "UOJ NOTICE: If you want to support Java 14, PLEASE INSTALL openjdk-14-jdk BY YOURSELF (or you can simply delete this language)." &&
 echo -e "\033[0m"

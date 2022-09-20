@@ -36,6 +36,25 @@ installAptPackages() {
         return 1
     fi
 
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - &&
+    apt-get install -y nodejs &&
+    npm install npm@latest -g
+    if [ $? -ne 0 ]; then
+        echo -e "\033[1;91m"
+        echo "UOJ ERROR: FAILED to install nodejs."
+        echo -e "\033[0m"
+        return 1
+    fi
+
+    npm install pm2@latest -g
+    if [ $? -ne 0 ]; then
+        echo -e "\033[1;91m"
+        echo "UOJ ERROR: FAILED to install pm2."
+        echo -e "\033[0m"
+        return 1
+    fi
+
+
     python3.9 -m pip install pip --upgrade
     python3.9 -m pip install requests --upgrade
 
