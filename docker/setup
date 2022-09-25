@@ -78,11 +78,11 @@ initUOJ() {
 
 	mkdir /var/www/.pm2 &&
 	chown www-data /var/www/.pm2 &&
-	sudo -u www-data pm2 start app/aux/index.js --name aux &&
-	sudo -u www-data pm2 stop aux
+	sudo -u www-data pm2 start app/uoj-aux/index.js --name uoj-aux &&
+	sudo -u www-data pm2 stop uoj-aux
 	if [ $? -ne 0 ]; then
 		echo -e "\033[1;91m"
-		echo "UOJ ERROR: FAILED to setup uoj aux server."
+		echo "UOJ ERROR: FAILED to setup uoj-aux server."
 		echo -e "\033[0m"
 		return 1
 	fi

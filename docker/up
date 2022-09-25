@@ -36,10 +36,10 @@ if ! su local_main_judger -c '~/judge_client/judge_client start'; then
     succ=0
 fi
 
-cd /opt/uoj/web && sudo -u www-data pm2 start app/aux/index.js --name aux
+cd /opt/uoj/web && sudo -u www-data pm2 start app/uoj-aux/index.js --name uoj-aux
 if [ $? -ne 0 ]; then
     echo -e "\033[1;91m"
-	echo "UOJ ERROR: uoj aux server did not start successfully!"
+	echo "UOJ ERROR: uoj-aux server did not start successfully!"
     echo -e "\033[0m"
     succ=0
 fi
