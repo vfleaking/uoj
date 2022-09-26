@@ -1,15 +1,15 @@
 <?php
 
 class Route {
-	protected static $routes = array();
-	protected static $patterns = array();
-	protected static $groupStack = array(array());
+	protected static $routes = [];
+	protected static $patterns = [];
+	protected static $groupStack = [[]];
 	
 	public static function match($methods, $uri, $action) {
 		return self::addRoute(array_map('strtoupper', (array)$methods), $uri, $action);
 	}
 	public static function any($uri, $action) {
-		return self::addRoute(array('GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'), $uri, $action);
+		return self::addRoute(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE'], $uri, $action);
 	}
 	public static function get($uri, $action) {
 		return self::addRoute(['GET', 'HEAD'], $uri, $action);
@@ -54,7 +54,7 @@ class Route {
 			$methods = [$methods];
 		}
 		
-		$cur = array();
+		$cur = [];
 		$cur['methods'] = $methods;
 		$cur['uri'] = $uri;
 		$cur['action'] = $action;
@@ -67,20 +67,26 @@ class Route {
 			return false;
 		}
 		
-		$rep_arr = array();
+		$rep_arr = [];
 		foreach (self::$patterns as $name => $pat) {
 			$rep_arr['{'.$name.'}'] = "(?P<$name>$pat)";
 		}
 		$rep_arr['/'] = '\/';
 		$rep_arr['.'] = '\.';
 		
-		$matches = array();
+		$matches = [];
 		if (isset($route['domain'])) {
 			$domain_pat = strtr($route['domain'], $rep_arr);
-			if (!preg_match('/^'.$domain_pat.'$/', UOJContext::httpHost(), $domain_matches)) {
+			if (!preg_match('/^'.$domain_pat.'$/', UOJContext::requestDomain(), $domain_matches)) {
 				return false;
 			}
 			$matches = array_merge($matches, $domain_matches);
+		}
+		if (isset($route['port'])) {
+			$ports = explode('/', $route['port']);
+			if (!in_array(UOJContext::requestPort(), $ports)) {
+				return false;
+			}
 		}
 		
 		$uri_pat = strtr($route['uri'], $rep_arr);
