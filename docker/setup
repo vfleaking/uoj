@@ -33,7 +33,8 @@ UOJEOF
 	fi
 
     # Create UOJ session save dir and make PHP extensions available
-    mkdir --mode=733 /var/lib/php/uoj_sessions && chmod +t /var/lib/php/uoj_sessions
+	UOJ_SESS_DIR=/var/lib/php/uoj_sessions
+    mkdir --mode=733 $UOJ_SESS_DIR && chown www-data $UOJ_SESS_DIR && chmod +t $UOJ_SESS_DIR
 	if [ $? -ne 0 ]; then
 		echo -e "\033[1;91m"
 		echo "UOJ ERROR: FAILED to setup uoj sessions."
