@@ -107,7 +107,7 @@ std::map<std::string, std::vector<std::pair<int, syscall_info>>> allowed_syscall
 		{__NR_stat           , syscall_info::with_extra_check(ECT_FILE_OP   | ECT_FILE_S)},
 		{__NR_statfs         , syscall_info::with_extra_check(ECT_FILE_OP   | ECT_FILE_S)},
 		{__NR_lstat          , syscall_info::with_extra_check(ECT_FILE_OP   | ECT_FILE_S)},
-		{__NR_newfstatat     , syscall_info::with_extra_check(ECT_FILE_OP   | ECT_FILE_S)},
+		{__NR_newfstatat     , syscall_info::with_extra_check(ECT_FILEAT_OP | ECT_FILE_S)},
 
 		// kill could be DGS or RE
 		{__NR_kill           , syscall_info::kill_type_syscall()},
