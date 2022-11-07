@@ -132,14 +132,14 @@ namespace runp {
 	fs::path run_path;
 
 	struct limits_t {
-		int time;
+		double time;
 		int memory;
 		int output;
-		int real_time;
+		double real_time;
 		int stack;
 
 		limits_t() = default;
-		limits_t(const int &_time, const int &_memory, const int &_output)
+		limits_t(const double &_time, const int &_memory, const int &_output)
 				: time(_time), memory(_memory), output(_output), real_time(-1), stack(-1) {
 		}
 	};

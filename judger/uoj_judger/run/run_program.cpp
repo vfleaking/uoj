@@ -51,10 +51,10 @@ error_t run_program_argp_parse_opt (int key, char *arg, struct argp_state *state
 
 	switch (key) {
 		case 'T':
-			config->limits.time = atoi(arg);
+			config->limits.time = stod(arg);
 			break;
 		case 'R':
-			config->limits.real_time = atoi(arg);
+			config->limits.real_time = stod(arg);
 			break;
 		case 'M':
 			config->limits.memory = atoi(arg);
@@ -201,9 +201,15 @@ void set_limit(int r, int rcur, int rmax = -1)  {
 	}
 }
 
-void set_user_cpu_time_limit(int tl) {
+void set_user_cpu_time_limit(double tl) {
 	struct itimerval val;
-	val.it_value = {tl, 100 * 1000};
+	long tl_sec = (long)tl;
+	long tl_usec = (long)((tl - floor(tl)) * 1000 + 100) * 1000;
+	if (tl_usec >= 1'000'000l) {
+		tl_sec++;
+		tl_usec -= 1'000'000l;
+	}
+	val.it_value = {tl_sec, tl_usec};
 	val.it_interval = {0, 100 * 1000};
 	setitimer(ITIMER_VIRTUAL, &val, NULL);
 }

@@ -633,6 +633,23 @@ int conf_int(const string &key, int num, const int &val) {
 int conf_int(const string &key)  {
 	return conf_int(key, 0);
 }
+double conf_double(const string &key, const double &val) {
+	if (config.count(key) == 0) {
+		return val;
+	}
+	return stod(config[key]);
+}
+double conf_double(const string &key, int num, const double &val) {
+	ostringstream sout;
+	sout << key << "_" << num;
+	if (config.count(sout.str()) == 0) {
+		return conf_double(key, val);
+	}
+	return stod(config[sout.str()]);
+}
+double conf_double(const string &key) {
+	return conf_double(key, 0);
+}
 string conf_file_name_with_num(string s, int num) {
 	ostringstream name;
 	if (num < 0) {
@@ -664,10 +681,10 @@ runp::limits_t conf_run_limit(string pre, const int &num, const runp::limits_t &
 		pre += "_";
 	}
 	runp::limits_t limits;
-	limits.time = conf_int(pre + "time_limit", num, val.time);
+	limits.time = conf_double(pre + "time_limit", num, val.time);
 	limits.memory = conf_int(pre + "memory_limit", num, val.memory);
 	limits.output = conf_int(pre + "output_limit", num, val.output);
-	limits.real_time = conf_int(pre + "real_time_limit", num, val.real_time);
+	limits.real_time = conf_double(pre + "real_time_limit", num, val.real_time);
 	limits.stack = conf_int(pre + "stack_limit", num, val.stack);
 	return limits;
 }
