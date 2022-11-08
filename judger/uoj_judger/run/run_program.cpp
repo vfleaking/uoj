@@ -202,15 +202,7 @@ void set_limit(int r, int rcur, int rmax = -1)  {
 }
 
 void set_user_cpu_time_limit(double tl) {
-	struct itimerval val;
-	long tl_sec = (long)tl;
-	long tl_usec = (long)((tl - floor(tl)) * 1000 + 100) * 1000;
-	if (tl_usec >= 1'000'000l) {
-		tl_sec++;
-		tl_usec -= 1'000'000l;
-	}
-	val.it_value = {tl_sec, tl_usec};
-	val.it_interval = {0, 100 * 1000};
+	itimerval val = runp::double_to_itimerval(tl);
 	setitimer(ITIMER_VIRTUAL, &val, NULL);
 }
 

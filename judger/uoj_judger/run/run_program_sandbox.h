@@ -1,6 +1,5 @@
 #include <iostream>
 #include <sstream>
-#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -15,7 +14,6 @@
 #include <sys/stat.h>
 #include <sys/resource.h>
 #include <sys/user.h>
-#include <sys/time.h>
 #include <sys/prctl.h>
 #include <fcntl.h>
 #include <argp.h>

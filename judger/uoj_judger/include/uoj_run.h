@@ -1,3 +1,4 @@
+#include <cmath>
 #include <string>
 #include <vector>
 #include <map>
@@ -7,6 +8,7 @@
 #include <filesystem>
 #include <exception>
 #include <stdexcept>
+#include <sys/time.h>
 
 #define UOJ_GCC "/usr/bin/gcc-10"
 #define UOJ_GPLUSPLUS "/usr/bin/g++-10"
@@ -394,6 +396,23 @@ namespace runp {
 			}
 		}
 	};
+
+	itimerval double_to_itimerval(const double &tl) {
+		struct itimerval val;
+
+		long tl_sec = (long)tl;
+		long tl_usec = (long)((tl - floor(tl)) * 1000 + 100) * 1000;
+
+		if (tl_usec >= 1'000'000l) {
+			tl_sec++;
+			tl_usec -= 1'000'000l;
+		}
+
+		val.it_value = {tl_sec, tl_usec};
+		val.it_interval = {0, 100 * 1000};
+
+		return val;
+	}
 }
 
 namespace runp::interaction {
