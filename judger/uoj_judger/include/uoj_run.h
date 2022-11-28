@@ -22,6 +22,11 @@
 std::string escapeshellarg(int arg) {
 	return std::to_string(arg);
 }
+std::string escapeshellarg(double arg) {
+	std::ostringstream sout;
+	sout << std::setprecision(15) << arg;
+	return sout.str();
+}
 std::string escapeshellarg(const std::string &arg) {
 	std::string res = "'";
 	for (char c : arg) {
@@ -397,21 +402,30 @@ namespace runp {
 		}
 	};
 
-	itimerval double_to_itimerval(const double &tl) {
-		struct itimerval val;
+	/**
+	 * @brief convert a time t to timeval. Assume t <= 1000. Accurate to ms.
+	 * 
+	 * @param t time in double
+	 * @return timeval
+	 */
+	timeval double_to_timeval(const double &t) {
+		long tl = round(t * 1000);
+		long tl_sec = tl / 1000;
+		long tl_usec = tl % 1000 * 1000;
+		return {tl_sec, tl_usec};
+	}
 
-		long tl_sec = (long)tl;
-		long tl_usec = (long)((tl - floor(tl)) * 1000 + 100) * 1000;
-
-		if (tl_usec >= 1'000'000l) {
-			tl_sec++;
-			tl_usec -= 1'000'000l;
-		}
-
-		val.it_value = {tl_sec, tl_usec};
-		val.it_interval = {0, 100 * 1000};
-
-		return val;
+	/**
+	 * @brief convert a time t to timespec. Assume t <= 1000. Accurate to ms.
+	 * 
+	 * @param t time in double
+	 * @return timespec
+	 */
+	timespec double_to_timespec(const double &t) {
+		long tl = round(t * 1000);
+		long tl_sec = tl / 1000;
+		long tl_nsec = tl % 1000 * 1'000'000;
+		return {tl_sec, tl_nsec};
 	}
 }
 
