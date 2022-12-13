@@ -111,6 +111,30 @@ TEST_CASE("TLE test", "[run_program]") {
     }
 }
 
+TEST_CASE("double TLE test", "[run_program]") {
+    tuple<string, double, double, runp::RS_TYPE> li[] = {
+        {"busy6.666" , 6.676, 10, runp::RS_AC },
+        {"busy6.666" , 6.656, 10, runp::RS_TLE},
+        {"busy6.666" , 10,   6.8, runp::RS_AC },
+        {"busy6.666" , 10,   6.3, runp::RS_TLE},
+    };
+
+    for (auto &ts : li) {
+        auto [ name, tl, rtl, rst ] = ts;
+        SECTION(name + "-" + to_string(tl) + "-" + to_string(rtl)) {
+            fs::path path = init_random_tmp_dir(name);
+            REQUIRE(execute("g++", "-o", "answer", "answer14.cpp", "-pthread") == 0);
+            runp::config rpc = get_simple_rpc("answer");
+            rpc.unsafe = true;
+            rpc.limits.time = tl;
+            rpc.limits.real_time = rtl;
+            runp::result res = run_program(rpc);
+            REQUIRE(res.type == rst);
+            fs::remove_all(path);
+        }
+    }
+}
+
 
 TEST_CASE("java test", "[run_program]") {
     pair<string, runp::RS_TYPE> li[] = {
@@ -246,5 +270,35 @@ TEST_CASE("coin2 test", "[interaction]") {
 
             fs::remove_all(path);
         }
+    }
+}
+
+TEST_CASE("double to time structure test", "[time limit]") {
+    for (int t = 0; t < 10000; t++) {
+        timeval val = runp::double_to_timeval(t / 1000.);
+        REQUIRE((val.tv_sec == t / 1000 && val.tv_usec == (t % 1000) * 1000));
+        timespec spec = runp::double_to_timespec(t / 1000.);
+        REQUIRE((spec.tv_sec == t / 1000 && spec.tv_nsec == (t % 1000) * 1'000'000));
+    }
+
+    for (int t = 25000; t < 30000; t++) {
+        timeval val = runp::double_to_timeval(t / 1000.);
+        REQUIRE((val.tv_sec == t / 1000 && val.tv_usec == (t % 1000) * 1000));
+        timespec spec = runp::double_to_timespec(t / 1000.);
+        REQUIRE((spec.tv_sec == t / 1000 && spec.tv_nsec == (t % 1000) * 1'000'000));
+    }
+
+    for (int t = 900000; t < 902000; t++) {
+        timeval val = runp::double_to_timeval(t / 1000.);
+        REQUIRE((val.tv_sec == t / 1000 && val.tv_usec == (t % 1000) * 1000));
+        timespec spec = runp::double_to_timespec(t / 1000.);
+        REQUIRE((spec.tv_sec == t / 1000 && spec.tv_nsec == (t % 1000) * 1'000'000));
+    }
+
+    for (int t = 970000; t < 1000000; t++) {
+        timeval val = runp::double_to_timeval(t / 1000.);
+        REQUIRE((val.tv_sec == t / 1000 && val.tv_usec == (t % 1000) * 1000));
+        timespec spec = runp::double_to_timespec(t / 1000.);
+        REQUIRE((spec.tv_sec == t / 1000 && spec.tv_nsec == (t % 1000) * 1'000'000));
     }
 }

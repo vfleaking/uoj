@@ -36,10 +36,36 @@ function validateInt($x) {
 	if (!is_string($x)) {
 		return false;
 	}
+	if (strlen($x) == 0) {
+		return false;
+	}
 	if ($x[0] == '-') {
 		$x = substr($x, 1);
 	}
 	return validateUInt($x);
+}
+
+function validateUFloat($x) {
+	if (!is_string($x)) {
+		return false;
+	}
+	if (!preg_match('/^([1-9][0-9]*|0)(\.[0-9]+)?$/', $x)) {
+		return false;
+	}
+	return filter_var($x, FILTER_VALIDATE_FLOAT) !== false;
+}
+
+function validateFloat($x) {
+	if (!is_string($x)) {
+		return false;
+	}
+	if (strlen($x) == 0) {
+		return false;
+	}
+	if ($x[0] == '-') {
+		$x = substr($x, 1);
+	}
+	return validateUFloat($x);
 }
 
 function validateUploadedFile($name) {

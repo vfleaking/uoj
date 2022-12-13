@@ -109,7 +109,15 @@ class UOJForm {
 		<div id="div-$name" class="form-group">
 			<label for="input-$name" class="{$this->control_label_config['class']} control-label">$label_text</label>
 			<div class="{$this->input_config['class']}">
-				<input type="$type" class="form-control" name="$name" id="input-$name" value="$default_value" />
+		EOD;
+
+		$attr = is_array($type) ? $type : ['type' => $type];
+		$attr += [
+			'class' => 'form-control', 'name' => $name, 'id' => "input-$name",
+			'value' => $default_value
+		];
+		$html .= HTML::empty_tag('input', $attr);
+		$html .= <<<EOD
 				<span class="help-block" id="help-$name"></span>
 			</div>
 		</div>

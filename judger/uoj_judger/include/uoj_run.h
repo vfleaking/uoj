@@ -1,3 +1,4 @@
+#include <cmath>
 #include <string>
 #include <vector>
 #include <map>
@@ -7,6 +8,7 @@
 #include <filesystem>
 #include <exception>
 #include <stdexcept>
+#include <sys/time.h>
 
 #define UOJ_GCC "/usr/bin/gcc-10"
 #define UOJ_GPLUSPLUS "/usr/bin/g++-10"
@@ -19,6 +21,11 @@
 
 std::string escapeshellarg(int arg) {
 	return std::to_string(arg);
+}
+std::string escapeshellarg(double arg) {
+	std::ostringstream sout;
+	sout << std::setprecision(15) << arg;
+	return sout.str();
 }
 std::string escapeshellarg(const std::string &arg) {
 	std::string res = "'";
@@ -132,14 +139,14 @@ namespace runp {
 	fs::path run_path;
 
 	struct limits_t {
-		int time;
+		double time;
 		int memory;
 		int output;
-		int real_time;
+		double real_time;
 		int stack;
 
 		limits_t() = default;
-		limits_t(const int &_time, const int &_memory, const int &_output)
+		limits_t(const double &_time, const int &_memory, const int &_output)
 				: time(_time), memory(_memory), output(_output), real_time(-1), stack(-1) {
 		}
 	};
@@ -394,6 +401,32 @@ namespace runp {
 			}
 		}
 	};
+
+	/**
+	 * @brief convert a time t to timeval. Assume t <= 1000. Accurate to ms.
+	 * 
+	 * @param t time in double
+	 * @return timeval
+	 */
+	timeval double_to_timeval(const double &t) {
+		long tl = round(t * 1000);
+		long tl_sec = tl / 1000;
+		long tl_usec = tl % 1000 * 1000;
+		return {tl_sec, tl_usec};
+	}
+
+	/**
+	 * @brief convert a time t to timespec. Assume t <= 1000. Accurate to ms.
+	 * 
+	 * @param t time in double
+	 * @return timespec
+	 */
+	timespec double_to_timespec(const double &t) {
+		long tl = round(t * 1000);
+		long tl_sec = tl / 1000;
+		long tl_nsec = tl % 1000 * 1'000'000;
+		return {tl_sec, tl_nsec};
+	}
 }
 
 namespace runp::interaction {
