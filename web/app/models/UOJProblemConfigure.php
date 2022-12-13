@@ -42,7 +42,7 @@ class UOJProblemConfigure {
         $this->addTextInput($this->simple_form, 'input_suf', '输入文件后缀', '');
         $this->addTextInput($this->simple_form, 'output_pre', '输出文件名称', '');
         $this->addTextInput($this->simple_form, 'output_suf', '输出文件后缀', '');
-        $this->addNumberInput($this->simple_form, 'time_limit', '时间限制（不能为小数！）', 1);
+        $this->addTimeLimitInput($this->simple_form, 'time_limit', '时间限制（单位为秒，至多三位小数）', 1);
         $this->addNumberInput($this->simple_form, 'memory_limit', '内存限制（MB）', 256);
         $this->addNumberInput($this->simple_form, 'output_limit', '输出长度限制（MB）', 64);
         $this->simple_form->handle = fn(&$vdata) => $this->onUpload($vdata);
@@ -66,6 +66,23 @@ class UOJProblemConfigure {
             getUOJConfVal($this->problem_conf, $key, $default_val),
             function($x) {
                 return validateInt($x) ? '' : '必须为一个整数';
+            }, null
+        );
+    }
+
+    public function addTimeLimitInput(UOJForm $form, $key, $label, $default_val = '') {
+        $this->conf_keys[$key] = true;
+        $form->addInput(
+            $key, ['type' => 'number', 'step' => 0.001], $label,
+            getUOJConfVal($this->problem_conf, $key, $default_val),
+            function($x) {
+                if (!validateUFloat($x)) {
+                    return '必须为整数或小数，且值大于等于零';
+                } elseif (round($x * 1000) != $x * 1000) {
+                    return '至多包含三位小数';
+                } else {
+                    return '';
+                }
             }, null
         );
     }
