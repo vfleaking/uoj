@@ -154,19 +154,25 @@ if (!isset($ShowPageHeader)) {
 		
 		<?php if (isset($REQUIRE_LIB['mathjax'])): ?>
 		<!-- MathJax -->
-		<script type="text/x-mathjax-config">
-			MathJax.Hub.Config({
-				showProcessingMessages: false,
-				tex2jax: {
-					inlineMath: [["$", "$"], ["\\\\(", "\\\\)"]],
-					processEscapes:true
+		<script>
+			MathJax = {
+				tex: {
+					inlineMath: [
+						['$', '$'],
+						['\\(', '\\)']
+					],
+					processEscapes: true
 				},
-				menuSettings: {
-					zoom: "Hover"
-    			}
-			});
+				options: {
+					menuOptions: {
+						settings: {
+							zoom: 'Hover'
+						}
+					}
+				}
+			};
 		</script>
-		<?= HTML::js_src('/js/MathJax-2.7.9/MathJax.js?config=TeX-AMS_HTML') ?>
+		<?= HTML::js_src('/js/MathJax-3.2.2/tex-mml-chtml.js') ?>
 		<?php endif ?>
 		
 		<?php if (isset($REQUIRE_LIB['jquery.form'])): ?>
