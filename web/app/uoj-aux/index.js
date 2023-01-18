@@ -30,19 +30,29 @@ app.use(bodyParser.text())
 
 app.post('/render-md/uoj', function (req, res) {
 	req.setTimeout(2000, function() {
-		res.send('编译时间超出限制');
+		res.send('编译时间超出限制，问问管理员怎么回事？');
 	});
-	res.send(uoj_marked(req.body))
+	try {
+		out = uoj_marked(req.body)
+	} catch (e) {
+		out = '编译失败，请发给管理员看看！';
+	}
+	res.send(out)
 })
 
 app.post('/render-md/slide', function (req, res) {
 	req.setTimeout(2000, function() {
-		res.send('编译时间超出限制');
+		res.send('编译时间超出限制，问问管理员怎么回事？');
 	});
-	res.send(slide_marked(req.body))
+	try {
+		out = slide_marked(req.body)
+	} catch (e) {
+		out = '编译失败，请发给管理员看看！';
+	}
+	res.send(out)
 })
 
 // 7513 is just a random number
 const server = app.listen('7513', () => {
-  console.log('Server is listening on port 7513')
+	console.log('Server is listening on port 7513')
 })
