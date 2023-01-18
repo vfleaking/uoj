@@ -14,7 +14,6 @@
 #include <sys/stat.h>
 #include <sys/resource.h>
 #include <sys/user.h>
-#include <sys/time.h>
 #include <sys/prctl.h>
 #include <fcntl.h>
 #include <argp.h>

@@ -51,10 +51,10 @@ error_t run_program_argp_parse_opt (int key, char *arg, struct argp_state *state
 
 	switch (key) {
 		case 'T':
-			config->limits.time = atoi(arg);
+			config->limits.time = round(stod(arg) * 1000) / 1000;
 			break;
 		case 'R':
-			config->limits.real_time = atoi(arg);
+			config->limits.real_time = round(stod(arg) * 1000) / 1000;
 			break;
 		case 'M':
 			config->limits.memory = atoi(arg);
@@ -201,10 +201,17 @@ void set_limit(int r, int rcur, int rmax = -1)  {
 	}
 }
 
-void set_user_cpu_time_limit(int tl) {
-	struct itimerval val;
-	val.it_value = {tl, 100 * 1000};
-	val.it_interval = {0, 100 * 1000};
+void set_user_cpu_time_limit(double tl) {
+	itimerval val;
+	val.it_value = runp::double_to_timeval(tl);
+	val.it_interval = {0, 100'000};
+
+	val.it_value.tv_usec += 100'000;
+	if (val.it_value.tv_usec >= 1'000'000) {
+		val.it_value.tv_sec++;
+		val.it_value.tv_usec -= 1'000'000;
+	}
+
 	setitimer(ITIMER_VIRTUAL, &val, NULL);
 }
 
@@ -304,7 +311,7 @@ struct rusage *ruse0p = NULL;
 bool has_real_TLE() {
 	struct timeval elapsed;
 	timersub(&end_time, &start_time, &elapsed);
-	return elapsed.tv_sec >= run_program_config.limits.real_time;
+	return elapsed.tv_sec + elapsed.tv_usec / 1'000'000. >= run_program_config.limits.real_time;
 }
 
 int rp_children_pos(pid_t pid) {
@@ -630,9 +637,12 @@ void dispatch_event(run_event&& e) {
 	if (rp_timer_pid == -1) {
 		runp::result(runp::RS_JGF, "error code: FKFAL2").dump_and_exit(); // fork failed
 	} else if (rp_timer_pid == 0) {
-		struct timespec ts;
-		ts.tv_sec = run_program_config.limits.real_time;
-		ts.tv_nsec = 100 * 1000000;
+		struct timespec ts = runp::double_to_timespec(run_program_config.limits.real_time);
+		ts.tv_nsec += 100'000'000;
+		if (ts.tv_nsec >= 1'000'000'000) {
+			ts.tv_sec += 1;
+			ts.tv_nsec -= 1'000'000'000;
+		}
 		nanosleep(&ts, NULL);
 		exit(0);
 	}
