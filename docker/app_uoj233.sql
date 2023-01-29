@@ -139,8 +139,8 @@ CREATE TABLE `contests_asks` (
 
 CREATE TABLE `contests_notice` (
   `contest_id` int NOT NULL,
-  `title` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `content` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` varchar(5000) COLLATE utf8mb4_unicode_ci NOT NULL,
   `time` datetime NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
