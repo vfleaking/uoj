@@ -124,7 +124,7 @@ class DB {
         return "{$field} as {$name}";
     }
     public static function value_as($value, $name) {
-        return DB::value($value)."as {$name}";
+        return DB::value($value)." as {$name}";
     }
 
     public static function if_func($conds, $val1, $val2) {
