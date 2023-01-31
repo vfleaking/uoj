@@ -154,9 +154,9 @@ output_limit 64
 
 如果想使用自定义的 checker，请使用 Codeforces 的 [testlib](http://codeforces.com/testlib) 库编写 checker，并命名为 `chk.cpp`，然后在 problem.conf 中去掉 “`use_builtin_checker`” 这一行。
 
-**时空限制：**`time_limit` 控制的是一个测试点的时间限制，单位为秒。`memory_limit` 控制的是一个测试点的空间限制，单位为 MB。`output_limit` 控制的是程序的输出长度限制，单位也为 MB。注意这些限制**都不能为小数**。
+**时空限制：**`time_limit` 控制的是一个测试点的时间限制，单位为秒，可以是小数（至多三位小数，即最高精确到毫秒）。
 
-在目前的 UOJ 代码架构下，想让时间限制为小数似乎不是一件难事，但一直因为各种原因拖着没写。。希望有路过的有为青年可以帮帮忙咯。
+`memory_limit` 控制的是一个测试点的空间限制，单位为 MB。`output_limit` 控制的是程序的输出长度限制，单位也为 MB。注意这两个限制都不能为小数。
 
 
 #### 2. 配置 Hack 功能
