@@ -111,6 +111,7 @@ class UOJSubmissionHistory {
             if ($his['time'] == UOJTime::MAX_TIME) {
                 $his['time'] = null;
             }
+            UOJSubmission::roundScoreInArray($his, 'actual_score');
         }
 
         $res = [];

@@ -28,7 +28,7 @@
 			} else if ($row[0] == 100) {
 				$has_score_100 = true;
 			}
-			$score = $row[0] * 100;
+			$score = UOJSubmission::roundedScore($row[0]) * 100;
 			$data[] = ['score' => $score, 'count' => $row[1]];
 		}
 		if (!$has_score_0) {

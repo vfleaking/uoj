@@ -74,6 +74,15 @@ class UOJSubmission {
         return $this->info['hide_score_to_others'] ? $this->info['hidden_score'] : $this->info['score'];
     }
 
+    public static function roundedScore($score): float {
+        return round($score, 10);
+    }
+    public static function roundScoreInArray(&$info, $key) {
+        if (isset($info[$key])) {
+            $info[$key] = static::roundedScore($info[$key]);
+        }
+    }
+
     public static function onUpload($zip_file_name, $content, $tot_size, $is_contest_submission) {
         $judge_reason = '';
 
@@ -351,6 +360,8 @@ class UOJSubmission {
 
     public function __construct($info) {
         $this->info = $info;
+        static::roundScoreInArray($this->info, 'score');
+        static::roundScoreInArray($this->info, 'hidden_score');
     }
 
     public function hasFullyJudged() {
@@ -604,6 +615,7 @@ class UOJSubmission {
         if (!$his) {
             return false;
         }
+        static::roundScoreInArray($his, 'actual_score');
         return $this->loadHistory($his);
     }
 
@@ -625,6 +637,7 @@ class UOJSubmission {
         if (!$his) {
             return false;
         }
+        static::roundScoreInArray($his, 'actual_score');
         return $this->loadHistory($his);
     }
 }

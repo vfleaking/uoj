@@ -20,6 +20,19 @@ class UOJProblemConfigure {
         'rcmp9' => 'rcmp9: 浮点数序列，绝对或相对误差在 1e-9 以内则视为答案正确',
     ];
 
+    public static $supported_score_types = [
+        'int' => '整数，每个测试点的部分分向下取整',
+        'real-0' => '整数，每个测试点的部分分四舍五入到整数',
+        'real-1' => '实数，四舍五入到小数点后1位',
+        'real-2' => '实数，四舍五入到小数点后2位',
+        'real-3' => '实数，四舍五入到小数点后3位',
+        'real-4' => '实数，四舍五入到小数点后4位',
+        'real-5' => '实数，四舍五入到小数点后5位',
+        'real-6' => '实数，四舍五入到小数点后6位',
+        'real-7' => '实数，四舍五入到小数点后7位',
+        'real-8' => '实数，四舍五入到小数点后8位',
+    ];
+
     public function __construct(UOJProblem $problem) {
         $this->problem = $problem;
         $problem_conf = $this->problem->getProblemConfArray('candidate');
@@ -35,6 +48,7 @@ class UOJProblemConfigure {
         $this->simple_form->input_config['class'] = 'col-sm-3 col-sm-push-2';
         $this->addSelect($this->simple_form, 'use_builtin_judger', ['on' => '默认', 'off' => '自定义judger'], '测评逻辑', 'off');
         $this->addSelect($this->simple_form, 'use_builtin_checker', self::$supported_checkers, '比对函数', 'ownchk');
+        $this->addSelect($this->simple_form, 'score_type', self::$supported_score_types, '测试点分数的数值类型', 'int');
         $this->addNumberInput($this->simple_form, 'n_tests', '数据点个数', 10);
         $this->addNumberInput($this->simple_form, 'n_ex_tests', '额外数据点个数', 0);
         $this->addNumberInput($this->simple_form, 'n_sample_tests', '样例数据点个数', 0);

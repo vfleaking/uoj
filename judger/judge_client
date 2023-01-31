@@ -1,5 +1,6 @@
 #!/usr/bin/python3.9
 
+from typing import List
 import json
 import sys
 import os
@@ -228,7 +229,13 @@ class Judger:
                 else:
                     assert len(sp) == 2
                     res[sp[0]] = sp[1]
-            res['score'] = int(res['score'])
+            try:
+                res['score'] = int(res['score'])
+            except ValueError:
+                res['score'] = float(res['score'])
+            if not (0 <= res['score'] <= 100):
+                res['score'] = 0
+                res['error'] = 'Score Error'
             res['time'] = int(res['time'])
             res['memory'] = int(res['memory'])
         res['status'] = 'Judged'

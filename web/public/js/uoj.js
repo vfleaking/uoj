@@ -439,12 +439,12 @@ $.fn.uoj_highlight = function() {
 		$(this).find(".uoj-score").each(function() {
 			var score = $(this).data('score');
 			if (isNaN(score)) {
-    			score = parseInt($(this).text());
+    			score = parseFloat($(this).text());
     	    }
     	    if (isNaN(score)) {
 				return;
 			}
-			var maxscore = parseInt($(this).data('max'));
+			var maxscore = parseFloat($(this).data('max'));
 			if (isNaN(maxscore)) {
 				$(this).css("color", getColOfScore(score));
 			} else {

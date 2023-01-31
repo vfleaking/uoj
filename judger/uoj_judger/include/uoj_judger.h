@@ -269,8 +269,92 @@ struct InfoBlock {
 	}
 };
 
-int scale_score(int scr100, int full) {
-	return scr100 * full / 100;
+enum SCORE_MODE {
+	SM_INT,
+	SM_REAL
+};
+
+/**
+ * @brief the value type for storing the score of a point/subtask/submission
+ */
+class score_t {
+private:
+	double __scr;
+public:
+	static SCORE_MODE mode;
+	static int P;
+	static int D;
+
+	score_t() = default;
+	score_t(const double &_scr) : __scr(_scr) {
+	}
+	
+#define SCORE_OP(x) friend inline score_t operator x(const score_t &lhs, const score_t &rhs) { return lhs.__scr x rhs.__scr; }
+	SCORE_OP(+)
+	SCORE_OP(-)
+	SCORE_OP(*)
+	SCORE_OP(/)
+#undef SCORE_OP
+
+#define SCORE_OP(x) friend inline bool operator x(const score_t &lhs, const score_t &rhs) { return lhs.__scr x rhs.__scr; }
+	SCORE_OP(==)
+	SCORE_OP(!=)
+	SCORE_OP(<)
+	SCORE_OP(<=)
+	SCORE_OP(>)
+	SCORE_OP(>=)
+#undef SCORE_OP
+
+#define SCORE_OP(x) inline score_t &operator x(const score_t &rhs) { __scr x rhs.__scr; return *this; }
+	SCORE_OP(+=)
+	SCORE_OP(-=)
+#undef SCORE_OP
+
+#define SCORE_OP(x) inline score_t operator x() { return x __scr; }
+	SCORE_OP(-)
+	SCORE_OP(+)
+#undef SCORE_OP
+
+	inline score_t rounded_score() const {
+		if (mode == SM_REAL) {
+			return round(__scr * P) / P;
+		} else {
+			// score_type = int. round to integer
+			return round(__scr);
+		}
+	}
+
+	explicit inline operator int() const {
+		return (int)round(__scr);
+	}
+
+	explicit inline operator double() const {
+		return __scr;
+	}
+
+	friend inline ostream& operator<<(ostream &out, const score_t &scr) {
+		auto default_prec = out.precision();
+		out.precision(13);
+		out << scr.__scr;
+		out.precision(default_prec);
+		return out;
+	}
+};
+
+SCORE_MODE score_t::mode;
+int score_t::P;
+int score_t::D;
+
+/**
+ * @brief given a score in a system where the full mark is 100, scale it so that the full mark equals "full"
+ */
+score_t scale_score(score_t scr100, score_t full) {
+	if (score_t::mode == SM_REAL) {
+		return (scr100 / 100 * full).rounded_score();
+	} else {
+		// score_type = int. round scr100 and full to integers. do integer division
+		return int(scr100) * int(full) / 100;
+	}
 }
 
 struct PointInfo {
@@ -279,14 +363,14 @@ struct PointInfo {
 	static bool show_res;
 
 	int num;
-	int scr;
+	score_t scr;
 	int ust, usm;
 	string info, in, out, res;
 
 	bool use_li;
 	vector<InfoBlock> li;
 
-	PointInfo(const int &_num, const int &_scr,
+	PointInfo(const int &_num, const score_t &_scr,
 			const int &_ust, const int &_usm, const string &_info = "default")
 			: num(_num), scr(_scr),
 			ust(_ust), usm(_usm), info(_info) {
@@ -302,7 +386,7 @@ struct PointInfo {
 		}
 	}
 
-	PointInfo(const int &_num, const int &_scr,
+	PointInfo(const int &_num, const score_t &_scr,
 			const int &_ust, const int &_usm, const string &_info,
 			const string &_in, const string &_out, const string &_res)
 			: num(_num), scr(_scr),
@@ -355,6 +439,7 @@ struct PointInfo {
 	}
 };
 
+
 bool PointInfo::show_in = true;
 bool PointInfo::show_out = true;
 bool PointInfo::show_res = true;
@@ -376,7 +461,7 @@ struct SubtaskMetaInfo {
 	string subtask_type;
 	string subtask_used_time_type;
 	vector<int> subtask_dependencies;
-	int full_score;
+	score_t full_score;
 
 	inline bool is_ordinary() {
 		return subtask_type == "packed" && subtask_used_time_type == "sum";
@@ -388,9 +473,10 @@ struct SubtaskInfo {
 
 	bool passed = true;
 	bool early_stop = false;
-	int scr, ust = 0, usm = 0;
+	score_t scr;
+	int ust = 0, usm = 0;
 	string info = "Accepted";
-	int unrescaled_min_score = 100;
+	score_t unrescaled_min_score = 100;
 	vector<PointInfo> points;
 
 	SubtaskInfo() = default;
@@ -485,7 +571,7 @@ struct SubtaskInfo {
 struct RunCheckerResult {
 	int type;
 	int ust, usm;
-	int scr;
+	score_t scr;
 	string info;
 
 	static RunCheckerResult from_file(const string &file_name, const RunResult &rres) {
@@ -509,7 +595,7 @@ struct RunCheckerResult {
 				if (fscanf(fres, "%lf", &d) != 1) {
 					return RunCheckerResult::failed_result();
 				} else {
-					res.scr = (int)floor(100 * d + 0.5);
+					res.scr = 100 * d;
 				}
 			} else {
 				res.scr = 0;
@@ -573,9 +659,9 @@ string work_path;
 string data_path;
 string result_path;
 
-int tot_time   = 0;
+int tot_time = 0;
 int max_memory = 0;
-int tot_score  = 0;
+score_t tot_score = 0;
 ostringstream details_out;
 map<string, string> config;
 
@@ -650,6 +736,12 @@ double conf_double(const string &key, int num, const double &val) {
 double conf_double(const string &key) {
 	return conf_double(key, 0);
 }
+score_t conf_score(const string &key, const score_t &val) {
+	return score_t(conf_double(key, double(val))).rounded_score();
+}
+score_t conf_score(const string &key, int num, const score_t &val) {
+	return score_t(conf_double(key, num, double(val))).rounded_score();
+}
 string conf_file_name_with_num(string s, int num) {
 	ostringstream name;
 	if (num < 0) {
@@ -709,7 +801,7 @@ SubtaskMetaInfo conf_subtask_meta_info(string pre, const int &num) {
 
 	meta.subtask_type = conf_str(pre + "subtask_type", num, "packed");
 	meta.subtask_used_time_type = conf_str(pre + "subtask_used_time_type", num, "sum");
-	meta.full_score = conf_int(pre + "subtask_score", num, 100 / nT);
+	meta.full_score = conf_score(pre + "subtask_score", num, 100 / nT);
 	if (conf_str("subtask_dependence", num, "none") == "many") {
 		string cur = "subtask_dependence_" + vtos(num);
 		int p = 1;
@@ -758,7 +850,7 @@ void add_point_info(const PointInfo &info, bool update_tot_score = true) {
 		}
 	}
 	if (update_tot_score) {
-        tot_score += info.scr;
+        tot_score = (tot_score + info.scr).rounded_score();
 	}
 
 	details_out << info;
@@ -787,35 +879,44 @@ void add_subtask_info(const SubtaskInfo &st_info) {
 	if (st_info.usm >= 0) {
 		max_memory = max(max_memory, st_info.usm);
 	}
-	tot_score += st_info.scr;
+	tot_score = (tot_score + st_info.scr).rounded_score();
 	details_out << st_info;
 }
 void end_judge_ok() {
-	FILE *fres = fopen((result_path + "/result.txt").c_str(), "w");
-	fprintf(fres, "score %d\n", tot_score);
-	fprintf(fres, "time %d\n", tot_time);
-	fprintf(fres, "memory %d\n", max_memory);
-	fprintf(fres, "details\n");
-	fprintf(fres, "<tests>\n");
-	fprintf(fres, "%s", details_out.str().c_str());
-	fprintf(fres, "</tests>\n");
-	fclose(fres);
+	ofstream fres(result_path + "/result.txt");
+	if (!fres) {
+		exit(1);
+	}
+	fres << "score " << tot_score << "\n";
+	fres << "time " << tot_time << "\n";
+	fres << "memory " << max_memory << "\n";
+	fres << "details\n";
+	fres << "<tests>\n";
+	fres << details_out.str();
+	fres << "</tests>\n";
+	fres.close();
 	exit(0);
 }
 void end_judge_judgement_failed(const string &info) {
-	FILE *fres = fopen((result_path + "/result.txt").c_str(), "w");
-	fprintf(fres, "error Judgment Failed\n");
-	fprintf(fres, "details\n");
-	fprintf(fres, "<error>%s</error>\n", htmlspecialchars(info).c_str());
-	fclose(fres);
+	ofstream fres(result_path + "/result.txt");
+	if (!fres) {
+		exit(1);
+	}
+	fres << "error Judgment Failed\n";
+	fres << "details\n";
+	fres << "<error>" << htmlspecialchars(info) << "</error>\n";
+	fres.close();
 	exit(0);
 }
 void end_judge_compile_error(const RunCompilerResult &res) {
-	FILE *fres = fopen((result_path + "/result.txt").c_str(), "w");
-	fprintf(fres, "error Compile Error\n");
-	fprintf(fres, "details\n");
-	fprintf(fres, "<error>%s</error>\n", htmlspecialchars(res.info).c_str());
-	fclose(fres);
+	ofstream fres(result_path + "/result.txt");
+	if (!fres) {
+		exit(1);
+	}
+	fres << "error Compile Error\n";
+	fres << "details\n";
+	fres << "<error>" << htmlspecialchars(res.info) << "</error>\n";
+	fres.close();
 	exit(0);
 }
 
@@ -1539,7 +1640,7 @@ bool main_data_test(TP test_point_func) {
 			if (po.scr != 100) {
 				passed = false;
 			}
-			po.scr = scale_score(po.scr, conf_int("point_score", i, 100 / n));
+			po.scr = scale_score(po.scr, conf_score("point_score", i, 100 / n));
 			add_point_info(po);
 		}
 	} else if (nT == 1 && conf_subtask_meta_info(1).is_ordinary()) { // ACM
@@ -1659,6 +1760,18 @@ void judger_init(int argc, char **argv) {
 	PointInfo::show_out = conf_str("show_out", "on") == "on";
 	PointInfo::show_res = conf_str("show_res", "on") == "on";
 
+	string score_type = conf_str("score_type", "int");
+	if (score_type == "int") {
+		score_t::mode = SM_INT;
+	} else {
+		score_t::mode = SM_REAL;
+		sscanf(score_type.c_str(), "real-%d", &score_t::D);
+		score_t::P = 1;
+		for (int i = 0; i < score_t::D; i++) {
+			score_t::P *= 10;
+		}
+	}
+	
 	if (chdir(work_path.c_str()) != 0) {
 		cerr << "invalid work path" << endl;
 		exit(1);

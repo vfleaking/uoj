@@ -205,7 +205,8 @@ function queryOIorIOIContestSubmissionData($contest, $prob_pos, $config = []) {
 			}
 			$row[0] = (int)$row[0];
 			$row[3] = $prob_pos[$row[3]];
-			$row[4] = (int)($r['final_result']['score']);
+
+			$row[4] = UOJSubmission::roundedScore($r['final_result']['score']);
 			$data[] = $row;
 		}
 	} else {
@@ -227,7 +228,7 @@ function queryOIorIOIContestSubmissionData($contest, $prob_pos, $config = []) {
 		foreach ($res as $row) {
 			$row[0] = (int)$row[0];
 			$row[3] = $prob_pos[$row[3]];
-			$row[4] = (int)$row[4];
+			$row[4] = UOJSubmission::roundedScore($row[4]);
 			$data[] = $row;
 		}
 	}
@@ -280,7 +281,7 @@ function queryACMContestSubmissionData($contest, $prob_pos, $config = []) {
 		$row[0] = (int)$row[0];
 		$row[3] = $prob_pos[$row[3]];
 		if (isset($row[4])) {
-			$row[4] = (int)$row[4];
+			$row[4] = UOJSubmission::roundedScore($row[4]);
 		}
 		if (isset($row[5])) {
 			$row[5] = (int)$row[5];
@@ -424,7 +425,7 @@ function calcStandings($contest, $contest_data, &$score, &$standings, $update_co
 		for ($i = 0; $i < $n_problems; $i++) {
 			if (isset($score[$person[0]][$i])) {
 				$cur_row = $score[$person[0]][$i];
-				$cur[0] += $cur_row[0];
+				$cur[0] = UOJSubmission::roundedScore($cur[0] + $cur_row[0]);
 				$cur[1] += $cur_row[1];
 				if ($update_contests_submissions) {
 					DB::insert([

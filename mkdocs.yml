@@ -19,4 +19,7 @@ markdown_extensions:
   - pymdownx.snippets
   - pymdownx.superfences
   - pymdownx.keys
+  - pymdownx.arithmatex
 extra_css: [extra.css]
+extra_javascript:
+  - https://uoj.ac/js/MathJax-2.7.9/MathJax.js?config=TeX-AMS_HTML

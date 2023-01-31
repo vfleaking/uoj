@@ -606,12 +606,10 @@ class JudgmentDetailsPrinter {
 	public function __construct($details, $styler, $name) {
 		$this->name = $name;
 		$this->styler = $styler;
-		$this->details = $details;
 		$this->dom = new DOMDocument();
-		if (!$this->dom->loadXML($this->details)) {
+		if (!$this->dom->loadXML($details)) {
 			throw new Exception("XML syntax error");
 		}
-		$this->details = '';
 	}
 	public function printHTML() {
 		$this->subtask_num = null;

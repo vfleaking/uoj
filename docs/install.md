@@ -15,7 +15,7 @@
 sudo docker-compose up
 ```
 
-### ⮞ 这是在做什么？
+### ▶ 这是在做什么？
 
 为了方便大家搭建 UOJ，我们发布的代码实际上是一份构建 UOJ 的 docker 镜像的代码，而这条命令简单来说就是先根据代码生成这个 UOJ 镜像，然后再把 UOJ 跑起来。
 
@@ -32,7 +32,7 @@ sudo docker-compose up
 * Docker —— 从入门到实践：<https://yeasy.gitbook.io/docker_practice/>
 * Docker 官方文档：<https://docs.docker.com/engine/>
 
-### ⮞ 可能遇到的问题
+### ▶ 可能遇到的问题
 
 * 如果安装成功，最后几行应该会看到 `Successfully tagged uoj_all:latest`、`Attaching to uoj-all`、`UOJ starts successfully` 的字样。
 * 如果报错说没有 docker，请先安装一个 docker。如果报错说没有 docker-compose，请先安装一个 docker-compose。
@@ -51,7 +51,7 @@ sudo docker-compose up
 
 然后你就可以在浏览器里输入 <http://local_uoj.ac> 来访问你刚刚搭好的 UOJ 了！
 
-### ⮞ 这是在做什么？
+### ▶ 这是在做什么？
 
 在没有修改配置文件的情况下，访问 UOJ 的默认网址是 <http://local_uoj.ac>。但你直接访问这个网址得到的却是 404，为什么呢？
 
@@ -146,7 +146,7 @@ return [
 ];
 ```
 
-### ⮞ 域名配置
+### ▶ 域名配置
 
 UOJ 默认的访问地址是 <http://local_uoj.ac>。如果你想使用自己的域名，可以修改上面的 `web` 键对应的数组内容。
 
@@ -156,7 +156,7 @@ UOJ 默认的访问地址是 <http://local_uoj.ac>。如果你想使用自己的
 
 不过博客功能的话需要给每个用户的博客域名进行解析，最好是用一种叫泛解析的技术解决。如果不具备这个条件，可以参考开源社区版 UOJ 将博客改成以子目录形式呈现。
 
-### ⮞ 邮箱配置
+### ▶ 邮箱配置
 
 noreply 邮箱的目的是发一些 OJ 相关的邮件，比如 svn 密码和 “找回密码”。
 
