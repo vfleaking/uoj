@@ -263,14 +263,14 @@
         
           <li class="md-nav__item">
   <a href="#_3" class="md-nav__link">
-    ⮞ 这是在做什么？
+    ▶ 这是在做什么？
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#_4" class="md-nav__link">
-    ⮞ 可能遇到的问题
+    ▶ 可能遇到的问题
   </a>
   
 </li>
@@ -290,7 +290,7 @@
         
           <li class="md-nav__item">
   <a href="#_5" class="md-nav__link">
-    ⮞ 这是在做什么？
+    ▶ 这是在做什么？
   </a>
   
 </li>
@@ -317,14 +317,14 @@
         
           <li class="md-nav__item">
   <a href="#_8" class="md-nav__link">
-    ⮞ 域名配置
+    ▶ 域名配置
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#_9" class="md-nav__link">
-    ⮞ 邮箱配置
+    ▶ 邮箱配置
   </a>
   
 </li>
@@ -453,14 +453,14 @@
         
           <li class="md-nav__item">
   <a href="#_3" class="md-nav__link">
-    ⮞ 这是在做什么？
+    ▶ 这是在做什么？
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#_4" class="md-nav__link">
-    ⮞ 可能遇到的问题
+    ▶ 可能遇到的问题
   </a>
   
 </li>
@@ -480,7 +480,7 @@
         
           <li class="md-nav__item">
   <a href="#_5" class="md-nav__link">
-    ⮞ 这是在做什么？
+    ▶ 这是在做什么？
   </a>
   
 </li>
@@ -507,14 +507,14 @@
         
           <li class="md-nav__item">
   <a href="#_8" class="md-nav__link">
-    ⮞ 域名配置
+    ▶ 域名配置
   </a>
   
 </li>
         
           <li class="md-nav__item">
   <a href="#_9" class="md-nav__link">
-    ⮞ 邮箱配置
+    ▶ 邮箱配置
   </a>
   
 </li>
@@ -552,7 +552,7 @@
 <p>在主目录下执行下面的命令：</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="__codelineno-0-1"></a>sudo docker-compose up
 </code></pre></div>
-<h3 id="_3">⮞ 这是在做什么？</h3>
+<h3 id="_3">▶ 这是在做什么？</h3>
 <p>为了方便大家搭建 UOJ，我们发布的代码实际上是一份构建 UOJ 的 docker 镜像的代码，而这条命令简单来说就是先根据代码生成这个 UOJ 镜像，然后再把 UOJ 跑起来。</p>
 <p><strong>镜像简介：</strong>什么是 docker？什么是镜像？这里稍微解释一下哈。比方说，你的同学张三做了一款很好玩的游戏，想分享给你。于是他把自己在本地写好的游戏打了个压缩包 “游戏.rar”，然后发送给了你。这个压缩包就是类似 docker 里面叫<strong>镜像</strong>（image）的东西，而 docker-compose 命令会先执行我们写好的小脚本，来生成一个 “压缩包”。那么为什么不把 UOJ 直接打个 “uoj.rar” 发过来呢？理论上不是不行，但 UOJ 是个网站，结构比普通游戏更复杂一点点。比如 UOJ 需要超级管理员权限来安装所需的数据库、编译器等等，软件版本和配置文件都不能有差错。为了防止大家折腾，我们这里就将 UOJ 整个用 docker 给“包了起来”。你可以认为 docker 镜像是一种更高级的压缩包，里面不仅包含了 UOJ 自己的源代码，还包含了 UOJ 所需的运行环境的全部信息。</p>
 <p><strong>容器简介：</strong>当然，你光得到了 “游戏.rar” 的压缩包，这还不叫玩游戏，你得先解压，然后找到一个叫 “游戏.exe” 的东西，然后双击，弹出个炫酷的窗口，这才叫玩游戏。docker 也是类似的。你可以把 docker 理解为一种轻量级的虚拟机，它可以理解 docker 镜像里面记录的内容，并支持你在一台计算机内部搭建一台虚拟的 “小计算机” 来让这个镜像真的运行起来。这台虚拟的小计算机又称为<strong>容器</strong>（container），而运行容器的计算机我们称为<strong>宿主机</strong>（host）。在生成了 UOJ 镜像之后，上面的 docker-compose 命令会让 docker 启动一个容器来真正地运行 UOJ。这个容器就好似你又买了一台计算机一样，只是你还是用你现在操作的这台宿主机的鼠标键盘来操控它。容器跟外部的宿主机几乎是互不影响的：即使 UOJ 在小计算机里对 C++ 编译器的版本进行了一大通升级，你的宿主机上的 C++ 编译器也不会发生任何变化。当然，如果你勇于折腾，可以通过阅读源代码的方式来搞清楚运行环境的具体要求，在宿主机上抛弃 docker 直接安装 UOJ，其实也不是很复杂。</p>
@@ -563,7 +563,7 @@
 <li>Docker —— 从入门到实践：<a href="https://yeasy.gitbook.io/docker_practice/">https://yeasy.gitbook.io/docker_practice/</a></li>
 <li>Docker 官方文档：<a href="https://docs.docker.com/engine/">https://docs.docker.com/engine/</a></li>
 </ul>
-<h3 id="_4">⮞ 可能遇到的问题</h3>
+<h3 id="_4">▶ 可能遇到的问题</h3>
 <ul>
 <li>如果安装成功，最后几行应该会看到 <code>Successfully tagged uoj_all:latest</code>、<code>Attaching to uoj-all</code>、<code>UOJ starts successfully</code> 的字样。</li>
 <li>如果报错说没有 docker，请先安装一个 docker。如果报错说没有 docker-compose，请先安装一个 docker-compose。</li>
@@ -577,7 +577,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="__codelineno-1-1"></a>127.0.0.1 local_uoj.ac
 </code></pre></div>
 <p>然后你就可以在浏览器里输入 <a href="http://local_uoj.ac">http://local_uoj.ac</a> 来访问你刚刚搭好的 UOJ 了！</p>
-<h3 id="_5">⮞ 这是在做什么？</h3>
+<h3 id="_5">▶ 这是在做什么？</h3>
 <p>在没有修改配置文件的情况下，访问 UOJ 的默认网址是 <a href="http://local_uoj.ac">http://local_uoj.ac</a>。但你直接访问这个网址得到的却是 404，为什么呢？</p>
 <p>这是因为像 “<a href="http://local_uoj.ac">http://local_uoj.ac</a>” 这种网址只是个名字而已，你的计算机暂时还不知道它对应着互联网上的哪台机器。为了找到对应的机器，就要找个人像问路一样问问：“你好你好，请问 local_uoj.ac 怎么走？” 这个问路的过程叫 <strong>DNS 解析</strong>，这个友好的路人叫 <strong>DNS 服务器</strong>。</p>
 <p>DNS 服务器会答复你一个 <strong>IP 地址</strong>来表示你想找的那台机器的位置。你平时之所以能通过 “<a href="https://www.bilibili.com">https://www.bilibili.com</a>” 访问B站，就是因为你每次询问 DNS 服务器，它都会以 IP 地址的形式告诉你哪一台服务器是这个网址对应的B站服务器。</p>
@@ -652,12 +652,12 @@
 <a id="__codelineno-4-53" name="__codelineno-4-53" href="__codelineno-4-53"></a>    <span class="p">]</span>
 <a id="__codelineno-4-54" name="__codelineno-4-54" href="__codelineno-4-54"></a><span class="p">];</span>
 </code></pre></div>
-<h3 id="_8">⮞ 域名配置</h3>
+<h3 id="_8">▶ 域名配置</h3>
 <p>UOJ 默认的访问地址是 <a href="http://local_uoj.ac">http://local_uoj.ac</a>。如果你想使用自己的域名，可以修改上面的 <code>web</code> 键对应的数组内容。</p>
 <p>如果你是搭校内网站这种内网网站，你可以选择自己搭建校内的 DNS 解析服务，或者给每台内网的机器更改 hosts。</p>
 <p>当然你也可以直接在 host 那里直接写 ip，就能直接通过 IP 访问了。</p>
 <p>不过博客功能的话需要给每个用户的博客域名进行解析，最好是用一种叫泛解析的技术解决。如果不具备这个条件，可以参考开源社区版 UOJ 将博客改成以子目录形式呈现。</p>
-<h3 id="_9">⮞ 邮箱配置</h3>
+<h3 id="_9">▶ 邮箱配置</h3>
 <p>noreply 邮箱的目的是发一些 OJ 相关的邮件，比如 svn 密码和 “找回密码”。</p>
 <p>你可以注册一个邮箱小号把账号密码放在 <code>mail</code> 键对应的数组里。同时还要查一下邮件服务商的 SMTP 服务器名和端口。有些邮箱是需要手动开启某个开关才能允许 SMTP 发送邮件的，这一点也需要注意。</p>
 
@@ -729,6 +729,8 @@
     
     
       <script src="../assets/javascripts/bundle.289a2a4b.min.js"></script>
+      
+        <script src="https://uoj.ac/js/MathJax-2.7.9/MathJax.js?config=TeX-AMS_HTML"></script>
       
     
   </body>
