@@ -4,8 +4,8 @@
 	
 	$q_problem_id = UOJRequest::get('problem_id', 'validateUInt', null);
 	$q_submitter = UOJRequest::get('submitter', 'validateUsername', null);
-	$q_min_score = UOJRequest::get('min_score', 'validateUInt', null);
-	$q_max_score = UOJRequest::get('max_score', 'validateUInt', null);
+	$q_min_score = UOJRequest::get('min_score', 'validateUFloat', null);
+	$q_max_score = UOJRequest::get('max_score', 'validateUFloat', null);
 	$q_lang = UOJRequest::get('language', 'is_short_string', null);
 
 	if (Auth::check()) {
