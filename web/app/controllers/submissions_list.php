@@ -4,8 +4,8 @@
 	
 	$q_problem_id = UOJRequest::get('problem_id', 'validateUInt', null);
 	$q_submitter = UOJRequest::get('submitter', 'validateUsername', null);
-	$q_min_score = UOJRequest::get('min_score', 'validateUInt', null);
-	$q_max_score = UOJRequest::get('max_score', 'validateUInt', null);
+	$q_min_score = UOJRequest::get('min_score', 'validateUFloat', null);
+	$q_max_score = UOJRequest::get('max_score', 'validateUFloat', null);
 	$q_lang = UOJRequest::get('language', 'is_short_string', null);
 
 	if (Auth::check()) {
@@ -62,9 +62,9 @@
 		</div>
 		<div id="form-group-score" class="form-group">
 			<label for="input-min_score" class="control-label"><?= UOJLocale::get('score range')?>:</label>
-			<input type="text" class="form-control input-sm" name="min_score" id="input-min_score" value="<?= $q_min_score ?>" maxlength="3" style="width:4em" placeholder="0" />
+			<input type="text" class="form-control input-sm" name="min_score" id="input-min_score" value="<?= $q_min_score ?>" maxlength="20" style="width:4em" placeholder="0" />
 			<label for="input-max_score" class="control-label">~</label>
-			<input type="text" class="form-control input-sm" name="max_score" id="input-max_score" value="<?= $q_max_score ?>" maxlength="3" style="width:4em" placeholder="100" />
+			<input type="text" class="form-control input-sm" name="max_score" id="input-max_score" value="<?= $q_max_score ?>" maxlength="20" style="width:4em" placeholder="100" />
 		</div>
 		<div id="form-group-language" class="form-group">
 			<label for="input-language" class="control-label"><?= UOJLocale::get('problems::language')?>:</label>
