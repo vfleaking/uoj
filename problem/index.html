@@ -860,8 +860,8 @@
 <p><strong>样例数据：</strong>样例必须被设置为前若干个额外数据。所以数据配置文件里有一个 <code>n_sample_tests</code> 参数，表示的是前多少组是样例。你需要把题面中的样例和大样例统统放进额外数据里。</p>
 <p><strong>答案检查器（chk）：</strong>数据配置文件中，<code>use_builtin_checker ncmp</code> 的意思是将本题的 checker 设置为 <code>ncmp</code>。checker 是指判断选手输出是否正确的答案检查器。一般来说，如果输出结果为整数序列，那么用 <code>ncmp</code> 就够了。<code>ncmp</code> 会比较标准答案的整数序列和选手输出的整数序列。如果是忽略所有空白字符，进行字符串序列的比较，可以用 <code>wcmp</code>。如果你想按行比较（不忽略行末空格，但忽略文末回车），可以使用 <code>fcmp</code>。</p>
 <p>如果想使用自定义的 checker，请使用 Codeforces 的 <a href="http://codeforces.com/testlib">testlib</a> 库编写 checker，并命名为 <code>chk.cpp</code>，然后在 problem.conf 中去掉 “<code>use_builtin_checker</code>” 这一行。</p>
-<p><strong>时空限制：</strong><code>time_limit</code> 控制的是一个测试点的时间限制，单位为秒。<code>memory_limit</code> 控制的是一个测试点的空间限制，单位为 MB。<code>output_limit</code> 控制的是程序的输出长度限制，单位也为 MB。注意这些限制<strong>都不能为小数</strong>。</p>
-<p>在目前的 UOJ 代码架构下，想让时间限制为小数似乎不是一件难事，但一直因为各种原因拖着没写。。希望有路过的有为青年可以帮帮忙咯。</p>
+<p><strong>时空限制：</strong><code>time_limit</code> 控制的是一个测试点的时间限制，单位为秒，可以是小数（至多三位小数，即最高精确到毫秒）。</p>
+<p><code>memory_limit</code> 控制的是一个测试点的空间限制，单位为 MB。<code>output_limit</code> 控制的是程序的输出长度限制，单位也为 MB。注意这两个限制都不能为小数。</p>
 <h4 id="2-hack">2. 配置 Hack 功能</h4>
 <p>如果想让你的题目支持 Hack 功能，那么你还要额外上传点程序。</p>
 <p><strong>数据检验器（val）</strong>：数据检验器的功能是检验你的题目的输入数据是否满足题目要求。比如你输入保证是个连通图，validator 就得检验这个图是不是连通的。但比如 “保证数据随机” “保证数据均为人手工输入” 等就无法进行检验。请使用 Codeforces 的 <a href="http://codeforces.com/testlib">testlib</a> 库编写，写好后命名为 val.cpp 即可。</p>
