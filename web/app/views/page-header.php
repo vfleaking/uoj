@@ -172,7 +172,7 @@ if (!isset($ShowPageHeader)) {
 				}
 			};
 		</script>
-		<?= HTML::js_src('/js/MathJax-3.2.2/tex-mml-chtml.js') ?>
+		<?= HTML::js_src('/js/MathJax-3.2.2/es5/tex-mml-chtml.js') ?>
 		<?php endif ?>
 		
 		<?php if (isset($REQUIRE_LIB['jquery.form'])): ?>
