@@ -1678,9 +1678,30 @@ bool main_data_test(TP test_point_func) {
 			}
 		}
 	} else { // subtask
+		map<int, SubtaskMetaInfo> subtask_metas;
+		score_t remaining_subtasks_total_score = 100;
+		int remaining_subtasks_cnt = nT;
+
+		for (int t = 1; t <= nT; t++) {
+			score_t subtask_score = conf_score("subtask_score", t, -1);
+
+			subtask_metas[t] = conf_subtask_meta_info(t);
+			subtask_metas[t].full_score = subtask_score;
+
+			if (subtask_score != -1) {
+				remaining_subtasks_total_score -= subtask_score;
+				remaining_subtasks_cnt--;
+			}
+		}
+
 		map<int, SubtaskInfo> subtasks;
 		for (int t = 1; t <= nT; t++) {
-			SubtaskInfo st_info(conf_subtask_meta_info(t));
+			SubtaskInfo st_info(subtask_metas[t]);
+
+			if (st_info.full_score == -1) {
+				st_info.full_score = remaining_subtasks_total_score / remaining_subtasks_cnt;
+			}
+
 			if (!st_info.resolve_dependencies(subtasks)) {
 				st_info.info = "Skipped";
 			} else {
