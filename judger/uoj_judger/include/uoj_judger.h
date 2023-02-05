@@ -1634,13 +1634,33 @@ bool main_data_test(TP test_point_func) {
 
 	bool passed = true;
 	if (nT == 0) { // OI
+		map<int, score_t> point_scores;
+		score_t remaining_tests_total_score = 100;
+		int remaining_tests_cnt = n;
+
+		for (int i = 1; i <= n; i++) {
+			score_t point_score = conf_score("point_score", i, -1);
+
+			if (point_score != -1) {
+				point_scores[i] = point_score;
+				remaining_tests_total_score -= point_score;
+				remaining_tests_cnt--;
+			}
+		}
+
 		for (int i = 1; i <= n; i++) {
 			report_judge_status_f("Judging Test #%d", i);
 			PointInfo po = test_point_func(i);
 			if (po.scr != 100) {
 				passed = false;
 			}
-			po.scr = scale_score(po.scr, conf_score("point_score", i, 100 / n));
+
+			if (point_scores.count(i)) {
+				po.scr = scale_score(po.scr, point_scores[i]);
+			} else {
+				po.scr = scale_score(po.scr, remaining_tests_total_score / remaining_tests_cnt);
+			}
+
 			add_point_info(po);
 		}
 	} else if (nT == 1 && conf_subtask_meta_info(1).is_ordinary()) { // ACM
