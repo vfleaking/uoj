@@ -10,6 +10,7 @@ class UOJForm {
 	public $is_big = false;
 	public $has_file = false;
 	public $ajax_submit_js = null;
+	public $prevent_multiple_submit = true;
 	public $run_at_server_handler = array();
 	private $data = array();
 	private $vdata = array();
@@ -518,6 +519,18 @@ class UOJForm {
 					EOD;
 		}
 
+		
+		if ($this->prevent_multiple_submit) {
+			echo <<<EOD
+							if (ok) {
+								$("#button-submit-{$this->form_name}").addClass('disabled');
+								$(this).submit(function () {
+									return false;
+								});
+							}
+
+					EOD;
+		}
 		if ($this->ajax_submit_js !== null) {
 			echo <<<EOD
 							e.preventDefault();

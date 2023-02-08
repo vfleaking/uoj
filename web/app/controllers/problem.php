@@ -118,6 +118,7 @@ if ($custom_test_enabled) {
 		return '';
 	};
 	$custom_test_form->ctrl_enter_submit = true;
+	$custom_test_form->prevent_multiple_submit = false;
 	$custom_test_form->setAjaxSubmit(<<<EOD
 		function(response_text) {
 			custom_test_onsubmit(
