@@ -469,7 +469,7 @@ function calcStandings($contest, $contest_data, &$score, &$standings, $update_co
 
 function calcACMScoreAndPenaltyForOneProblem($contest, $problem_id, $sub, $n_failures) {
 	if (isset($contest['extra_config']['bonus']["problem_{$problem_id}"])) {
-		if ($sub[4] === 100) {
+		if ($sub[4] == 100) {
 			return [0, -60 * 20];
 		} else {
 			return [0, 0];
@@ -477,7 +477,7 @@ function calcACMScoreAndPenaltyForOneProblem($contest, $problem_id, $sub, $n_fai
 	} else {
 		$penalty = (new DateTime($sub[1]))->getTimestamp() - $contest['start_time']->getTimestamp();
 		$penalty += $n_failures * 60 * 20;
-		if ($sub[4] === 0) {
+		if ($sub[4] == 0) {
 			$penalty = 0;
 		}
 		return [$sub[4], $penalty];
