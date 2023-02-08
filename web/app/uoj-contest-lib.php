@@ -477,7 +477,7 @@ function calcACMScoreAndPenaltyForOneProblem($contest, $problem_id, $sub, $n_fai
 	} else {
 		$penalty = (new DateTime($sub[1]))->getTimestamp() - $contest['start_time']->getTimestamp();
 		$penalty += $n_failures * 60 * 20;
-		if ($sub[4] === 0) {
+		if ($sub[4] == 0) {
 			$penalty = 0;
 		}
 		return [$sub[4], $penalty];
