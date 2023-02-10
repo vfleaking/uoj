@@ -247,9 +247,9 @@ class SvnProblemDataManager {
 			UOJLocalRun::execAnd([
 				['cd', $this->upload_dir],
 				<<<'EOD'
-				if [ `find . -maxdepth 1 -type f`File = File ];
-				then for sub_dir in `find -maxdepth 1 -type d ! -name .`;
-				do mv -f $sub_dir/* . && rm -rf $sub_dir; done; fi
+				if [ "$(find . -maxdepth 1 -type f)File" = "File" ];
+				then for sub_dir in "$(find -maxdepth 1 -type d ! -name .)";
+				do mv -f "$sub_dir"/* . && rm -rf "$sub_dir"; done; fi
 				EOD
 			]);
 			
