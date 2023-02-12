@@ -139,7 +139,7 @@ class UOJProblemConfigure {
             }
         }
 
-        $err = svnUpdateProblemConf($this->problem->info, $conf);
+        $err = $this->problem->updateCandidateProblemConf($conf);
         if ($err) {
             UOJResponse::message('<div>'.$err.'</div><a href="'.$this->href.'">返回</a>');
         }

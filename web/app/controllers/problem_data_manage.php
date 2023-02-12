@@ -47,7 +47,7 @@ if (isset($_POST['problem_data_file_submit'])) {
 	else{
 		$zip_mime_types = array('application/zip', 'application/x-zip', 'application/x-zip-compressed');
 		if(in_array($_FILES["problem_data_file"]["type"], $zip_mime_types)){
-			$errmsg = svnUploadViaBrowser($problem, $_FILES["problem_data_file"]["tmp_name"]);
+			$errmsg = UOJProblem::cur()->uploadDataViaZipFile($_FILES["problem_data_file"]["tmp_name"]);
 			if ($errmsg !== '') {
 				UOJResponse::message('<div>' . $errmsg . '</div><a href="/problem/'.$problem['id'].'/manage/data">返回</a>');
 			}
@@ -272,18 +272,18 @@ if (isset($_GET['display_file'])) {
 
 $hackable_form = new UOJForm('hackable');
 $hackable_form->handle = function() {
-	global $problem;
-	$problem['hackable'] = !$problem['hackable'];
-	$ret = svnSyncProblemData($problem, Auth::user());
+	UOJProblem::cur()->info['hackable'] = !UOJProblem::cur()->info['hackable'];
+
+	set_time_limit(60 * 5);
+	$ret = UOJProblem::cur()->syncData(Auth::user());
 	if ($ret) {
-		UOJResponse::message('<div>' . $ret . '</div><a href="/problem/'.$problem['id'].'/manage/data">返回</a>');
+		UOJResponse::message('<div>' . $ret . '</div><a href="/problem/'.UOJProblem::info('id').'/manage/data">返回</a>');
 	}
 	
-	$hackable = $problem['hackable'] ? 1 : 0;
 	DB::update([
 		"update problems",
-		"set", ["hackable" => $hackable],
-		"where", ["id" => $problem['id']]
+		"set", ["hackable" => UOJProblem::cur()->info['hackable']],
+		"where", ["id" => UOJProblem::info('id')]
 	]);
 };
 $hackable_form->submit_button_config['class_str'] = 'btn btn-warning btn-block';
@@ -292,11 +292,10 @@ $hackable_form->submit_button_config['smart_confirm'] = '';
 
 $data_form = new UOJForm('data');
 $data_form->handle = function() {
-	global $problem;
 	set_time_limit(60 * 5);
-	$ret = svnSyncProblemData($problem, Auth::user());
+	$ret = UOJProblem::cur()->syncData(Auth::user());
 	if ($ret) {
-		UOJResponse::message('<div>' . $ret . '</div><a href="/problem/'.$problem['id'].'/manage/data">返回</a>');
+		UOJResponse::message('<div>' . $ret . '</div><a href="/problem/'.UOJProblem::info('id').'/manage/data">返回</a>');
 	}
 };
 $data_form->submit_button_config['class_str'] = 'btn btn-primary btn-block';

@@ -6,8 +6,11 @@ class FS {
             'exclude_dots' => true
         ];
         $entries = scandir($directory);
+        if ($entries === false) {
+            return false;
+        }
         if ($cfg['exclude_dots']) {
-            $entries = array_filter($entries, fn($name) => $name !== '.' && $name !== '..');
+            $entries = array_values(array_filter($entries, fn($name) => $name !== '.' && $name !== '..'));
         }
         return $entries;
     }
@@ -60,5 +63,14 @@ class FS {
             system("mkdir ".UOJContext::storagePath()."/submission/$num");
         }
         return static::randomAvailableFileName("/submission/$num/");
+    }
+
+    public static function moveFilesInDir(string $src, string $dest) {
+        foreach (FS::scandir($src) as $name) {
+            if (!rename("{$src}/{$name}", "{$dest}/{$name}")) {
+                return false;
+            }
+        }
+        return true;
     }
 }

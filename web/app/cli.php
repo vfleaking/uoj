@@ -4,62 +4,93 @@ $_SERVER['DOCUMENT_ROOT'] = dirname(__DIR__);
 
 require $_SERVER['DOCUMENT_ROOT'] . '/app/uoj-lib.php';
 
+requirePHPLib('judger');
+requirePHPLib('svn');
+
 // TODO: more powerful argv parser
 
 $handlers = [
 	'upgrade:up' => function ($name) {
 		if (func_num_args() != 1) {
-			die("php cli.php upgrade:up <name>\n");
+			print("php cli.php upgrade:up <name>\n");
+			exit(1);
 		}
 		Upgrader::transaction(function() use($name)  {
 			Upgrader::up($name);
 		});
-		die("finished!\n");
+		print("finished!\n");
 	},
 	'upgrade:down' => function ($name) {
 		if (func_num_args() != 1) {
-			die("php cli.php upgrade:down <name>\n");
+			print("php cli.php upgrade:down <name>\n");
+			exit(1);
 		}
 		Upgrader::transaction(function() use($name)  {
 			Upgrader::down($name);
 		});
-		die("finished!\n");
+		print("finished!\n");
 	},
 	'upgrade:refresh' => function ($name) {
 		if (func_num_args() != 1) {
-			die("php cli.php upgrade:refresh <name>\n");
+			print("php cli.php upgrade:refresh <name>\n");
+			exit(1);
 		}
 		Upgrader::transaction(function() use($name)  {
 			Upgrader::refresh($name);
 		});
-		die("finished!\n");
+		print("finished!\n");
 	},
 	'upgrade:remove' => function ($name) {
 		if (func_num_args() != 1) {
-			die("php cli.php upgrade:remove <name>\n");
+			print("php cli.php upgrade:remove <name>\n");
+			exit(1);
 		}
 		Upgrader::transaction(function() use($name) {
 			Upgrader::remove($name);
 		});
-		die("finished!\n");
+		print("finished!\n");
 	},
 	'upgrade:latest' => function () {
 		if (func_num_args() != 0) {
-			die("php cli.php upgrade:latest\n");
+			print("php cli.php upgrade:latest\n");
+			exit(1);
 		}
 		Upgrader::transaction(function() {
 			Upgrader::upgradeToLatest();
 		});
-		die("finished!\n");
+		print("finished!\n");
 	},
 	'upgrade:remove-all' => function () {
 		if (func_num_args() != 0) {
-			die("php cli.php upgrade:remove-all\n");
+			print("php cli.php upgrade:remove-all\n");
+			exit(1);
 		}
 		Upgrader::transaction(function() {
 			Upgrader::removeAll();
 		});
-		die("finished!\n");
+		print("finished!\n");
+	},
+	'problem:sync' => function($id) {
+		if (func_num_args() != 1) {
+			print("php cli.php problem:sync <id>\n");
+			exit(1);
+		}
+		$www_data = posix_getpwnam("www-data");
+		if (posix_geteuid() != $www_data['uid']) {
+			print("please run the command as www-data\n");
+			exit(1);
+		}
+		$problem = UOJProblem::query($id);
+		if (!$problem) {
+			print("problem {$id} does not exist\n");
+			exit(1);
+		}
+		$err = $problem->syncData('root');
+		if ($err !== '') {
+			print("$err\n");
+			exit(1);
+		}
+		print("finished!\n");
 	},
 	'help' => 'showHelp'
 ];

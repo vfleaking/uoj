@@ -1119,14 +1119,14 @@ if (isset($_GET['copy']) && !isset($_GET['finish']) && !FM_READONLY) {
         </p>
         <p>
             <b><a href="<?= HTML::url('?', ['params' => [
-                'p' => urlencode(FM_PATH),
-                'copy' => urlencode($copy),
+                'p' => FM_PATH,
+                'copy' => $copy,
                 'finish' => 1,
                 '_token' => crsf_token()
             ]]) ?>"><i class="fa fa-check-circle"></i> Copy</a></b> &nbsp;
             <b><a href="<?= HTML::url('?', ['params' => [
-                'p' => urlencode(FM_PATH),
-                'copy' => urlencode($copy),
+                'p' => FM_PATH,
+                'copy' => $copy,
                 'finish' => 1,
                 'move' => 1,
                 '_token' => crsf_token()
@@ -1373,8 +1373,8 @@ if (isset($_GET['view'])) {
                 </p>
                 <p>
                     <b><a href="<?= HTML::url('?', ['params' => [
-                        'p' => urlencode(FM_PATH),
-                        'dl' => urlencode($file),
+                        'p' => FM_PATH,
+                        'dl' => $file,
                     ]])
                     ?>"><i class="fa fa-cloud-download"></i> <?php echo lng('Download') ?></a></b> &nbsp;
                     <b><a href="<?php echo fm_enc($file_url) ?>" target="_blank"><i class="fa fa-external-link-square"></i> <?php echo lng('Open') ?></a></b>
@@ -1385,13 +1385,13 @@ if (isset($_GET['view'])) {
                         $zip_name = pathinfo($file_path, PATHINFO_FILENAME);
                         ?>
                         <b><a href="<?= HTML::url('?', ['params' => [
-                            'p' => urlencode(FM_PATH),
-                            'unzip' => urlencode($file),
+                            'p' => FM_PATH,
+                            'unzip' => $file,
                             '_token' => crsf_token()
                         ]])?>"><i class="fa fa-check-circle"></i> <?php echo lng('UnZip') ?></a></b> &nbsp;
                         <b><a href="<?= HTML::url('?', ['params' => [
-                            'p' => urlencode(FM_PATH),
-                            'unzip' => urlencode($file),
+                            'p' => FM_PATH,
+                            'unzip' => $file,
                             'tofolder' => 1,
                             '_token' => crsf_token()
                         ]]) ?>" title="UnZip to <?php echo fm_enc($zip_name) ?>"><i class="fa fa-check-circle"></i>
@@ -1742,14 +1742,14 @@ $tableTheme = (FM_THEME == "dark") ? "text-white bg-dark table-dark" : "bg-white
                     <?php endif; ?>
                     <td class="inline-actions"><?php if (!FM_READONLY): ?>
                             <a title="<?php echo lng('Delete')?>" href="<?= HTML::url('?', ['params' => [
-                                'p' => urlencode(FM_PATH),
-                                'del' => urlencode($f),
+                                'p' => FM_PATH,
+                                'del' => $f,
                                 '_token' => crsf_token()
                             ]])?>" onclick="return confirm('<?php echo lng('Delete').' '.lng('Folder').'?'; ?>\n \n ( <?php echo urlencode($f) ?> )');"> <i class="fa fa-trash-o" aria-hidden="true"></i></a>
                             <a title="<?php echo lng('Rename')?>" href="#" onclick="rename('<?php echo fm_enc(addslashes(FM_PATH)) ?>', '<?php echo fm_enc(addslashes($f)) ?>');return false;"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
                             <a title="<?php echo lng('CopyTo')?>..." href="<?= HTML::url('?', ['params' => [
                                 'p' => '',
-                                'copy' => urlencode(trim(FM_PATH . '/' . $f, '/')),
+                                'copy' => trim(FM_PATH . '/' . $f, '/'),
                                 '_token' => crsf_token()
                             ]])?>"><i class="fa fa-files-o" aria-hidden="true"></i></a>
                         <?php endif; ?>
@@ -1814,21 +1814,21 @@ $tableTheme = (FM_THEME == "dark") ? "text-white bg-dark table-dark" : "bg-white
                         <a title="<?php echo lng('Preview') ?>" href="<?php echo $filelink.'&quickView=1'; ?>" data-toggle="lightbox" data-gallery="tiny-gallery" data-title="<?php echo fm_convert_win(fm_enc($f)) ?>" data-max-width="100%" data-width="100%"><i class="fa fa-eye"></i></a>
                         <?php if (!FM_READONLY): ?>
                             <a title="<?php echo lng('Delete') ?>" href="<?= HTML::url('?', ['params' => [
-                                'p' => urlencode(FM_PATH),
-                                'del' => urlencode($f),
+                                'p' => FM_PATH,
+                                'del' => $f,
                                 '_token' => crsf_token()
                             ]]) ?>" onclick="return confirm('<?php echo lng('Delete').' '.lng('File').'?'; ?>\n \n ( <?php echo urlencode($f) ?> )');"> <i class="fa fa-trash-o"></i></a>
                             <a title="<?php echo lng('Rename') ?>" href="#" onclick="rename('<?php echo fm_enc(addslashes(FM_PATH)) ?>', '<?php echo fm_enc(addslashes($f)) ?>');return false;"><i class="fa fa-pencil-square-o"></i></a>
                             <a title="<?php echo lng('CopyTo')?>..." href="<?= HTML::url('?', ['params' => [
-                                'p' => urlencode(FM_PATH),
-                                'copy' => urlencode(trim(FM_PATH . '/' . $f, '/')),
+                                'p' => FM_PATH,
+                                'copy' => trim(FM_PATH . '/' . $f, '/'),
                                 '_token' => crsf_token()
                             ]])?>"><i class="fa fa-files-o"></i></a>
                         <?php endif; ?>
                         <a title="<?php echo lng('DirectLink') ?>" href="<?php echo fm_enc(FM_ROOT_URL . (FM_PATH != '' ? '/' . FM_PATH : '') . '/' . $f) ?>" target="_blank"><i class="fa fa-link"></i></a>
                         <a title="<?php echo lng('Download') ?>" href="<?= HTML::url('?', ['params' => [
-                            'p' => urlencode(FM_PATH),
-                            'dl' => urlencode($f)
+                            'p' => FM_PATH,
+                            'dl' => $f
                         ]]) ?>"><i class="fa fa-download"></i></a>
                     </td>
                 </tr>

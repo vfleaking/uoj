@@ -326,6 +326,31 @@ class UOJProblem {
         return $conf->getNonTraditionalJudgeType();
     }
 
+    public function syncData($user = null) {
+	    return (new UOJProblemDataSynchronizer($this, $user))->sync();
+    }
+
+    public function addHackPoint($uploaded_input_file, $uploaded_output_file, $reason = null, $user = null) {
+        if ($reason === null) {
+            if (UOJHack::cur()) {
+                $reason = [
+                    'rejudge' => '自动重测本题所有获得100分的提交记录',
+                    'hack_url' => HTML::url(UOJHack::cur()->getUri())
+                ];
+            } else {
+                $reason = [];
+            }
+        }
+        return (new UOJProblemDataSynchronizer($this, $user))->addHackPoint($uploaded_input_file, $uploaded_output_file, $reason);
+    }
+
+    public function uploadDataViaZipFile($new_data_zip) {
+        return (new UOJProblemDataSynchronizer($this))->upload($new_data_zip);
+    }
+
+    public function updateCandidateProblemConf($new_problem_conf) {
+        return (new UOJProblemDataSynchronizer($this))->updateProblemConf($new_problem_conf);
+    }
 }
 
 UOJProblem::$table_for_content = 'problems_contents';
