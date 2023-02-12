@@ -64,9 +64,17 @@
 
 				transition: 'slide',
 				
-				math: {
-					mathjax: '<?= HTML::url('/js/MathJax-2.7.9/MathJax.js') ?>',
-					config: 'TeX-AMS_HTML-full'
+				mathjax3: {
+					mathjax: '<?= HTML::url('/js/MathJax-3.2.2/es5/tex-mml-chtml.js') ?>',
+					tex: {
+						inlineMath: [
+							[ '$', '$' ],
+							[ '\\(', '\\)' ]
+						]
+					},
+					options: {
+						skipHtmlTags: [ 'script', 'noscript', 'style', 'textarea', 'pre' ]
+					},
 				},
 
 				dependencies: [

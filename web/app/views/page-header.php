@@ -154,19 +154,69 @@ if (!isset($ShowPageHeader)) {
 		
 		<?php if (isset($REQUIRE_LIB['mathjax'])): ?>
 		<!-- MathJax -->
-		<script type="text/x-mathjax-config">
-			MathJax.Hub.Config({
-				showProcessingMessages: false,
-				tex2jax: {
-					inlineMath: [["$", "$"], ["\\\\(", "\\\\)"]],
-					processEscapes:true
+		<script>
+			MathJax = {
+				tex: {
+					inlineMath: [
+						['$', '$'],
+						['\\(', '\\)']
+					],
+					processEscapes: true
 				},
-				menuSettings: {
-					zoom: "Hover"
-    			}
-			});
+				options: {
+					menuOptions: {
+						settings: {
+							zoom: 'Click'
+						}
+					},
+					renderActions: {
+						addCopyText: [
+							155,
+							(doc) => {
+								for (const math of doc.math) {
+									MathJax.config.addCopyText(math, doc);
+								}
+							},
+							function(math, doc) {
+								MathJax.config.addCopyText(math, doc);
+							}
+						]
+					},
+				},
+				addCopyText(math, doc) {
+					doc.adaptor.append(
+						math.typesetRoot,
+						doc.adaptor.node(
+							'mjx-copytext',
+							{
+								'aria-hidden': true,
+							},
+							[
+								doc.adaptor.text(
+									math.start.delim +
+									math.math +
+									math.end.delim)
+							]
+						)
+					);
+				},
+				startup: {
+					ready() {
+						MathJax._.output.chtml_ts.CHTML.commonStyles['mjx-copytext'] = {
+							display: 'inline-block',
+							position: 'absolute',
+							top: 0,
+							left: 0,
+							width: 0,
+							height: 0,
+							opacity: 0,
+						};
+						MathJax.startup.defaultReady();
+					}
+				},
+			};
 		</script>
-		<?= HTML::js_src('/js/MathJax-2.7.9/MathJax.js?config=TeX-AMS_HTML') ?>
+		<?= HTML::js_src('/js/MathJax-3.2.2/es5/tex-mml-chtml.js') ?>
 		<?php endif ?>
 		
 		<?php if (isset($REQUIRE_LIB['jquery.form'])): ?>
