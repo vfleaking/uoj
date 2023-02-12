@@ -166,7 +166,7 @@ if (!isset($ShowPageHeader)) {
 				options: {
 					menuOptions: {
 						settings: {
-							zoom: 'Hover'
+							zoom: 'Click'
 						}
 					},
 					renderActions: {
