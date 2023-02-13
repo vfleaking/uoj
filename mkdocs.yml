@@ -22,4 +22,5 @@ markdown_extensions:
   - pymdownx.arithmatex
 extra_css: [extra.css]
 extra_javascript:
-  - https://uoj.ac/js/MathJax-2.7.9/MathJax.js?config=TeX-AMS_HTML
+  - js/mathjax-config.js
+  - https://uoj.ac/js/MathJax-3.2.2/es5/tex-mml-chtml.js
