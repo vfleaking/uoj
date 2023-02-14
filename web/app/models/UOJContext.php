@@ -6,7 +6,11 @@ class UOJContext {
 		'markdown' => [
 			'backend' => 'aux',
 			'timeout' => 5
-		]
+		],
+		'submission_frequency' => [
+			'interval' => 'PT1S',
+			'limit' => 1,
+		],
 	];
 
 	public static $data = [

@@ -337,6 +337,31 @@ $active_user_rule_form->handle = function(&$vdata) {
 };
 $active_user_rule_form->runAtServer();
 
+$submission_frequency = UOJContext::getMeta('submission_frequency');
+$submission_frequency_form = new UOJForm('submission_frequency');
+$submission_frequency_form->addVSelect('submission_frequency_interval', [
+	'PT1S' => '1 秒',
+	'PT10S' => '10 秒',
+	'PT1M' => '1 分钟',
+	'PT10M' => '10 分钟',
+	'PT30M' => '30 分钟',
+	'PT1H' => '1 小时',
+], '时间间隔', $submission_frequency['interval']);
+$submission_frequency_form->addVInput('submission_frequency_limit', 'number', '最大提交次数', $submission_frequency['limit'], function ($x, &$vdata) {
+	if (!validateUInt($x)) {
+		return '不合法';
+	}
+	$vdata['limit'] = (int)$x;
+	return '';
+}, null);
+$submission_frequency_form->handle = function (&$vdata) {
+	UOJContext::setMeta('submission_frequency', [
+		'interval' => UOJRequest::post('submission_frequency_interval'),
+		'limit' => $vdata['limit'],
+	]);
+};
+$submission_frequency_form->runAtServer();
+
 $cur_tab = isset($_GET['tab']) ? $_GET['tab'] : 'users';
 
 $tabs_info = [
@@ -593,6 +618,9 @@ requireLib('morris');
 		<h4>活跃用户判定标准</h4>
 		<p><?= UOJLocale::get('active rule', 'M') ?></p>
 		<?php $active_user_rule_form->printHTML() ?>
+		
+		<h4>提交频次限制</h4>
+		<?php $submission_frequency_form->printHTML() ?>
 		<?php endif ?>
 	</div>
 </div>
