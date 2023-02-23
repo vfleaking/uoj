@@ -339,7 +339,7 @@ $active_user_rule_form->runAtServer();
 
 $submission_frequency = UOJContext::getMeta('submission_frequency');
 $submission_frequency_form = new UOJForm('submission_frequency');
-$submission_frequency_form->addVSelect('submission_frequency_interval', [
+$submission_frequency_form->addSelect('submission_frequency_interval', [
 	'PT1S' => '1 秒',
 	'PT10S' => '10 秒',
 	'PT1M' => '1 分钟',
@@ -347,7 +347,7 @@ $submission_frequency_form->addVSelect('submission_frequency_interval', [
 	'PT30M' => '30 分钟',
 	'PT1H' => '1 小时',
 ], '时间间隔', $submission_frequency['interval']);
-$submission_frequency_form->addVInput('submission_frequency_limit', 'number', '最大提交次数', $submission_frequency['limit'], function ($x, &$vdata) {
+$submission_frequency_form->addInput('submission_frequency_limit', 'number', '最大提交次数', $submission_frequency['limit'], function ($x, &$vdata) {
 	if (!validateUInt($x)) {
 		return '不合法';
 	}
