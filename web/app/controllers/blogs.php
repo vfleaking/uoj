@@ -75,7 +75,7 @@ $config['table_classes'] = ['table', 'table-hover', 'table-vertical-middle'];
     echoLongTable(
         ['id', 'poster', 'title', 'post_time', 'active_time', 'zan'], 'blogs',
         ['is_hidden' => 0],
-        'order by '.$sortby.' desc',
+        'order by '.$sortby.' desc, id desc',
         $header, function($info) {
 			echoBlogCell(new UOJBlog($info));
 		}, $config
