@@ -2,63 +2,64 @@
  * A plugin which enables rendering of math equations inside
  * of reveal.js slides. Essentially a thin wrapper for MathJax.
  *
+ * Modified by vfleaking to support mathjax 3
+ *
  * @author Hakim El Hattab
  */
 var RevealMath = window.RevealMath || (function(){
 
-	var options = Reveal.getConfig().math || {};
-	options.mathjax = options.mathjax || 'http://cdn.mathjax.org/mathjax/latest/MathJax.js';
-	options.config = options.config || 'TeX-AMS_HTML-full';
 
-	loadScript( options.mathjax + '?config=' + options.config, function() {
+    // The reveal.js instance this plugin is attached to
+    let deck = Reveal;
 
-		MathJax.Hub.Config({
-			messageStyle: 'none',
-			tex2jax: { inlineMath: [['$','$'],['\\(','\\)']] },
-			skipStartupTypeset: true
-		});
+    let defaultOptions = {
+        tex: {
+            inlineMath: [ [ '$', '$' ], [ '\\(', '\\)' ]  ]
+        },
+        options: {
+            skipHtmlTags: [ 'script', 'noscript', 'style', 'textarea', 'pre' ]
+        },
+        startup: {
+            ready: () => {
+                MathJax.startup.defaultReady();
+                MathJax.startup.promise.then(() => {
+                    Reveal.layout();
+                });
+            }
+        }
+    };
 
-		// Typeset followed by an immediate reveal.js layout since
-		// the typesetting process could affect slide height
-		MathJax.Hub.Queue( [ 'Typeset', MathJax.Hub ] );
-		MathJax.Hub.Queue( Reveal.layout );
+    function loadScript( url, callback ) {
 
-		// Reprocess equations in slides when they turn visible
-		Reveal.addEventListener( 'slidechanged', function( event ) {
+        let script = document.createElement( 'script' );
+        script.type = "text/javascript"
+        script.id = "MathJax-script"
+        script.src = url;
+        script.async = true
 
-			MathJax.Hub.Queue( [ 'Typeset', MathJax.Hub, event.currentSlide ] );
+        // Wrapper for callback to make sure it only fires once
+        script.onload = () => {
+            if (typeof callback === 'function') {
+                callback.call();
+                callback = null;
+            }
+        };
 
-		} );
+        document.head.appendChild( script );
 
-	} );
+    }
 
-	function loadScript( url, callback ) {
+	let revealOptions = deck.getConfig().mathjax3 || {};
+	let options = {...defaultOptions, ...revealOptions};
+	options.tex = {...defaultOptions.tex, ...revealOptions.tex}
+	options.options = {...defaultOptions.options, ...revealOptions.options}
+	options.startup = {...defaultOptions.startup, ...revealOptions.startup}
 
-		var head = document.querySelector( 'head' );
-		var script = document.createElement( 'script' );
-		script.type = 'text/javascript';
-		script.src = url;
+	let url = options.mathjax || 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+	options.mathjax = null;
 
-		// Wrapper for callback to make sure it only fires once
-		var finish = function() {
-			if( typeof callback === 'function' ) {
-				callback.call();
-				callback = null;
-			}
-		}
+	window.MathJax = options;
 
-		script.onload = finish;
-
-		// IE
-		script.onreadystatechange = function() {
-			if ( this.readyState === 'loaded' ) {
-				finish();
-			}
-		}
-
-		// Normal browsers
-		head.appendChild( script );
-
-	}
+	loadScript( url, function() { } );
 
 })();
