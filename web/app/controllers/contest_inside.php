@@ -316,6 +316,7 @@
 		$options[] = ['value' => 'all', 'text' => '所有题目'];
 		for ($i = 0; $i < count($problems); $i++) {
 			$problem = UOJContestProblem::query($problems[$i]);
+			$problem->problem_number = $i;
 			$options[] = [
 				'value' => $problem->getLetter(),
 				'text' => $problem->getTitle(['with' => 'letter', 'simplify' => true]),
