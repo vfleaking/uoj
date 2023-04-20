@@ -181,14 +181,12 @@
 			</div>
 		</form>
 		<div class="checkbox">
-		<label class="checkbox-inline" for="input-show_tags_mode"><input type="checkbox" id="input-show_tags_mode" <?= isset($_COOKIE['show_tags_mode']) ? 'checked="checked" ': ''?>/> <?= UOJLocale::get('problems::show tags') ?></label>
-		<label class="checkbox-inline" for="input-show_submit_mode"><input type="checkbox" id="input-show_submit_mode" <?= isset($_COOKIE['show_submit_mode']) ? 'checked="checked" ': ''?>/> <?= UOJLocale::get('problems::show statistics') ?></label>
+			<label class="checkbox-inline" for="input-show_tags_mode"><input type="checkbox" id="input-show_tags_mode" <?= isset($_COOKIE['show_tags_mode']) ? 'checked="checked" ': ''?>/> <?= UOJLocale::get('problems::show tags') ?></label>
+			<label class="checkbox-inline" for="input-show_submit_mode"><input type="checkbox" id="input-show_submit_mode" <?= isset($_COOKIE['show_submit_mode']) ? 'checked="checked" ': ''?>/> <?= UOJLocale::get('problems::show statistics') ?></label>
 		</div>
 	</div>
-	<div class="col-sm-4 col-sm-pull-4">
-		<?php echo $pag->pagination(); ?>
-	</div>
 </div>
+<?= $pag->pagination() ?>
 <script type="text/javascript">
 $('#input-show_tags_mode').click(function() {
 	if (this.checked) {
@@ -221,8 +219,6 @@ echo HTML::responsive_table($header, $pag->get(), [
 if (isSuperUser($myUser)) {
 	$new_problem_form->printHTML();
 }
-
-echo $pag->pagination();
-
 ?>
+<?= $pag->pagination() ?>
 <?php echoUOJPageFooter() ?>
