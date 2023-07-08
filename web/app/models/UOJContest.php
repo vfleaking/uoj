@@ -83,7 +83,8 @@ class UOJContest {
         $contest = self::info();
 
         $data = queryContestData($contest);
-        calcStandings($contest, $data, $score, $standings, true);
+        $update_contests_submissions = $contest['cur_progress'] != CONTEST_FINISHED;
+        calcStandings($contest, $data, $score, $standings, $update_contests_submissions);
         if (!isset($contest['extra_config']['unrated'])) {
             $rating_k = isset($contest['extra_config']['rating_k']) ? $contest['extra_config']['rating_k'] : 400;
             $ratings = calcRating($standings, $rating_k);
@@ -95,43 +96,50 @@ class UOJContest {
         }
 
         for ($i = 0; $i < count($standings); $i++) {
-            $user = UOJUser::query($standings[$i][2][0]);
-            $change = $ratings[$i] - $user['rating'];
-            $user_link = getUserLink($user['username']);
+            $username = $standings[$i][2][0];
+            $userrating = $standings[$i][2][1];
+            $change = $ratings[$i] - $userrating;
 
-            $content = '<p>'.$user_link.' 您好：</p>';
+            $title = 'Rating变化通知';
+
+            if ($contest['cur_progress'] == CONTEST_FINISHED) {
+                $title .= '（更正）';
+            }
+
+            $content = '<p>'.getUserLink($username, $userrating).' 您好：</p>';
+            $content .= '<p class="indent2">';
             if ($change != 0) {
                 $chstr = ($change > 0 ? '+' : '').$change;
-                $content .= '<p class="indent2">';
                 $content .= '您在 <a href="/contest/'.$contest['id'].'">'.$contest['name'].'</a> 这场比赛后的Rating变化为<strong style="color:red">'.$chstr.'</strong>，';
-                $content .= '当前Rating为 <strong style="color:red">'.$ratings[$i].'</strong>。';
-                $content .= '</p>';
             } else {
-                $content .= '<p class="indent2">';
                 $content .= '您在 <a href="/contest/'.$contest['id'].'">'.$contest['name'].'</a> 这场比赛后Rating没有变化。';
-                $content .= '当前Rating为 <strong style="color:red">'.$ratings[$i].'</strong>。';
-                $content .= '</p>';
             }
-            sendSystemMsg($user['username'], 'Rating变化通知', $content);
+            $content .= '当前Rating为 <strong style="color:red">'.$ratings[$i].'</strong>。';
+            $content .= '</p>';
+            sendSystemMsg($username, $title, $content);
+
             DB::update([
                 "update user_info",
                 "set", ["rating" => "{$ratings[$i]}"],
-                "where", ["username" => $standings[$i][2][0]]
+                "where", ["username" => $username]
             ]);
             DB::update([
                 "update contests_registrants",
                 "set", ["final_rank" => $standings[$i][3]],
                 "where", [
                     "contest_id" => $contest['id'],
-                    "username" => $standings[$i][2][0]
+                    "username" => $username
                 ]
             ]);
         }
-        DB::update([
-            "update contests",
-            "set", ["status" => 'finished'],
-            "where", ["id" => $contest['id']]
-        ]);
+
+        if ($contest['cur_progress'] != CONTEST_FINISHED) {
+            DB::update([
+                "update contests",
+                "set", ["status" => 'finished'],
+                "where", ["id" => $contest['id']]
+            ]);
+        }
 
         UOJRanklist::updateActiveUserList();
 
