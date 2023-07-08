@@ -69,9 +69,9 @@ class HTML {
 	public static function avatar_addr($user, $size) {
 		$extra = UOJUser::getExtra($user);
 		if (isset($extra['avatar']) && $extra['avatar'] === 'banned') {
-			return '//gravatar.zeruns.tech/avatar/' . md5('banned') . "?d=mm&amp;s=$size";
+			return '//cravatar.cn/avatar/' . md5('banned') . "?f=mp&amp;s=$size";
 		} else {
-			return '//gravatar.zeruns.tech/avatar/' . md5(strtolower(trim($user['email']))) . "?d=mm&amp;s=$size";
+			return '//cravatar.cn/avatar/' . md5(strtolower(trim($user['email']))) . "?d=mp&amp;s=$size";
 		}
 	}
 	

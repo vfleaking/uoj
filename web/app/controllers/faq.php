@@ -15,6 +15,7 @@
 		</header>
 		<p>UOJ不提供头像存储服务。每到一个网站都要上传一个头像挺烦的对不对？UOJ支持Gravatar，请使用Gravatar吧！Gravatar是一个全球的头像存储服务，你的头像将会与你的电子邮箱绑定。在各大网站比如各种Wordpress还有各种OJ比如Vijos、Contest Hunter上，只要你电子邮箱填对了，那么你的头像也就立即能显示了！</p>
 		<p>快使用Gravatar吧！ Gravatar地址：<a href="https://cn.gravatar.com/">https://cn.gravatar.com/</a>。进去后注册个帐号然后与邮箱绑定并上传头像，就ok啦！</p>
+		<p>UOJ 实际上是通过完美兼容Gravatar的Cravatar来显示头像的。如果访问Gravatar有困难，也可以使用Cravatar存储头像！ Cravatar地址：<a href="https://cravatar.cn/">https://cravatar.cn/</a>。</p>
 	</section>
 	<section>
 		<header>
