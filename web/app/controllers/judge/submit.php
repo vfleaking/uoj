@@ -183,12 +183,23 @@
 
         for ($times = 0; $times < 10; $times++) {
             $submission = null;
-            $his = DB::selectFirst([
-			"select submissions_history.id, submissions_history.submission_id from submissions_history",
-			"inner join submissions on submissions.id = submissions_history.submission_id",
-			"where", array_merge(["submissions_history.status" => $status, "submissions_history.major" => 0], $assignCond),
-                "order by id limit 1"
-            ]);
+            if ($assignCond) {
+                $his = DB::selectFirst([
+                    "select submissions_history.id, submissions_history.submission_id from submissions_history",
+                    "inner join submissions on submissions.id = submissions_history.submission_id",
+                    "where", array_merge(
+                        ["submissions_history.status" => $status, "submissions_history.major" => 0],
+                        $assignCond
+                    ),
+                    "order by id limit 1"
+                ]);
+            } else {
+                $his = DB::selectFirst([
+                    "select id, submission_id from submissions_history",
+                    "where", ["status" => $status, "major" => 0],
+                    "order by id limit 1"
+                ]);
+            }
             if (!$his) {
                 return null;
             }
