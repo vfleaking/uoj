@@ -54,8 +54,8 @@ installAptPackages() {
         return 1
     fi
 
-
-    python3.9 -m pip install pip --upgrade
+    python3.9 -m pip config set global.index_url 'https://pypi.tuna.tsinghua.edu.cn/simple' &&
+    python3.9 -m pip install pip --upgrade &&
     python3.9 -m pip install requests --upgrade
 
     if [ $? -ne 0 ]; then

@@ -43,6 +43,38 @@ uojLocaleData = {
 	"editor::upload from local": {
 		"en": "Upload from local",
 		"zh-cn": "从本地文件上传"
+	},
+	"quiz::empty answer alert": {
+		"en": function(empty_list) {
+			var ret = empty_list.length + " question";
+			ret += empty_list.length <= 1 ? " is" : "s are"
+			ret += " left unanswered (";
+			for (var i = 0; i < empty_list.length && i < 3; i++) {
+				if (i > 0) {
+					ret += ", ";
+				}
+				ret += "#" + empty_list[i];
+			}
+			if (empty_list.length > 3) {
+				ret += ", etc."
+			}
+			ret += "). Are your sure you want to submit?"
+			return ret;
+		},
+		"zh-cn": function(empty_list) {
+			var ret = "第";
+			for (var i = 0; i < empty_list.length && i < 3; i++) {
+				if (i > 0) {
+					ret += "、";
+				}
+				ret += empty_list[i];
+			}
+			if (empty_list.length > 3) {
+				ret += "等" + empty_list.length;
+			}
+			ret += "题尚未作答，你确定要提交吗？";
+			return ret;
+		}
 	}
 };
 
@@ -142,7 +174,7 @@ function getUserLink(username, rating, addSymbol) {
 	}
 	var text = username;
 	if (username.charAt(0) == '@') {
-		username = username.substr(1);
+		username = username.substring(1);
 	}
 	if (addSymbol) {
 		if (rating >= 2500) {
@@ -164,7 +196,7 @@ function getUserSpan(username, rating, addSymbol) {
 	}
 	var text = username;
 	if (username.charAt(0) == '@') {
-		username = username.substr(1);
+		username = username.substring(1);
 	}
 	if (addSymbol) {
 		if (rating >= 2500) {
@@ -223,6 +255,12 @@ function showErrorHelp(name, err) {
 function getFormErrorAndShowHelp(name, val) {
 	var err = val($('#input-' + name).val());
 	return showErrorHelp(name, err);
+}
+function disableFormSubmit(form_name) {
+	$("#button-submit-" + form_name).addClass('disabled');
+	$("#form-" + form_name).submit(function () {
+		return false;
+	});
 }
 
 function validateSettingPassword(str) {
@@ -394,12 +432,28 @@ $.fn.countdown = function(rest, callback) {
 
 // update_judgement_status
 update_judgement_status_list = []
-function update_judgement_status_details(id) {
+update_judgement_status_base_delay = 500;
+update_judgement_status_delay_adder = 500;
+update_judgement_status_max_delay = 30 * 1000; // 30s
+function update_judgement_status_details(id, base_delay = 0, delay_adder = 0) {
 	update_judgement_status_list.push(id);
+	if (base_delay > update_judgement_status_base_delay) {
+		update_judgement_status_base_delay = base_delay;
+	}
+	if (delay_adder > update_judgement_status_delay_adder) {
+		update_judgement_status_delay_adder = delay_adder;
+	}
 };
 
-$(document).ready(function() {
-	var n_wait = 0;
+$(document).ready(function() {	
+	var mean_delay = update_judgement_status_base_delay + update_judgement_status_delay_adder;
+
+	function random_delay() {
+		return -Math.log(1.0 - Math.random());
+	}
+
+	var next_delay = random_delay() * mean_delay;
+
 	function update() {
 		$.get("/submission-status-details", {
 				get: update_judgement_status_list
@@ -414,20 +468,24 @@ $(document).ready(function() {
 					if (!data[i].waiting) {
 						is_waiting = false;
 					}
-					if (is_waiting) {
-						n_wait++;
-					} else {
-						n_wait = 0;
+				}
+				if (is_waiting) {
+					mean_delay += update_judgement_status_delay_adder;
+					if (mean_delay > update_judgement_status_max_delay) {
+						mean_delay = update_judgement_status_max_delay;
 					}
+					next_delay = random_delay() * mean_delay;
+				} else {
+					next_delay = delay = update_judgement_status_base_delay;
 				}
 			}, 'json').always(
 			function() {
-    			setTimeout(update, 500 << Math.min(n_wait, 6));
+    			setTimeout(update, next_delay);
 	    	}
 	    );
 	}
 	if (update_judgement_status_list.length > 0) {
-		setTimeout(update, 500);
+		setTimeout(update, next_delay);
 	}
 });
 
@@ -641,6 +699,7 @@ function get_codemirror_mode(lang) {
 		case 'Java8':
 		case 'Java11':
 		case 'Java14':
+		case 'Java17':
 			return 'text/x-java';
 		case 'Pascal':
 			return 'text/x-pascal';
@@ -673,20 +732,41 @@ function require_codemirror_mode(mode, callback) {
 	}
 };
 
-// auto save
-function autosave_locally(interval, name, target) {
+function is_localStorage_supported() {
 	if (typeof(Storage) === "undefined") {
 		console.log('autosave_locally: Sorry! No Web Storage support..');
+		return false;
+	} else {
+		return true;
+	}
+}
+
+function local_var_at_this_page(name, val) {
+	if (!is_localStorage_supported()) {
 		return;
 	}
+
 	var url = window.location.href;
 	var hp = url.indexOf('#');
-	var uri = hp == -1 ? url : url.substr(0, hp);
+	var uri = hp == -1 ? url : url.substring(0, hp);
 	var full_name = name + '@' + uri;
 
-	target.val(localStorage.getItem(full_name));
+	if (val === undefined) {
+		return localStorage.getItem(full_name);
+	} else {
+		localStorage.setItem(full_name, val)
+	}
+}
+
+// auto save
+function autosave_locally(interval, name, target) {
+	if (!is_localStorage_supported()) {
+		return;
+	}
+
+	target.val(local_var_at_this_page(name));
 	var save = function() {
-		localStorage.setItem(full_name, target.val());
+		local_var_at_this_page(name, target.val());
 		setTimeout(save, interval);
 	};
 	setTimeout(save, interval);
@@ -1027,6 +1107,70 @@ $.fn.text_file_form_group = function(name, text) {
 			}
 			check_advanced_init();
 		}
+	});
+}
+
+function quiz_problem_form_init(form_name) {
+	var inputs = {}
+
+	$('#form-' + form_name + ' *').filter(':input').each(function() {
+		var name = this.name;
+		switch (this.type) {
+			case 'checkbox':
+				inputs[name] = this.type;
+				if (is_localStorage_supported()) {
+					var varname = name + '_' + this.value;
+					var checked = local_var_at_this_page(varname);
+					if (checked !== null) {
+						this.checked = checked === 'true';
+					}
+					$(this).change(function() {
+						local_var_at_this_page(varname, this.checked);
+					});
+				}
+				break;
+			case 'radio':
+				inputs[name] = this.type;
+				if (is_localStorage_supported()) {
+					var value = local_var_at_this_page(name);
+					if (value !== null) {
+						this.checked = this.value == value;
+					}
+					$(this).change(function() {
+						local_var_at_this_page(name, $('input[name="' + name + '"]:checked').val());
+					});
+				}
+				break;
+		}
+	});
+
+	$('#form-' + form_name).submit(function(e) {
+		var ok = true;
+		var empty_list = [];
+		for (var name in inputs) {
+			var type = inputs[name];
+			var qid = parseInt(name.substring((form_name + '_Q').length));
+			switch (type) {
+				case 'checkbox':
+				case 'radio':
+					if ($('input[name="' + name + '"]:checked').length == 0) {
+						empty_list.push(qid);
+					}
+					break;
+			}
+		}
+
+		if (empty_list.length > 0) {
+			if (!confirm(uojLocale("quiz::empty answer alert", empty_list))) {
+				ok = false;
+			}
+		}
+
+		if (ok) {
+			disableFormSubmit(form_name);
+		}
+
+		return ok;
 	});
 }
 

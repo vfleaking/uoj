@@ -1,11 +1,11 @@
 <?php
-	requirePHPLib('form');
 	requirePHPLib('svn');
 
 	UOJProblem::init(UOJRequest::get('id')) || UOJResponse::page404();
 	UOJProblem::cur()->userCanManage(Auth::user()) || UOJResponse::page403();
 
-	$managers_form = newAddDelCmdForm('managers',
+	$managers_form = new UOJAddDelCmdForm(
+		'managers',
 		'validateUserAndStoreByUsername',
 		function($type, $username, &$vdata) {
 			$user = $vdata['user'][$username];

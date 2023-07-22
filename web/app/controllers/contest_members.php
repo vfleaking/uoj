@@ -1,6 +1,4 @@
 <?php
-	requirePHPLib('form');
-	
     UOJContest::init(UOJRequest::get('id')) || UOJResponse::page404();
 
 	$contest = UOJContest::info();

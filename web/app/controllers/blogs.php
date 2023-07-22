@@ -1,7 +1,5 @@
 <?php
 
-requirePHPLib('form');
-
 if (Cookie::get('blogs_sortby') === 'active') {
 	$sortby = 'active_time';
 } else {

@@ -1,6 +1,7 @@
 <?php
 
-
+// Actually, these things should be done by main_judger so that the code would be much simpler.
+// However, this class exists due to some history issues.
 class UOJProblemDataSynchronizer {
 	private UOJProblem $problem;
 	private UOJProblemCandidateDataManager $candidate_data_manager;
@@ -224,10 +225,17 @@ class UOJProblemDataSynchronizer {
 		return $this->lock(LOCK_EX, fn() => $this->_upload($new_data_zip));
 	}
 	
-	public function _updateProblemConf($new_problem_conf) {
+	public function _updateFromArray($data) {
 		try {
 			$this->create_upload_folder();
-			putUOJConf("{$this->upload_dir}/problem.conf", $new_problem_conf);
+			foreach ($data as $file_name => $content) {
+				if ($file_name == 'problem.conf') {
+					putUOJConf("{$this->upload_dir}/problem.conf", $content);
+				} else {
+					// assume $data is from a trusted source
+					file_put_contents("{$this->upload_dir}/$file_name", $content);
+				}
+			}
 			$this->commit_upload_folder();
 			return '';
 		} catch (Exception $e) {
@@ -236,8 +244,8 @@ class UOJProblemDataSynchronizer {
 			$this->remove_prepare_folder();
 		}
 	}
-	public function updateProblemConf($new_problem_conf) {
-		return $this->lock(LOCK_EX, fn() => $this->_updateProblemConf($new_problem_conf));
+	public function updateFromArray($data) {
+		return $this->lock(LOCK_EX, fn() => $this->_updateFromArray($data));
 	}
 
 	private function _addHackPoint($uploaded_input_file, $uploaded_output_file, $reason) {

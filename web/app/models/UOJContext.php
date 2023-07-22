@@ -5,11 +5,15 @@ class UOJContext {
 		'active_duration_M' => 36,
 		'markdown' => [
 			'backend' => 'aux',
-			'timeout' => 5
+			'timeout' => 30
 		],
 		'submission_frequency' => [
 			'interval' => 'PT1S',
 			'limit' => 1,
+		],
+		'update_judgement_status_delay' => [
+			'base' => 500,
+			'adder' => 500
 		],
 	];
 

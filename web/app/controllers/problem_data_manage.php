@@ -1,6 +1,5 @@
 <?php
 
-requirePHPLib('form');
 requirePHPLib('judger');
 requirePHPLib('svn');
 
@@ -302,31 +301,35 @@ $data_form->submit_button_config['class_str'] = 'btn btn-primary btn-block';
 $data_form->submit_button_config['text'] = '与svn仓库同步';
 $data_form->submit_button_config['smart_confirm'] = '';
 
-$clear_data_form = new UOJForm('clear_data');
-$clear_data_form->handle = function() {
-	svnClearProblemData(UOJProblem::info());
-};
-$clear_data_form->submit_button_config['class_str'] = 'btn btn-danger btn-block';
-$clear_data_form->submit_button_config['text'] = '清空题目数据';
-$clear_data_form->submit_button_config['smart_confirm'] = '';
-
 $rejudge_form = new UOJForm('rejudge');
+$rejudge_form->addVSelect('rejudge_type', [
+		'ALL' => '重测所有记录',
+		'GE97' => '重测 >=97 的记录',
+		'MINOR' => '偷偷重测所有记录'
+	],
+	'操作类型',
+	'ALL'
+);
 $rejudge_form->handle = function() {
-	UOJSubmission::rejudgeProblem(UOJProblem::cur());
+	switch (UOJRequest::post('rejudge_type')) {
+		case 'ALL':
+			UOJSubmission::rejudgeProblem(UOJProblem::cur());
+			break;
+		case 'GE97':
+			UOJSubmission::rejudgeProblemGe97(UOJProblem::cur());
+			break;
+		case 'MINOR':
+			UOJSubmission::rejudgeProblem(UOJProblem::cur(), [
+				'reason_text' => '管理员偷偷重测本题所有提交记录',
+				'major' => false
+			]);
+			break;
+	}
 };
 $rejudge_form->succ_href = "/submissions?problem_id={$problem['id']}";
-$rejudge_form->submit_button_config['class_str'] = 'btn btn-danger btn-block';
-$rejudge_form->submit_button_config['text'] = '重测该题';
+$rejudge_form->submit_button_config['class_str'] = 'btn btn-danger btn-block top-buffer-sm';
+$rejudge_form->submit_button_config['text'] = '重测';
 $rejudge_form->submit_button_config['smart_confirm'] = '';
-
-$rejudgege97_form = new UOJForm('rejudgege97');
-$rejudgege97_form->handle = function() {
-	UOJSubmission::rejudgeProblemGe97(UOJProblem::cur());
-};
-$rejudgege97_form->succ_href = "/submissions?problem_id={$problem['id']}";
-$rejudgege97_form->submit_button_config['class_str'] = 'btn btn-danger btn-block';
-$rejudgege97_form->submit_button_config['text'] = '重测 >=97 的程序';
-$rejudgege97_form->submit_button_config['smart_confirm'] = '';
 
 $view_type_form = new UOJForm('view_type');
 $view_type_form->addVSelect('view_content_type', [
@@ -439,9 +442,7 @@ if ($problem['hackable']) {
 $hackable_form->runAtServer();
 $view_type_form->runAtServer();
 $data_form->runAtServer();
-$clear_data_form->runAtServer();
 $rejudge_form->runAtServer();
-$rejudgege97_form->runAtServer();
 $info_form->runAtServer();
 
 requireLib('dialog');
@@ -504,19 +505,19 @@ requireLib('dialog');
 		<?php endif ?>
 		</div>
 		<div class="top-buffer-md">
-			<button id="button-display_view_type" type="button" class="btn btn-info btn-block" onclick="$('#div-view_type').toggle('fast');">修改提交记录可视权限</button>
+			<button id="button-display_view_type" type="button" class="btn btn-info btn-block" onclick="$('#div-view_type').toggle('fast');"><span class="glyphicon glyphicon-cog"></span> 提交记录可视权限</button>
 			<div class="top-buffer-sm" id="div-view_type" style="display:none; padding-left:5px; padding-right:5px;">
 				<?php $view_type_form->printHTML(); ?>
 			</div>
 		</div>
 		<div class="top-buffer-md">
-			<?php $clear_data_form->printHTML(); ?>
+			<button id="button-display_rejudge" type="button" class="btn btn-info btn-block" onclick="$('#div-rejudge').toggle('fast');"><span class="glyphicon glyphicon-cog"></span> 重测</button>
+			<div class="top-buffer-sm" id="div-rejudge" style="display:none; padding-left:5px; padding-right:5px;">
+				<?php $rejudge_form->printHTML(); ?>
+			</div>
 		</div>
 		<div class="top-buffer-md">
-			<?php $rejudge_form->printHTML(); ?>
-		</div>
-		<div class="top-buffer-md">
-			<?php $rejudgege97_form->printHTML(); ?>
+			<a class="btn btn-danger btn-block" href="/problem/<?= $problem['id'] ?>/manage/data/reset">重置题目数据</a>
 		</div>
 	</div>
 	

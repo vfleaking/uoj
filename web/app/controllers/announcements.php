@@ -1,6 +1,4 @@
 <?php
-	requirePHPLib('form');
-	
 	function echoBlogCell(UOJBlog $blog) {
 		echo '<tr>';
 		echo '<td>' . $blog->getLink(['show_level' => true, 'show_new_tag' => true]) . '</td>';

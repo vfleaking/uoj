@@ -62,7 +62,7 @@ if (!isset($ShowPageHeader)) {
 		<?= HTML::css_link('/css/bootstrap-theme.min.css?v=2015.5.31') ?>
 
 		<!-- Custom styles for this template -->
-		<?= HTML::css_link('/css/uoj-theme.css?v=2022.01.16') ?>
+		<?= HTML::css_link('/css/uoj-theme.css?v=2023.07.11') ?>
 		
 		<!-- jQuery (necessary for Bootstrap\'s JavaScript plugins) -->
 		<?= HTML::js_src('/js/jquery.min.js') ?>
@@ -93,7 +93,7 @@ if (!isset($ShowPageHeader)) {
 		<?= HTML::js_src('/js/color-converter.min.js') ?>
 		
 		<!-- uoj -->
-		<?= HTML::js_src('/js/uoj.js?v=2023.01.30') ?>
+		<?= HTML::js_src('/js/uoj.js?v=2023.07.14') ?>
 		
 		<!-- readmore -->
 		<?= HTML::js_src('/js/readmore/readmore.min.js') ?>
@@ -110,8 +110,7 @@ if (!isset($ShowPageHeader)) {
 		<?php $REQUIRE_LIB['switch'] = '' ?>
 		<?= HTML::css_link('/js/codemirror/lib/codemirror.css') ?>
 		<?= HTML::css_link('/css/blog-editor.css') ?>
-		<?= HTML::js_src('/js/marked.js?v=2016.10.19') ?>
-		<?= HTML::js_src('/js/blog-editor/blog-editor.js?v=2015.7.9') ?>
+		<?= HTML::js_src('/js/blog-editor/blog-editor.js?v=2023.7.10') ?>
 		<?= HTML::js_src('/js/codemirror/lib/codemirror.js') ?>
 		<?= HTML::js_src('/js/codemirror/addon/mode/overlay.js') ?>
 		<?= HTML::js_src('/js/codemirror/addon/selection/active-line.js') ?>

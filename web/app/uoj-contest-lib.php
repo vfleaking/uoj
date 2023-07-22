@@ -195,17 +195,41 @@ function queryOIorIOIContestSubmissionData($contest, $prob_pos, $config = []) {
 			"select id, submit_time, submitter, problem_id, result from submissions",
 			"where", [
 				"contest_id" => $contest['id'],
-				["score", "is not", null]
 			], "order by id"
 		], DB::NUM);
+
+		$pos = [];
+		foreach ($res as $rowid => $row) {
+			$pos[$row[0]] = $rowid;
+		}
+
+		$his_res = DB::selectAll([
+			"select H.submission_id as id, H.result",
+			"from submissions_history as H, submissions as S",
+			"where", [
+				"H.submission_id = S.id",
+				"S.contest_id" => $contest['id'],
+				["H.judge_time", "is not", null],
+				db::lor([
+					["S.judge_time", "is", null],
+					"H.judge_time > S.judge_time"
+				]),
+			], "order by H.judge_time asc"
+		], DB::NUM);
+		foreach ($his_res as $row) {
+			// it is possible that new submissions are inserted between the first and second queries
+			if (isset($pos[$row[0]])) {
+				$res[$pos[$row[0]]][4] = $row[1];
+			}
+		}
+
 		foreach ($res as $row) {
 			$r = json_decode($row[4], true);
-			if (!isset($r['final_result'])) {
+			if (!isset($r['final_result']) || !isset($r['final_result']['score'])) {
 				continue;
 			}
 			$row[0] = (int)$row[0];
 			$row[3] = $prob_pos[$row[3]];
-
 			$row[4] = UOJSubmission::roundedScore($r['final_result']['score']);
 			$data[] = $row;
 		}

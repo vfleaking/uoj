@@ -1,5 +1,4 @@
 <?php
-	requirePHPLib('form');
 	requirePHPLib('judger');
 	requirePHPLib('svn');
 	
@@ -216,9 +215,13 @@ echo HTML::responsive_table($header, $pag->get(), [
 	}
 ]);
 
-if (isSuperUser($myUser)) {
-	$new_problem_form->printHTML();
-}
 ?>
+
+<?php if (isSuperUser(Auth::user())): ?>
+<div class="text-right">
+	<a class="btn btn-primary" href="/problem/new"><?= UOJLocale::get('problems::add new') ?></a>
+</div>
+<?php endif ?>
+
 <?= $pag->pagination() ?>
 <?php echoUOJPageFooter() ?>

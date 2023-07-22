@@ -1,6 +1,4 @@
 <?php
-	requirePHPLib('form');
-	
 	UOJProblem::init(UOJRequest::get('id')) || UOJResponse::page404();
 	UOJProblem::cur()->userCanManage(Auth::user()) || UOJResponse::page403();
 
@@ -10,6 +8,11 @@
 	
 	$problem_editor = new UOJBlogEditor();
 	$problem_editor->name = 'problem';
+
+	if (UOJProblem::cur()->getPresentationMode() == 'quiz') {
+		$problem_editor->type = 'quiz';
+	}
+
 	$problem_editor->blog_url = UOJProblem::cur()->getUri();
 	$problem_editor->cur_data = [
 		'title' => $problem['title'],

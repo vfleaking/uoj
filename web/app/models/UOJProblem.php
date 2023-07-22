@@ -119,7 +119,8 @@ class UOJProblem {
             'view_all_details_type' => 'ALL',
             'view_details_type' => 'ALL',
             'need_to_review_hack' => false,
-            'add_hack_as' => 'ex_test'
+            'add_hack_as' => 'ex_test',
+            'presentation_mode' => 'normal'
         ]);
         
         return $key === null ? $extra_config : $extra_config[$key];
@@ -348,8 +349,57 @@ class UOJProblem {
         return (new UOJProblemDataSynchronizer($this))->upload($new_data_zip);
     }
 
+    public function updateCandidateDataFromArray($data) {
+        return (new UOJProblemDataSynchronizer($this))->updateFromArray($data);
+    }
+
     public function updateCandidateProblemConf($new_problem_conf) {
-        return (new UOJProblemDataSynchronizer($this))->updateProblemConf($new_problem_conf);
+        return (new UOJProblemDataSynchronizer($this))->updateFromArray(['problem.conf' => $new_problem_conf]);
+    }
+
+    public function getPresentationMode() {
+        return $this->getExtraConfig('presentation_mode');
+    }
+
+    public function queryPresentationInfo(array $user = null) {
+        $pre = [
+            'mode' => $this->getPresentationMode(),
+            'submission' => [
+                'requirement' => $this->getSubmissionRequirement()
+            ]
+        ];
+        $content = $this->queryContent();
+
+        if ($pre['mode'] == 'quiz') {
+            $statement = json_decode($content['statement'], true);
+            if (empty($statement)) {
+                $pre += [
+                    'quiz' => [
+                        ['type' => 'html', 'html' => '<p>题目描述格式错误</p>']
+                    ],
+                ];
+                return $pre;
+            }
+            $pre += [
+                'quiz' => $statement
+            ];
+            return $pre;
+        }
+
+        $pre['mode'] = 'normal';
+        mergeConfig($pre, [
+            'statement' => $content['statement'],
+            'submission' => [
+                'format' => [
+                    'normal' => true,
+                    'zip' => $this->userCanUploadSubmissionViaZip($user)
+                ]
+            ],
+            'custom_test' => [
+                'requirement' => $this->getCustomTestRequirement(),
+            ]
+        ]);
+        return $pre;
     }
 }
 

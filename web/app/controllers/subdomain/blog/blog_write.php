@@ -1,6 +1,4 @@
 <?php
-	requirePHPLib('form');
-	
 	UOJUserBlog::userCanManage(Auth::user()) || UOJResponse::page403();
 
 	$blog_type = UOJRequest::option(UOJRequest::GET, 'type', ['B', 'S']);

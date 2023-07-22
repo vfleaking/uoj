@@ -22,6 +22,17 @@ function is_assoc($arr) {
     return false;
 }
 
+/**
+ * Check whether an array is a list.
+ * Delete this function when using PHP 8.1
+ */
+function array_is_list($arr) {
+	if ($arr === []) {
+		return true;
+	}
+	return array_keys($arr) === range(0, count($arr) - 1);
+}
+
 function strStartWith($str, $pre) {
 	return substr($str, 0, strlen($pre)) === $pre;
 }

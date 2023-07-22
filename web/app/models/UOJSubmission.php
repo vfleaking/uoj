@@ -83,18 +83,18 @@ class UOJSubmission {
         }
     }
 
-    public static function onUpload($zip_file_name, $content, $tot_size, $is_contest_submission) {
+    public static function onUpload(UOJSubmissionArchive $archive, $is_contest_submission) {
         $judge_reason = '';
 
-		$content['config'][] = ['problem_id', UOJProblem::info('id')];
+		$archive->content['config'][] = ['problem_id', UOJProblem::info('id')];
 		if ($is_contest_submission && UOJContestProblem::cur()->getJudgeTypeInContest() == 'sample') {
-			$content['final_test_config'] = $content['config'];
-			$content['config'][] = ['test_sample_only', 'on'];
+			$archive->content['final_test_config'] = $archive->content['config'];
+			$archive->content['config'][] = ['test_sample_only', 'on'];
             $judge_reason = json_encode(['text' => '样例测评']);
 		}
-		$content_json = json_encode($content);
+		$content_json = json_encode($archive->content);
 
-		$language = static::getAndRememberSubmissionLanguage($content);
+		$language = static::getAndRememberSubmissionLanguage($archive->content);
  		
 		$result = ['status' => 'Waiting'];
 		$result_json = json_encode($result);
@@ -108,7 +108,7 @@ class UOJSubmission {
                 ]),
                 "values", DB::tuple([
                     UOJProblem::info('id'), UOJContest::info('id'), DB::now(), Auth::id(), $content_json, $judge_reason,
-                    $language, $tot_size, $result['status'], $result_json, UOJContest::info('frozen'), 0
+                    $language, $archive->total_size, $result['status'], $result_json, UOJContest::info('frozen'), 0
                 ])
             ]);
         } else {
@@ -120,13 +120,13 @@ class UOJSubmission {
                 ]),
                 "values", DB::tuple([
                     UOJProblem::info('id'), DB::now(), Auth::id(), $content_json, $judge_reason,
-                    $language, $tot_size, $result['status'], $result_json, UOJProblem::info('is_hidden')
+                    $language, $archive->total_size, $result['status'], $result_json, UOJProblem::info('is_hidden')
                 ])
             ]);
         }
         $ret = retry_loop(fn() => DB::insert($qs));
         if ($ret === false) {
-            unlink(UOJContext::storagePath().$zip_file_name);
+            $archive->unlink();
             UOJLog::error('submission failed.');
         }
     }
@@ -153,22 +153,16 @@ class UOJSubmission {
             'status' => 'Judged',
             'status_details' => '',
         ];
-		
+
 		if ($submission->info['status'] == 'Judged, Judging') { // for UOJ-OI
 			$result = json_decode($submission->info['result'], true);
-			$result['final_result'] = json_decode($post_result, true);
-			$result['final_result']['details'] = uojTextEncode($result['final_result']['details']);
+			$result['final_result'] = $post_result;
 			
             $set_q += [
                 'result' => json_encode($result, JSON_UNESCAPED_UNICODE),
             ];
 		} else if ($submission->info['status'] == 'Judging') {
-			$result = json_decode($post_result, true);
-			if (isset($result['details'])) {
-				$result['details'] = uojTextEncode($result['details']);
-			} else {
-				$result['details'] = '<error>No Comment</error>';
-			}
+			$result = $post_result;
 
 			$set_q += [
 				'result' => json_encode($result, JSON_UNESCAPED_UNICODE),
@@ -449,7 +443,7 @@ class UOJSubmission {
         return "/submission/{$this->info['id']}?tid={$tid}";
     }
 
-    public function echoStatusBarTD($name, array $cfg) {
+    public function getStatusBarTD($name, array $cfg) {
         switch ($name) {
             case 'result':
                 if (empty($cfg['no_link'])) {
@@ -467,25 +461,22 @@ class UOJSubmission {
                         ];
                     }
                     if (!$cfg['show_actual_score']) {
-                        echo '<strong class="text-muted">?</strong>';
+                        return '<strong class="text-muted">?</strong>';
                     } else {
                         $actual_score = $this->getActualScore();
                         if ($actual_score === null) {
-                            echo $tag_st, '" class="small">', $this->info['result_error'], $tag_ed;
+                            return $tag_st.'" class="small">'.$this->info['result_error'].$tag_ed;
                         } else {
-                            echo $tag_st, '" class="uoj-score">', $actual_score, $tag_ed;
+                            return $tag_st.'" class="uoj-score">'.$actual_score.$tag_ed;
                         }
                     }
                 } else {
-                    echo $tag_st, '" class="small">', $this->publicStatus(), $tag_ed;
+                    return $tag_st.'" class="small">'.$this->publicStatus().$tag_ed;
                 }
-                break;
             case 'language':
-                echo '<a href="', $this->getUri(), '">', UOJLang::getLanguageDisplayName($this->info['language']), '</a>';
-                break;
+                return '<a href="'.$this->getUri().'">'.UOJLang::getLanguageDisplayName($this->info['language']).'</a>';
             default:
-                $this->echoStatusBarTDBase($name, $cfg);
-                break;
+                return $this->getStatusBarTDBase($name, $cfg);
         }
     }
 
@@ -504,7 +495,7 @@ class UOJSubmission {
         foreach ($cols as $name) {
             if (!isset($cfg["{$name}_hidden"])) {
                 echo '<td>';
-                $this->echoStatusBarTD($name, $cfg);
+                echo $this->getStatusBarTD($name, $cfg);
                 echo '</td>';
             }
         }
@@ -513,34 +504,53 @@ class UOJSubmission {
             echo '<tr id="', "status_details_{$this->info['id']}", '" class="info">';
             echo $this->getStatusDetailsHTML();
             echo '</tr>';
-            echo '<script type="text/javascript">update_judgement_status_details('.$this->info['id'].')</script>';
+            
+            $delay = UOJContext::getMeta('update_judgement_status_delay');
+
+            echo '<script type="text/javascript">update_judgement_status_details('.$this->info['id'];
+            echo ', ', $delay['base'];
+            echo ', ', $delay['adder'];
+            echo ')</script>';
         }
     }
 
-    function echoStatusTable(array $cfg, array $viewer = null) {
+    public static function getStatusHeaderRow(array $cfg) {
+        $header = '<tr>';
+        if (!isset($cfg['id_hidden'])) {
+            $header .= '<th>ID</th>';
+        }
+        if (!isset($cfg['problem_hidden'])) {
+            $header .= '<th>'.UOJLocale::get('problems::problem').'</th>';
+        }
+        if (!isset($cfg['submitter_hidden'])) {
+            $header .= '<th>'.UOJLocale::get('problems::submitter').'</th>';
+        }
+        if (!isset($cfg['result_hidden'])) {
+            $header .= '<th>'.UOJLocale::get('problems::result').'</th>';
+        }
+        if (!isset($cfg['used_time_hidden'])) {
+            $header .= '<th>'.UOJLocale::get('problems::used time').'</th>';
+        }
+        if (!isset($cfg['used_memory_hidden'])) {
+            $header .= '<th>'.UOJLocale::get('problems::used memory').'</th>';
+        }
+        $header .= '<th>'.UOJLocale::get('problems::language').'</th>';
+        $header .= '<th>'.UOJLocale::get('problems::file size').'</th>';
+        if (!isset($cfg['submit_time_hidden'])) {
+            $header .= '<th>'.UOJLocale::get('problems::submit time').'</th>';
+        }
+        if (!isset($cfg['judge_time_hidden'])) {
+            $header .= '<th>'.UOJLocale::get('problems::judge time').'</th>';
+        }
+        $header .= '</tr>';
+        return $header;
+    }
+
+    public function echoStatusTable(array $cfg, array $viewer = null) {
         echo '<div class="table-responsive">';
         echo '<table class="table table-bordered table-text-center">';
         echo '<thead>';
-        echo '<tr>';
-        if (!isset($cfg['id_hidden']))
-            echo '<th>ID</th>';
-        if (!isset($cfg['problem_hidden']))
-            echo '<th>'.UOJLocale::get('problems::problem').'</th>';
-        if (!isset($cfg['submitter_hidden']))
-            echo '<th>'.UOJLocale::get('problems::submitter').'</th>';
-        if (!isset($cfg['result_hidden']))
-            echo '<th>'.UOJLocale::get('problems::result').'</th>';
-        if (!isset($cfg['used_time_hidden']))
-            echo '<th>'.UOJLocale::get('problems::used time').'</th>';
-        if (!isset($cfg['used_memory_hidden']))
-            echo '<th>'.UOJLocale::get('problems::used memory').'</th>';
-        echo '<th>'.UOJLocale::get('problems::language').'</th>';
-        echo '<th>'.UOJLocale::get('problems::file size').'</th>';
-        if (!isset($cfg['submit_time_hidden']))
-            echo '<th>'.UOJLocale::get('problems::submit time').'</th>';
-        if (!isset($cfg['judge_time_hidden']))
-            echo '<th>'.UOJLocale::get('problems::judge time').'</th>';
-        echo '</tr>';
+        echo static::getStatusHeaderRow($cfg);
         echo '</thead>';
         echo '<tbody>';
         $this->echoStatusTableRow($cfg, $viewer);

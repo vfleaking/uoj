@@ -106,7 +106,31 @@ trait UOJSubmissionLikeTrait {
         return $this->userIsSubmitter($user) && !$this->hasJudged();
     }
     public function getStatusDetailsHTML() {
-        return getSubmissionStatusDetailsHTML($this->publicStatus(), $this->info['status_details']);
+        $status = $this->publicStatus();
+        $status_details = $this->info['status_details'];
+
+        $html = '<td colspan="233" style="vertical-align: middle">';
+        
+        $fly = '<img src="//img.uoj.ac/utility/bear-flying.gif" alt="小熊像超人一样飞" class="img-rounded" />';
+        $think = '<img src="//img.uoj.ac/utility/bear-thinking.gif" alt="小熊像在思考" class="img-rounded" />';
+        
+        if ($status == 'Judged') {
+            $status_text = '<strong>Judged!</strong>';
+            $status_img = $fly;
+        } else {
+            if ($status_details !== '') {
+                $status_img = $fly;
+                $status_text = HTML::escape($status_details);
+            } else  {
+                $status_img = $think;
+                $status_text = $status;
+            }
+        }
+        $html .= '<div class="uoj-status-details-img-div">' . $status_img . '</div>';
+        $html .= '<div class="uoj-status-details-text-div">' . $status_text . '</div>';
+
+        $html .= '</td>';
+        return $html;
     }
 
     public function getUri() {
@@ -221,51 +245,43 @@ trait UOJSubmissionLikeTrait {
     }
 
 
-    protected function echoStatusBarTDBase($name, array $cfg) {
+    protected function getStatusBarTDBase($name, array $cfg) {
         switch ($name) {
             case 'id':
-                echo $this->getLink();
-                break;
+                return $this->getLink();
             case 'problem':
                 if ($this->problem) {
-                    echo $this->problem->getLink(isset($cfg['problem_title']) ? $cfg['problem_title'] : []);
+                    return $this->problem->getLink(isset($cfg['problem_title']) ? $cfg['problem_title'] : []);
                 } else {
-                    echo '<span class="text-danger">?</span>';
+                    return '<span class="text-danger">?</span>';
                 }
-                break;
             case 'submitter':
             case 'owner':
             case 'hacker':
-                echo getUserLink($this->info[$name]);
-                break;
+                return getUserLink($this->info[$name]);
             case 'used_time':
                 if ($cfg['show_actual_score']) {
-                    echo $this->info['used_time'].'ms';
+                    return $this->info['used_time'].'ms';
                 } else {
-                    echo '/';
+                    return '/';
                 }
-                break;
             case 'used_memory':
                 if ($cfg['show_actual_score']) {
-                    echo $this->info['used_memory'].'kb';
+                    return $this->info['used_memory'].'kb';
                 } else {
-                    echo '/';
+                    return '/';
                 }
-                break;
             case 'tot_size':
                 if ($this->info['tot_size'] < 1024) {
-                    echo $this->info['tot_size'] . 'b';
+                    return $this->info['tot_size'] . 'b';
                 } else {
-                    echo sprintf("%.1f", $this->info['tot_size'] / 1024) . 'kb';
+                    return sprintf("%.1f", $this->info['tot_size'] / 1024) . 'kb';
                 }
-                break;
             case 'submit_time':
             case 'judge_time':
-                echo '<small>', $this->info[$name],'</small>';
-                break;
+                return '<small>'.$this->info[$name].'</small>';
             default:
-                echo '?';
-                break;
+                return '?';
         }
     }
 }

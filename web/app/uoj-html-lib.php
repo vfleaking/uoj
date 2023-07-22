@@ -152,31 +152,6 @@ function echoLongTable($col_names, $table_name, $cond, $tail, $header_row, $prin
 	echo $pag->pagination();
 }
 
-function getSubmissionStatusDetailsHTML($status, $status_details) {
-	$html = '<td colspan="233" style="vertical-align: middle">';
-	
-	$fly = '<img src="//img.uoj.ac/utility/bear-flying.gif" alt="小熊像超人一样飞" class="img-rounded" />';
-	$think = '<img src="//img.uoj.ac/utility/bear-thinking.gif" alt="小熊像在思考" class="img-rounded" />';
-	
-	if ($status == 'Judged') {
-		$status_text = '<strong>Judged!</strong>';
-		$status_img = $fly;
-	} else {
-		if ($status_details !== '') {
-			$status_img = $fly;
-			$status_text = HTML::escape($status_details);
-		} else  {
-			$status_img = $think;
-			$status_text = $status;
-		}
-	}
-	$html .= '<div class="uoj-status-details-img-div">' . $status_img . '</div>';
-	$html .= '<div class="uoj-status-details-text-div">' . $status_text . '</div>';
-
-	$html .= '</td>';
-	return $html;
-}
-
 function echoSubmission($submission, $config, $viewer) {
     $usubm = new UOJSubmission($submission);
     $usubm->setProblem();
@@ -196,45 +171,33 @@ function echoSubmissionsList($cond, $tail, $config, $user) {
     if (!isset($config['problem'])) {
         $config['problem'] = null;
     }
+
+	$header_row = UOJSubmission::getStatusHeaderRow($config);
 	
 	if (!isset($config['id_hidden'])) {
-		$header_row .= '<th>ID</th>';
 		$col_names[] = 'submissions.id';
 	}
 	if (!isset($config['problem_hidden'])) {
-		$header_row .= '<th>'.UOJLocale::get('problems::problem').'</th>';
 		$col_names[] = 'submissions.problem_id';
 		$col_names[] = 'submissions.contest_id';
 	}
 	if (!isset($config['submitter_hidden'])) {
-		$header_row .= '<th>'.UOJLocale::get('problems::submitter').'</th>';
 		$col_names[] = 'submissions.submitter';
 	}
-	if (!isset($config['result_hidden'])) {
-		$header_row .= '<th>'.UOJLocale::get('problems::result').'</th>';
-	}
 	if (!isset($config['used_time_hidden'])) {
-		$header_row .= '<th>'.UOJLocale::get('problems::used time').'</th>';
 		$col_names[] = 'submissions.used_time';
 	}
 	if (!isset($config['used_memory_hidden'])) {
-		$header_row .= '<th>'.UOJLocale::get('problems::used memory').'</th>';
 		$col_names[] = 'submissions.used_memory';
 	}
-	$header_row .= '<th>'.UOJLocale::get('problems::language').'</th>';
 	$col_names[] = 'submissions.language';
-	$header_row .= '<th>'.UOJLocale::get('problems::file size').'</th>';
 	$col_names[] = 'submissions.tot_size';
-
 	if (!isset($config['submit_time_hidden'])) {
-		$header_row .= '<th>'.UOJLocale::get('problems::submit time').'</th>';
 		$col_names[] = 'submissions.submit_time';
 	}
 	if (!isset($config['judge_time_hidden'])) {
-		$header_row .= '<th>'.UOJLocale::get('problems::judge time').'</th>';
 		$col_names[] = 'submissions.judge_time';
 	}
-	$header_row .= '</tr>';
 	
 	$table_name = isset($config['table_name']) ? $config['table_name'] : 'submissions';
     

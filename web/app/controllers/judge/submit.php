@@ -5,9 +5,27 @@
 	if (!authenticateJudger()) {
 		UOJResponse::page404();
 	}
+
+    function processedPostResult() {
+        $result = UOJRequest::post('result');
+        if ($result !== null) {
+            $result = json_decode($result, true);
+        }
+        if ($result === null) {
+            $result = [];
+        }
+        if (isset($result['details'])) {
+            $result['details'] = uojTextEncode($result['details']);
+        } else {
+            $result['details'] = '<error>No Comment</error>';
+        }
+        return $result;
+    }
+
+    // 3 types of things to submit: submission, hack, custom_test
 	
 	function submissionJudged() {
-        UOJSubmission::onJudged(UOJRequest::post('id'), UOJRequest::post('result'), UOJRequest::post('judge_time'));
+        UOJSubmission::onJudged(UOJRequest::post('id'), processedPostResult(), UOJRequest::post('judge_time'));
 	}
 
 	function customTestSubmissionJudged() {
@@ -21,8 +39,7 @@
 		if ($submission['status'] != 'Judging') {
 			return;
 		}
-		$result = json_decode($_POST['result'], true);
-		$result['details'] = uojTextEncode($result['details']);
+		$result = processedPostResult();
         DB::update([
             "update custom_test_submissions",
             "set", [
@@ -34,7 +51,7 @@
 	}
 	
 	function hackJudged() {
-        $result = json_decode($_POST['result'], true);
+        $result = processedPostResult();
 
         UOJHack::init($_POST['id']);
         UOJHack::cur()->setProblem();
@@ -51,7 +68,7 @@
             "set", [
                 'success' => $result['score'],
                 'status' => $status,
-                'details' => uojTextEncode($result['details'])
+                'details' => $result['details']
             ], "where", ['id' => $_POST['id']]
         ]);
 
@@ -312,6 +329,9 @@
 	}
 	function findSubmissionToJudge() {
 		global $submission, $hack;
+
+        // the first three types have higher priority because users can see them
+        // major submission: normal or sample test
 		$submission = querySubmissionToJudge('Waiting', [
             "judge_time" => DB::now(),
             "judger" => $_POST['judger_name'],
@@ -321,11 +341,13 @@
 			return true;
         }
         
+        // custom test
         $submission = queryCustomTestSubmissionToJudge();
 		if ($submission) {
 			return true;
 		}
 		
+        // major submission: rejudge normal or sample test
 		$submission = querySubmissionToJudge('Waiting Rejudge', [
             "judge_time" => DB::now(),
             "judger" => $_POST['judger_name'],
@@ -334,14 +356,10 @@
 		if ($submission) {
 			return true;
 		}
-		
-		$submission = querySubmissionToJudge('Judged, Waiting', [
-            "status" => 'Judged, Judging'
-        ]);
-		if ($submission) {
-			return true;
-		}
 
+        // the following three types cannot be seen by users
+        // minor submission is considered as an emergency but hidden request, so it has higher priority
+        // minor submission: normal or sample test
 		$submission = queryMinorSubmissionToJudge('Waiting Rejudge', [
             "judge_time" => DB::now(),
             "judger" => $_POST['judger_name'],
@@ -351,6 +369,7 @@
 			return true;
 		}
 		
+        // minor submission: pre-final test
 		$submission = queryMinorSubmissionToJudge('Judged, Waiting', [
             "status" => 'Judged, Judging'
         ]);
@@ -358,6 +377,16 @@
 			return true;
 		}
 		
+        // major submission: rejudge pre-final test
+		$submission = querySubmissionToJudge('Judged, Waiting', [
+            "status" => 'Judged, Judging'
+        ]);
+		if ($submission) {
+			return true;
+		}
+		
+        // hack has the lowest priority
+        // need to wait all the rejudge requests to ensure correctness
 		$hack = queryHackToJudge();
 		if ($hack) {
 			$submission = DB::selectFirst([

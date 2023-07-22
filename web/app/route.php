@@ -17,12 +17,14 @@ Route::group([
 		Route::any('/problems', '/problem_set.php');
 		Route::any('/problems/template', '/problem_set.php?tab=template');
 		Route::any('/problem/{id}', '/problem.php');
+		Route::any('/problem/new', '/problem_init.php');
 		Route::any('/problem/{id}/statement.md', '/download.php?type=problem-md');
 		Route::any('/problem/{id}/statistics', '/problem_statistics.php');
 		Route::any('/problem/{id}/manage/statement', '/problem_statement_manage.php');
 		Route::any('/problem/{id}/manage/managers', '/problem_managers_manage.php');
-		Route::any('/problem/{id}/manage/data', '/problem_data_manage.php');
 		Route::any('/problem/{id}/manage/oss', '/problem_oss_manage.php');
+		Route::any('/problem/{id}/manage/data', '/problem_data_manage.php');
+		Route::any('/problem/{id}/manage/data/reset', '/problem_init.php');
 		Route::any('/problem/{id}/manage/data/configure', '/problem_configure.php');
 		Route::any('/problem/{id}/data/candidate', '/problem_data_candidate.php');
 		Route::any('/problem/{id}/data/{problem_data_branch}/{path}', '/problem_data_files.php');

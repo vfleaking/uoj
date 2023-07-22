@@ -1,6 +1,4 @@
 <?php
-    requirePHPLib('form');
-
     isSuperUser(Auth::user()) || UOJResponse::page403();
 
 	$time_form = new UOJForm('time');

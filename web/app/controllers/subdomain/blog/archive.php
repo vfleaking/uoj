@@ -1,6 +1,4 @@
 <?php
-	requirePHPLib('form');
-	
 	$blogs_conds = [
         "poster" => UOJUserBlog::id(),
         "is_draft" => false

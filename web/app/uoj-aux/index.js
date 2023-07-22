@@ -7,47 +7,47 @@ slide_marked.setOptions({
 	getLangClass: function(lang) {
 		lang = lang.toLowerCase();
 		switch (lang) {
-			case 'c': return 'c';
-			case 'c++': return 'cpp';
-			case 'pascal': return 'pascal';
-			default: return lang;
+			case 'c': return 'c'
+			case 'c++': return 'cpp'
+			case 'pascal': return 'pascal'
+			default: return lang
 		}
 	},
 	getElementClass: function(tok) {
 		switch (tok.type) {
 			case 'list_item_start':
-				return 'fragment';
+				return 'fragment'
 			case 'loose_item_start':
-				return 'fragment';
+				return 'fragment'
 			default:
-				return null;
+				return null
 		}
 	}
 })
 
 var app = express()
-app.use(bodyParser.text())
+app.use(bodyParser.text({limit: '50mb'}))
 
 app.post('/render-md/uoj', function (req, res) {
-	req.setTimeout(2000, function() {
-		res.send('编译时间超出限制，问问管理员怎么回事？');
+	req.setTimeout(25000, function() {
+		res.send('编译时间超出限制，问问管理员怎么回事？')
 	});
 	try {
 		out = uoj_marked(req.body)
 	} catch (e) {
-		out = '编译失败，请发给管理员看看！';
+		out = '编译失败，请发给管理员看看！'
 	}
 	res.send(out)
 })
 
 app.post('/render-md/slide', function (req, res) {
-	req.setTimeout(2000, function() {
-		res.send('编译时间超出限制，问问管理员怎么回事？');
+	req.setTimeout(25000, function() {
+		res.send('编译时间超出限制，问问管理员怎么回事？')
 	});
 	try {
 		out = slide_marked(req.body)
 	} catch (e) {
-		out = '编译失败，请发给管理员看看！';
+		out = '编译失败，请发给管理员看看！'
 	}
 	res.send(out)
 })

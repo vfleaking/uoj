@@ -1,6 +1,5 @@
 <?php
 
-requirePHPLib('form');
 UOJContest::init(UOJRequest::get('id')) || UOJResponse::page404();
 UOJProblem::init(UOJRequest::get('problem_id')) || UOJResponse::page404();
 UOJProblem::upgradeToContestProblem() || UOJResponse::page404();

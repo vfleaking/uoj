@@ -1,6 +1,5 @@
 <?php
 
-requirePHPLib('form');
 requirePHPLib('judger');
 
 if ($myUser == null || !isSuperUser($myUser)) {

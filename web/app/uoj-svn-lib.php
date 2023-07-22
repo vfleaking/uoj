@@ -1,15 +1,12 @@
 <?php
 
-// Actually, these things should be done by main_judger so that the code would be much simpler.
-// However, this lib exists due to some history issues.
-
 function svnNewProblem($id) {
 	UOJLocalRun::exec(['/var/svn/problem/new_problem.sh', $id]);
 	svnRefreshPasswordOfProblem($id);
 	
 	UOJLocalRun::execAnd([
 		['cd', '/var/uoj_data'],
-		['rm', "$id.zip"],
+		['rm', '-f', "$id.zip"],
 		['zip', "$id.zip", $id, '-r', '-q']
 	]);
 }

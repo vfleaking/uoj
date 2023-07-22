@@ -1,6 +1,4 @@
 <?php
-	requirePHPLib('form');
-	
 	UOJContest::init(UOJRequest::get('id')) || UOJResponse::page404();
 	isSuperUser(Auth::user()) || UOJResponse::page403();
     
@@ -51,7 +49,8 @@
         ]);
 	};
 	
-	$managers_form = newAddDelCmdForm('managers',
+	$managers_form = new UOJAddDelCmdForm(
+		'managers',
 		'validateUserAndStoreByUsername',
 		function($type, $username, &$vdata) {
 			global $contest;
@@ -73,8 +72,9 @@
 			}
 		}
 	);
-	
-	$contest_batch_registration_form = newAddDelCmdForm('contestbatchregistration',
+
+	$contest_batch_registration_form = new UOJAddDelCmdForm(
+		'contestbatchregistration',
 		'validateUserAndStoreByUsername',
 		function($type, $username, &$vdata) {
 			global $contest;
@@ -101,7 +101,8 @@
 		}
 	);
 	
-	$problems_form = newAddDelCmdForm('problems',
+	$problems_form = new UOJAddDelCmdForm(
+		'problems',
 		function($cmd, &$vdata) {
 			if (!preg_match('/^(\d+)\s*(\[\S+\])?$/', $cmd, $matches)) {
 				return "无效题号";

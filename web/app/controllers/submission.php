@@ -1,6 +1,5 @@
 <?php
 
-requirePHPLib('form');
 requirePHPLib('judger');
 
 UOJSubmission::init(UOJRequest::get('id')) || UOJResponse::page404();

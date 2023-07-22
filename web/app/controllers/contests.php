@@ -1,6 +1,4 @@
 <?php
-	requirePHPLib('form');
-	
 	$upcoming_contest_name = null;
 	$upcoming_contest_href = null;
 	$rest_second = 1000000;

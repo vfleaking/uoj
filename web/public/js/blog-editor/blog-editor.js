@@ -6,6 +6,10 @@ function blog_editor_init(name, editor_config) {
 	editor_config = $.extend({
 		type: 'blog'
 	}, editor_config);
+
+	if (editor_config.type == 'quiz') {
+		editor_config.type = 'blog';
+	}
 	
 	var input_title = $("#input-" + name + "_title");
 	var input_tags = $("#input-" + name + "_tags");

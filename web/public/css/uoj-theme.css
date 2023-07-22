@@ -49,20 +49,67 @@ a sub {
 	overflow-wrap: anywhere;
 }
 
-.uoj-article>p {
+.uoj-article>p, .uoj-article>form>p {
 	text-indent: 2em;
 }
 
-.uoj-article>blockquote {
+.uoj-article>blockquote, .uoj-article>form>blockquote {
 	margin-left: 2em;
 }
 
-.uoj-article>ul, .uoj-article>ol {
+.uoj-article>ul, .uoj-article>ol, .uoj-article>form>ul, .uoj-article>form>ol {
 	padding-inline-start: 3.5em;
 }
 
 .uoj-article img {
 	vertical-align: baseline
+}
+
+.uoj-quiz {
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.uoj-quiz .uoj-quiz-q .uoj-quiz-q-id {
+	display: table-cell;
+	width: 27px;
+}
+
+.uoj-quiz .uoj-quiz-q .uoj-quiz-q-content {
+	display: table-cell;
+}
+
+.uoj-quiz .uoj-quiz-q .uoj-quiz-q-prompt :last-child {
+	margin-bottom: 0px;
+}
+
+.uoj-quiz .uoj-quiz-q .uoj-quiz-q-choices {
+	margin-left: 10px; 
+}
+
+.uoj-quiz .uoj-quiz-q .uoj-quiz-q-choices .uoj-quiz-q-ckey {
+	display: inline-block;
+	width: 23px;
+	font-weight: bold;
+	margin-top: 2px;
+	margin-left: 1px;
+}
+
+.uoj-quiz .uoj-quiz-q .uoj-quiz-q-choices .uoj-quiz-q-cval {
+	display: inline-block;
+	margin-top: 2px;
+}
+
+.uoj-quiz .uoj-quiz-q .uoj-quiz-q-choices p {
+	margin-bottom: 0px;
+}
+
+.uoj-quiz .uoj-quiz-q .uoj-quiz-q-choices input[type="radio"] {
+	transform: scale(1.2); 
+}
+
+.uoj-quiz .uoj-quiz-q .uoj-quiz-q-choices input[type="checkbox"] {
+	transform: scale(1.2); 
 }
 
 pre {

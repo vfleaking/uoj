@@ -10,11 +10,25 @@ class UOJForm {
 	public $is_big = false;
 	public $has_file = false;
 	public $ajax_submit_js = null;
+	public $error_on_incomplete_form = true;
 	public $prevent_multiple_submit = true;
-	public $run_at_server_handler = array();
-	private $data = array();
-	private $vdata = array();
-	private $main_html = '';
+	public $run_at_server_handler = [];
+
+    /**
+     * @var array $data a list of input fields in the form
+     */
+	private array $data = [];
+
+    /**
+     * @var array $vdata an associative array that can be used to store data in the validation stage
+     */
+	private array $vdata = [];
+
+    /**
+     * @var string $main_html the main html of the form, which doesn't include <form>, js scripts, etc.
+     */
+	private string $main_html = '';
+
 	public $max_post_size = 15728640; // 15M
 	public $max_file_size_mb = 10; // 10M
 	
@@ -37,9 +51,11 @@ class UOJForm {
 			if ($this->no_submit) {
 				UOJResponse::page404();
 			}
-			foreach ($this->data as $field) {
-				if (!isset($field['no_val']) && !isset($_POST[$field['name']])) {
-					UOJResponse::message('The form is incomplete.');
+			if ($this->error_on_incomplete_form) {
+				foreach ($this->data as $field) {
+					if (!isset($field['no_val']) && !isset($_POST[$field['name']])) {
+						UOJResponse::message('未正确上传完整数据。。重试一下或者联系管理员？');
+					}
 				}
 			}
 
@@ -48,7 +64,7 @@ class UOJForm {
 				if ($len === null) {
 					UOJResponse::page403();
 				} elseif ($len > $this->max_post_size) {
-					UOJResponse::message('The form is too large.');
+					UOJResponse::message('传过来的数据太大了！');
 				}
 			}
 
@@ -57,7 +73,7 @@ class UOJForm {
 			if ($errors) {
 				$err_str = '';
 				foreach ($errors as $name => $err) {
-					$esc_err = htmlspecialchars($err);
+					$esc_err = HTML::escape($err);
 					$err_str .= "$name: $esc_err<br />";
 				}
 				UOJResponse::message($err_str);
@@ -77,23 +93,41 @@ class UOJForm {
 		$this->ajax_submit_js = $js;
 	}
 	
+    /**
+     * add an input field
+     * 
+     * @param string $name name of the input field
+     * @param string $html HTML for this input field
+     * @param callable|null $validator_php a validate function to run at the server after user submits. 
+     *        It will called as $val($_POST[$field['name']], $this->vdata, $field['name'])
+     *        Expected return value:
+     *        1. An array $ret (recommended): $ret['error'] will be reported as an error (required);
+     *           $ret['store'] will be stored in $vdata[$field['name']] (optional).
+     *        2. A non-empty error string
+     *        3. Anything that can be considered false, meaning no error and do nothing
+     * @param string|null $validator_js a validate function to run at the client before user submits.
+     * 
+     */
 	public function add($name, $html, $validator_php, $validator_js) {
 		$this->main_html .= $html;
-		$this->data[] = array(
+		$this->data[] = [
 			'name' => $name,
 			'validator_php' => $validator_php,
-			'validator_js' => $validator_js);
+			'validator_js' => $validator_js
+        ];
 	}
+
 	public function appendHTML($html) {
 		$this->main_html .= $html;
 	}
 	
 	public function addNoVal($name, $html) {
 		$this->main_html .= $html;
-		$this->data[] = array(
+		$this->data[] = [
 			'name' => $name,
 			'validator_js' => 'always_ok',
-			'no_val' => '');
+			'no_val' => ''
+        ];
 	}
 	
 	public function addHidden($name, $default_value, $validator_php, $validator_js) {
@@ -131,7 +165,7 @@ class UOJForm {
 		<div id="div-$name" class="form-group">
 			<label for="input-$name" class="{$this->control_label_config['class']} control-label">$label_text</label>
 			<div class="{$this->input_config['class']}">
-				<select class="form-control" id="input-content" name="$name">
+				<select class="form-control" id="input-{$name}" name="$name">
 
 		EOD;
 		foreach ($options as $opt_name => $opt_label) {
@@ -391,7 +425,10 @@ class UOJForm {
 		if ($this->no_submit) {
 			return;
 		}
-		
+		$this->printFormJS();
+	}
+
+	protected function printFormJS () {
 		echo <<<EOD
 					<script type="text/javascript">
 					$(document).ready(function() {
@@ -558,7 +595,7 @@ class UOJForm {
 	}
 	
 	private function validateAtServer() {
-		$errors = array();
+		$errors = [];
 		if ($this->extra_validator) {
 			$fun = $this->extra_validator;
 			$err = $fun();
@@ -567,9 +604,12 @@ class UOJForm {
 			}
 		}
 		foreach ($this->data as $field) {
-			if (!isset($field['no_val']) && isset($_POST[$field['name']])) {
+			if (!isset($field['no_val'])) {
+				if ($this->error_on_incomplete_form && !isset($_POST[$field['name']])) {
+					continue;
+				}
 				$fun = $field['validator_php'];
-				$ret = $fun($_POST[$field['name']], $this->vdata, $field['name']);
+				$ret = $fun(UOJRequest::post($field['name']), $this->vdata, $field['name']);
 				if (is_array($ret) && isset($ret['error'])) {
 					$err = $ret['error'];
 				} else {
@@ -593,257 +633,4 @@ class UOJForm {
 			}
 		}
 	}
-}
-
-function newAddDelCmdForm($form_name, $validate, $handle, $final = null) {
-	$form = new UOJForm($form_name);
-	$form->addTextArea(
-		$form_name . '_cmds', '命令', '',
-		function($str, &$vdata) use($validate) {
-			$cmds = array();
-			foreach (explode("\n", $str) as $line_id => $raw_line) {
-				$line = trim($raw_line);
-				if ($line == '') {
-					continue;
-				}
-				if ($line[0] != '+' && $line[0] != '-') {
-					return '第' . ($line_id + 1) . '行：格式错误';
-				}
-				$obj = trim(substr($line, 1));
-				
-				if ($err = $validate($obj, $vdata)) {
-					return '第' . ($line_id + 1) . '行：' . $err;
-				}
-				$cmds[] = array('type' => $line[0], 'obj' => $obj);
-			}
-			$vdata['cmds'] = $cmds;
-			return '';
-		},
-		null
-	);
-	if (!isset($final)) {
-		$form->handle = function(&$vdata) use($handle) {
-			foreach ($vdata['cmds'] as $cmd) {
-				$handle($cmd['type'], $cmd['obj'], $vdata);
-			}
-		};
-	} else {
-		$form->handle = function(&$vdata) use($handle, $final) {
-			foreach ($vdata['cmds'] as $cmd) {
-				$handle($cmd['type'], $cmd['obj'], $vdata);
-			}
-			$final();
-		};
-	}
-	return $form;
-}
-
-function newSubmissionForm($form_name, $requirement, $zip_file_name_gen, $handle) {
-	$form = new UOJForm($form_name);
-	foreach ($requirement as $req) {
-		if ($req['type'] == "source code") {
-			$languages = UOJLang::getAvailableLanguages(isset($req['languages']) ? $req['languages'] : null);
-			$form->addSourceCodeInput("{$form_name}_{$req['name']}", UOJLocale::get('problems::source code').':'.$req['name'], $languages);
-		} elseif ($req['type'] == "text") {
-			$form->addTextFileInput("{$form_name}_{$req['name']}", UOJLocale::get('problems::text file').':'.$req['file_name']);
-		}
-	}
-	
-	$form->handle = function(&$vdata) use($form_name, $requirement, $zip_file_name_gen, $handle) {
-		global $myUser;
-		
-		if ($myUser == null) {
-			redirectToLogin();
-		}
-		
-		$tot_size = 0;
-		$zip_file_name = $zip_file_name_gen();
-		
-		$zip_file = new ZipArchive();
-		if ($zip_file->open(UOJContext::storagePath().$zip_file_name, ZipArchive::CREATE) !== true) {
-			UOJResponse::message('提交失败');
-		}
-		
-		$content = array();
-		$content['file_name'] = $zip_file_name;
-		$content['config'] = array();
-		foreach ($requirement as $req) {
-			if ($req['type'] == "source code") {
-				$content['config'][] = ["{$req['name']}_language", $_POST["{$form_name}_{$req['name']}_language"]];
-			}
-		}
-		
-		foreach ($requirement as $req) {
-			if ($_POST["{$form_name}_{$req['name']}_upload_type"] == 'editor') {
-				$zip_file->addFromString($req['file_name'], $_POST["{$form_name}_{$req['name']}_editor"]);
-			} else {
-				$tmp_name = UOJForm::uploadedFileTmpName("{$form_name}_{$req['name']}_file");
-				if ($tmp_name == null) {
-					$zip_file->addFromString($req['file_name'], '');
-				} else {
-					$zip_file->addFile($tmp_name, $req['file_name']);
-				}
-			}
-			$stat = $zip_file->statName($req['file_name']);
-			
-			if ($req['type'] == 'source code') {
-				$max_size = isset($req['size']) ? (int)$req['size'] : 50;
-				if ($stat['size'] > $max_size * 1024) {
-					$zip_file->close();
-					unlink(UOJContext::storagePath().$zip_file_name);
-					UOJResponse::message("源代码长度不能超过 {$max_size}KB。");
-				}
-			}
-			
-			$tot_size += $stat['size'];
-		}
-		
-		$zip_file->close();
-		
-		$handle($zip_file_name, $content, $tot_size);
-	};
-	return $form;
-}
-function newZipSubmissionForm($form_name, $requirement, $zip_file_name_gen, $handle) {
-	$form = new DropzoneForm($form_name, [], [
-			'accept' => <<<EOD
-				function(file, done) {
-					if (file.size > 0) {
-						done();
-					} else {
-						done('请不要上传空文件！');
-					}
-				}
-				EOD,
-		]
-	);
-	$form->introduction = '<p class="top-buffer-md">'.UOJLocale::get(
-		'problems::zip file upload introduction',
-		'<strong>'.implode(', ', array_map(fn($req) => $req['file_name'], $requirement)).'</strong>'
-	).'</p>';
-
-	$form->handler = function($form) use($requirement, $zip_file_name_gen, $handle) {
-		Auth::check() || UOJResponse::page406('请登录后再提交');
-
-		$files = $form->getFiles();
-		if (count($files) == 0) {
-			UOJResponse::page406('上传出错：请提交至少一个文件');
-		}
-		
-		$reqset = [];
-		foreach ($requirement as $req) {
-			$file_name = strtolower($req['file_name']);
-			$reqset[$file_name] = true;
-		}
-
-		$fdict = [];
-		$single_file_size_limit = 20 * 1024 * 1024;
-
-		$invalid_zip_msg = '不是合法的zip压缩文件（压缩包里的文件名是否包含特殊字符？或者换个压缩软件试试？）';
-
-		foreach ($files as $name => $file) {
-			if (strEndWith(strtolower($name), '.zip')) {
-				$up_zip_file = new ZipArchive();
-				if ($up_zip_file->open($files[$name]['tmp_name']) !== true) {
-					UOJResponse::page406("{$name} {$invalid_zip_msg}");
-				}
-				for ($i = 0; $i < $up_zip_file->numFiles; $i++) {
-					$stat = $up_zip_file->statIndex($i);
-					if ($stat === false) {
-						UOJResponse::page406("{$name} {$invalid_zip_msg}");
-					}
-					$file_name = strtolower(basename($stat['name']));
-					if ($stat['size'] > $single_file_size_limit) {
-						UOJResponse::page406("压缩包内文件 {$file_name} 实际大小过大。");
-					}
-					if ($stat['size'] == 0) { // skip empty files and directories
-						continue;
-					}
-					if (empty($reqset[$file_name])) {
-						UOJResponse::page406("压缩包内包含了题目不需要的文件：{$file_name}");
-					}
-					if (isset($fdict[$file_name])) {
-						UOJResponse::page406("压缩包内的文件出现了重复的文件名：{$file_name}");
-					}
-					$fdict[$file_name] = [
-						'zip' => $up_zip_file,
-						'zip_name' => $name,
-						'size' => $stat['size'],
-						'index' => $i
-					];
-				}
-			}
-		}
-
-		foreach ($files as $name => $file) {
-			if (!strEndWith(strtolower($name), '.zip')) {
-				$file_name = strtolower($name);
-				if ($file['size'] > $single_file_size_limit) {
-					UOJResponse::page406("文件 {$file_name} 大小过大。");
-				}
-				if ($file['size'] == 0) { // skip empty files
-					continue;
-				}
-				if (empty($reqset[$name])) {
-					UOJResponse::page406("上传了题目不需要的文件：{$file_name}");
-				}
-				if (isset($fdict[$file_name])) {
-					UOJResponse::page406("压缩包内的文件和直接上传的文件中出现了重复的文件名：{$file_name}");
-				}
-				$fdict[$file_name] = [
-					'zip' => false,
-					'size' => $file['size'],
-					'name' => $name
-				];
-			}
-		}
-
-		$tot_size = 0;
-		$up_content = [];
-		$is_empty = true;
-		foreach ($requirement as $req) {
-			$file_name = strtolower($req['file_name']);
-			if (empty($fdict[$file_name])) {
-				$up_content[$req['name']] = '';
-				continue;
-			}
-			
-			$is_empty = false;
-			$tot_size += $fdict[$file_name]['size'];
-
-			if ($fdict[$file_name]['zip']) {
-				$ret = $fdict[$file_name]['zip']->getFromIndex($fdict[$file_name]['index']);
-				if ($ret === false) {
-					UOJResponse::page406("{$fdict[$file_name]['zip_name']} {$invalid_zip_msg}");
-				}
-				$up_content[$req['name']] = $ret;
-			} else {
-				$up_content[$req['name']] = file_get_contents($files[$fdict[$file_name]['name']]['tmp_name']);
-			}
-		}
-
-		if ($is_empty) {
-			UOJResponse::page406('未上传任何题目要求的文件');
-		}
-		
-		$zip_file_name = $zip_file_name_gen();
-		
-		$zip_file = new ZipArchive();
-		if ($zip_file->open(UOJContext::storagePath().$zip_file_name, ZipArchive::CREATE) !== true) {
-			UOJResponse::page406('提交失败：可能是服务器空间不足导致的');
-		}
-		
-		foreach ($requirement as $req) {
-			$zip_file->addFromString($req['file_name'], $up_content[$req['name']]);
-		}
-		$zip_file->close();
-		
-		$content = [
-			'file_name' => $zip_file_name,
-			'config' => []
-		];
-		
-		$handle($zip_file_name, $content, $tot_size);
-	};
-	return $form;
 }

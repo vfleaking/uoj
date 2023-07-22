@@ -1,6 +1,10 @@
 <?php
 
 class UOJBlogEditor {
+
+	/**
+	 * @var string blog, slide, or quiz
+	 */
 	public $type = 'blog';
 	public $name;
 	public $blog_url;
@@ -109,7 +113,7 @@ class UOJBlogEditor {
 			} else {
 				$this->post_data['content'] = $purifier->purify($this->post_data['content']);
 			}
-		} else if ($this->type == 'slide') {
+		} elseif ($this->type == 'slide') {
 			$content_array = yaml_parse($this->post_data['content_md']);
 			if ($content_array === false || !is_array($content_array)) {
 				die(json_encode(array('content_md' => '不合法的 YAML 格式')));
@@ -151,6 +155,52 @@ class UOJBlogEditor {
 				$this->post_data['content'] .= "</section>\n";
 			}
 			$this->post_data['content'] = json_encode($config) . "\n" . $this->post_data['content'];
+		} elseif ($this->type == 'quiz') {
+			$content_md = $_POST[$this->name . '_content_md'];
+			$content = UOJMarkdown::compile_from_markdown($content_md, ['type' => 'uoj']);
+			if ($content === false) {
+				die(json_encode(['content_md' => [
+					['type' => 'html', 'html' => '未知错误']
+				]], JSON_UNESCAPED_UNICODE));
+			}
+
+			$content = $purifier->purify($content);
+
+			$delimiter = '/(<h1>\{[a-zA-Z_]+\}<\/h1>|<p>[a-zA-Z_]+\..*<\/p>)/';
+
+			$res = preg_split($delimiter, $content, -1, PREG_SPLIT_DELIM_CAPTURE);
+
+			$final = [];
+			$curi = -1;
+			$curj = -1;
+
+			foreach ($res as $sp) {
+				$matches = [];
+				if (preg_match('/^<h1>\{([a-zA-Z_]+)\}<\/h1>$/', $sp, $matches)) {
+					$final[] = ['type' => $matches[1], 'html' => ''];
+					$curi = count($final) - 1;
+					$curj = 'html';
+				} elseif (preg_match('/^<p>([a-zA-Z_]+)\.(.*)<\/p>$/', $sp, $matches)) {
+					if ($curi == -1) {
+						$final[] = ['type' => 'html', 'html' => $sp];
+						$curi = count($final) - 1;
+						$curj = 'html';
+					} else {
+						$final[$curi][$matches[1]] = $matches[2];
+						$curj = $matches[1];
+					}
+				} else {
+					if ($curi == -1) {
+						$final[] = ['type' => 'html', 'html' => $sp];
+						$curi = count($final) - 1;
+						$curj = 'html';
+					} else {
+						$final[$curi][$curj] .= $sp;
+					}
+				}
+			}
+
+			$this->post_data['content'] = json_encode($final, JSON_UNESCAPED_UNICODE);
 		}
 	}
 	
@@ -170,13 +220,21 @@ class UOJBlogEditor {
 				echo $this->post_data['content'];
 				echo '</article>';
 				echoUOJPageFooter(['ShowPageFooter' => false]);
-			} else if ($this->type == 'slide') {
+			} elseif ($this->type == 'slide') {
 				uojIncludeView('slide', array_merge(
 					UOJContext::pageConfig(), [
 						'PageTitle' => '幻灯片预览',
 						'content' => $this->post_data['content']
 					]
 				));
+			} elseif ($this->type == 'quiz') {
+				echoUOJPageHeader('博客预览', ['ShowPageHeader' => false, 'REQUIRE_LIB' => ['mathjax' => '', 'shjs' => '']]);
+				echo '<article class="uoj-article">';
+				$form = new UOJQuizSubmissionForm('quiz', json_decode($this->post_data['content'], true));
+				$form->no_submit = true;
+				$form->printHTML();
+				echo '</article>';
+				echoUOJPageFooter(['ShowPageFooter' => false]);
 			}
 			$ret['html'] = ob_get_contents();
 			ob_end_clean();

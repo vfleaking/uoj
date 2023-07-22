@@ -1,5 +1,4 @@
 <?php
-	requirePHPLib('form');
 	UOJContest::init(UOJRequest::get('id')) || UOJResponse::page404();
     UOJContest::cur()->userCanRegister(Auth::user(), ['ensure' => true]);
 

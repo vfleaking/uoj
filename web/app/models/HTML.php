@@ -78,7 +78,30 @@ class HTML {
 	public static function tablist(array $tabs_info, $cur, $type = 'nav-tabs') {
 		$html = '<ul class="nav '.$type.'" role="tablist">';
 		foreach ($tabs_info as $id => $tab) {
-			$html .= '<li'.($cur == $id ? ' class="active"' : '').'><a href="'.$tab['url'].'" role="tab">'.$tab['name'].'</a></li>';
+			$html .= '<li'.($cur == $id ? ' class="active"' : '').'>';
+			$html .= '<a href="'.$tab['url'].'" role="tab">'.$tab['name'].'</a>';
+			$html .= '</li>';
+		}
+		$html .= '</ul>';
+		return $html;
+    }
+
+	public static function samepage_tablist($tablist_name, array $tabs_info, $cur, $type = 'nav-tabs') {
+		$html = '<ul class="nav '.$type.'" role="tablist">';
+		foreach ($tabs_info as $id => $tab) {
+			$html .= '<li'.($cur == $id ? ' class="active"' : '').'>';
+
+			if (isset($tab['url'])) {
+				$html .= '<a href="'.$tab['url'].'" role="tab">'.$tab['name'].'</a>';
+			} else {
+				$html .= HTML::tag('a', [
+					'href' => "#{$tablist_name}-{$id}",
+					'role' => 'tab',
+					'data-toggle' => $tablist_name
+				], $tab['name']);
+			}
+
+			$html .= '</li>';
 		}
 		$html .= '</ul>';
 		return $html;
@@ -101,9 +124,17 @@ class HTML {
 			. '<span class="help-block" id="'."help-$name".'"></span>'
 			. '</div>';
 	}
-	public static function checkbox($name, $default_value) {
-		$status = $default_value ? 'checked="checked" ' : '';
+	public static function checkbox($name, $default_status = false) {
+		$status = $default_status ? 'checked="checked" ' : '';
 		return '<input type="checkbox" id="'."input-$name".'" name="'.$name.'" '.$status.'/>';
+	}
+	public static function checkbox_in_array($name, $value, $default_status = false) {
+		$status = $default_status ? 'checked="checked" ' : '';
+		return '<input type="checkbox" id="'."input-{$name}-{$value}".'" name="'.$name.'[]" value="'.$value.'" '.$status.'/>';
+	}
+	public static function radio($name, $value, $default_status = false) {
+		$status = $default_status ? 'checked="checked" ' : '';
+		return '<input type="radio" id="'."input-{$name}-{$value}".'" name="'.$name.'" value="'.$value.'" '.$status.'/>';
 	}
 	public static function option($value, $text, $selected) {
 		return '<option value="'.HTML::escape($value).'"'

@@ -1,5 +1,4 @@
 <?php
-	requirePHPLib('form');
 	requirePHPLib('judger');
 
     UOJContest::init(UOJRequest::get('id')) || UOJResponse::page404();
@@ -136,8 +135,6 @@
 			$reply_question = new UOJForm('reply_question');
 			$reply_question->addHidden('rid', '0',
 				function($id) {
-				    global $contest;
-				    
 					if (!validateUInt($id)) {
 						return '无效ID';
 					}
@@ -145,7 +142,7 @@
                         "select * from contests_asks",
                         "where", [
                             "id" => $id,
-                            "contest_id" => $contest['id']
+                            "contest_id" => UOJContest::info('id')
                         ]
                     ]);
 					if (!$q) {
@@ -180,7 +177,6 @@
 				null
 			);
 			$reply_question->handle = function() {
-				global $contest;
 				$content = $_POST['rcontent'];
 				$is_hidden = 1;
 				switch ($_POST['rtype']) {
@@ -258,7 +254,7 @@
 			'table_name' => 'contests_asks',
 			'cond' => [
                 "contest_id" => $contest['id'],
-                ["username", "!=", Auth::id()],
+                Auth::check() ? ["username", "!=", Auth::id()] : ["username", "is not", null],
                 "is_hidden" => 0
             ],
 			'tail' => 'order by reply_time desc',

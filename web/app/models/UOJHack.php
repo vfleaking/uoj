@@ -80,29 +80,26 @@ class UOJHack {
         return $this->problem->userCanManage($user);
     }
 
-    public function echoStatusBarTD($name, array $cfg) {
+    public function getStatusBarTD($name, array $cfg) {
         switch ($name) {
             case 'submission':
                 if ($this->submission) {
-                    echo $this->submission->getLink();
+                    return $this->submission->getLink();
                 } else {
-                    echo '<span class="text-danger">?</span>';
+                    return '<span class="text-danger">?</span>';
                 }
-                break;
             case 'result':
                 if ($this->hasJudged()) {
                     if ($this->info['success']) {
-                        echo '<a href="/hack/', $this->info['id'], '" class="uoj-status" data-success="1"><strong>Success!</strong></a>';
+                        return '<a href="/hack/'.$this->info['id'].'" class="uoj-status" data-success="1"><strong>Success!</strong></a>';
                     } else {
-                        echo '<a href="/hack/', $this->info['id'], '" class="uoj-status" data-success="0"><strong>Failed.</strong></a>';
+                        return '<a href="/hack/'.$this->info['id'].'" class="uoj-status" data-success="0"><strong>Failed.</strong></a>';
                     }
                 } else {
-                    echo '<a href="/hack/', $this->info['id'], '" class="small">', $this->publicStatus(),'</a>';
+                    return '<a href="/hack/'.$this->info['id'].'" class="small">'.$this->publicStatus().'</a>';
                 }
-                break;
             default:
-                $this->echoStatusBarTDBase($name, $cfg);
-                break;
+                return $this->getStatusBarTDBase($name, $cfg);
         }
     }
 
@@ -112,7 +109,7 @@ class UOJHack {
         foreach ($cols as $name) {
             if (!isset($cfg["{$name}_hidden"])) {
                 echo '<td>';
-                $this->echoStatusBarTD($name, $cfg);
+                echo $this->getStatusBarTD($name, $cfg);
                 echo '</td>';
             }
         }

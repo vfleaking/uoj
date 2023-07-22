@@ -184,7 +184,7 @@ class UOJSubmissionHistory {
             } else {
                 $show_result = false;
                 if ($his['type'] == 'major' || $his['type'] == 'minor') {
-                    echo '<strong>[', $h->echoStatusBarTD('result', $cfg), ']</strong>';
+                    echo '<strong>[', $h->getStatusBarTD('result', $cfg), ']</strong>';
                 } else {
                     echo '<strong>[error]</strong>';
                 }
@@ -214,15 +214,15 @@ class UOJSubmissionHistory {
                 echo '<ul class="list-group-item-text list-inline">';
                 echo '<li>';
                 echo '<strong>测评结果：</strong>';
-                echo $h->echoStatusBarTD('result', $cfg);
+                echo $h->getStatusBarTD('result', $cfg);
                 echo '</li>';
                 echo '<li>';
                 echo '<strong>用时：</strong>';
-                echo $h->echoStatusBarTD('used_time', $cfg);
+                echo $h->getStatusBarTD('used_time', $cfg);
                 echo '</li>';
                 echo '<li>';
                 echo '<strong>内存：</strong>';
-                echo $h->echoStatusBarTD('used_memory', $cfg);
+                echo $h->getStatusBarTD('used_memory', $cfg);
                 echo '</li>';
                 echo '</ul>';
             }
