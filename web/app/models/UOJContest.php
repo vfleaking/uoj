@@ -20,8 +20,10 @@ class UOJContest {
     public static function finalTest() {
         $contest = self::info();
 
+        $reason = self::cur()->reasonForFinalTest();
+
         $res = DB::selectAll([
-            "select id, problem_id, content, submitter, hide_score_to_others from submissions",
+            "select id, contest_id, problem_id, content, submitter, hide_score_to_others from submissions",
             "where", ["contest_id" => $contest['id']]
         ]);
         foreach ($res as $submission) {
@@ -32,9 +34,7 @@ class UOJContest {
             } else {
                 continue;
             }
-            UOJSubmission::rejudgeById($submission['id'], [
-                'reason_text' => HTML::stripTags($contest['name']).' 最终测试',
-                'reason_url' => HTML::url(UOJContest::cur()->getUri()),
+            UOJSubmission::rejudgeSubmission($submission, $reason + [
                 'set_q' => [
                     "content" => json_encode($content)
                 ]
@@ -250,6 +250,32 @@ class UOJContest {
             $label = '重新'.$label;
         }
         return $label;
+    }
+
+    public function reasonForFinalTest() {
+        $reason_text = HTML::stripTags($this->info['name']);
+        if ($this->progress() < CONTEST_TESTING) {
+            $reason_text .= ' 最终测试';
+        } else {
+            $reason_text .= ' 重新进行最终测试';
+        }
+        return [
+            'reason_text' => $reason_text,
+            'reason_url' => HTML::url($this->getUri())
+        ];
+    }
+
+    public function reasonForRejudgingContestSubmission() {
+        if ($this->basicRule() !== 'UOJ-ACM'
+            && CONTEST_TESTING <= $this->progress() && $this->progress() < CONTEST_FINISHED) {
+            $reason_text = HTML::stripTags($this->info['name']).' 重新进行最终测试';
+            return [
+                'reason_text' => $reason_text,
+                'reason_url' => HTML::url($this->getUri())
+            ];
+        } else {
+            return [];
+        }
     }
 
     public function queryJudgeProgress() {

@@ -8,7 +8,9 @@
 			<div class="uoj-footer">
 				<?= UOJLocale::getLocaleSwitcher() ?>
 				<?php if (UOJConfig::$data['switch']['ICP-license']): ?>
-				<ul class="list-inline"><li>Universal Online Judge</li>|<li><a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=42010202000505" style="text-decoration:none;"><img src="<?= HTML::url('/pictures/beian.png') ?>" /> 鄂公网安备 42010202000505 号</a></li></ul>
+				<ul class="list-inline">
+					<li>Universal Online Judge</li>|<li><a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=42010202000505" style="text-decoration:none;"><img src="<?= HTML::url('/pictures/beian.png') ?>" /> 鄂公网安备 42010202000505 号</a></li>|<li><a target="_blank" href="https://beian.miit.gov.cn/" style="text-decoration:none;">鄂ICP备 14016048 号</a></li>
+				</ul>
 				<?php else: ?>
 				<ul class="list-inline"><li>Universal Online Judge</li></ul>
 				<?php endif ?>

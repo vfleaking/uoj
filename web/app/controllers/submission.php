@@ -31,7 +31,7 @@ $problem = UOJProblem::info();
 if ($can_see_minor) {
     $minor_rejudge_form = new UOJForm('minorrejudge');
     $minor_rejudge_form->handle = function() {
-        UOJSubmission::rejudgeById(UOJSubmission::info('id'), [
+        UOJSubmission::cur()->rejudge([
             'reason_text' => '管理员偷偷重测该提交记录',
             'major' => false
         ]);
@@ -88,7 +88,7 @@ if (UOJSubmission::cur()->isLatest()) {
     if (UOJSubmission::cur()->userCanRejudge(Auth::user())) {
         $rejudge_form = new UOJForm('rejudge');
         $rejudge_form->handle = function() {
-            UOJSubmission::rejudgeById(UOJSubmission::info('id'));
+            UOJSubmission::cur()->rejudge();
         };
         $rejudge_form->submit_button_config['class_str'] = 'btn btn-primary';
         $rejudge_form->submit_button_config['text'] = '重新测试';

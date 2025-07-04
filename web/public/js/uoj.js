@@ -620,7 +620,7 @@ $.fn.long_table = function(data, cur_page, header_row, get_row_str, config) {
 		}
 		
 		if (config.mathjax) {
-			MathJax.Hub.Queue(["Typeset", MathJax.Hub, table_div]);
+			MathJax.typesetPromise([table_div]);
 		}
 		
 		var get_page_li = function(p, h) {

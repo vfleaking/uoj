@@ -2,7 +2,6 @@
 	UOJProblem::init(UOJRequest::get('id')) || UOJResponse::page404();
 	UOJProblem::cur()->userCanManage(Auth::user()) || UOJResponse::page403();
 
-	$problem = UOJProblem::cur()->info;
 	$problem_content = UOJProblem::cur()->queryContent();
 	$problem_tags = UOJProblem::cur()->queryTags();
 	
@@ -15,11 +14,11 @@
 
 	$problem_editor->blog_url = UOJProblem::cur()->getUri();
 	$problem_editor->cur_data = [
-		'title' => $problem['title'],
+		'title' => UOJProblem::info('title'),
 		'content_md' => $problem_content['statement_md'],
 		'content' => $problem_content['statement'],
 		'tags' => $problem_tags,
-		'is_hidden' => $problem['is_hidden']
+		'is_hidden' => UOJProblem::info('is_hidden')
 	];
 	$problem_editor->label_text = array_merge($problem_editor->label_text, [
 		'view blog' => '查看题目',
@@ -27,7 +26,26 @@
 	]);
 	
 	$problem_editor->save = function($data) {
-		global $problem, $problem_tags;
+		global $problem_tags;
+
+		$problem = UOJProblem::cur()->info;
+
+		$change_visibility = $data['is_hidden'] != $problem['is_hidden'];
+
+		if ($change_visibility && !$data['is_hidden']) {
+			$contest_problem_pairs = DB::selectAll([
+				"select * from contests_problems",
+				"where", ["problem_id" => $problem['id']]
+			]);
+
+			foreach ($contest_problem_pairs as $pair) {
+				$contest = UOJContest::query($pair['contest_id']);
+				if ($contest->progress() < CONTEST_FINISHED) {
+					return ['extra' => '当前题目出现在了一场尚未结束的比赛中，不能公开！'];
+				}
+			}
+		}
+
 		DB::update([
             "update problems",
             "set", ["title" => $data['title']],
@@ -54,7 +72,7 @@
                 ]);
 			}
 		}
-		if ($data['is_hidden'] != $problem['is_hidden'] ) {
+		if ($change_visibility) {
 			DB::update([
                 "update problems",
                 "set", ["is_hidden" => $data['is_hidden']],
@@ -75,7 +93,7 @@
 	
 	$problem_editor->runAtServer();
 ?>
-<?php echoUOJPageHeader(HTML::stripTags($problem['title']) . ' - 编辑 - 题目管理') ?>
+<?php echoUOJPageHeader(HTML::stripTags(UOJProblem::info('title')) . ' - 编辑 - 题目管理') ?>
 <?php uojIncludeView('problem-manage-header', ['cur_tab' => 'statement']) ?>
 <?php $problem_editor->printHTML() ?>
 <?php echoUOJPageFooter() ?>

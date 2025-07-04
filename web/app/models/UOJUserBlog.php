@@ -8,6 +8,9 @@ class UOJUserBlog {
 		if (!validateUsername($username) || !(self::$user = UOJUser::query($username))) {
 			UOJResponse::page404();
 		}
+		if (self::$user['usergroup'] === 'B') {
+			UOJResponse::page404('该用户已被封禁');
+		}
 		if ($_GET['blog_username'] !== blog_name_encode(self::$user['username'])) {
 			permanentlyRedirectTo(HTML::blog_url(self::$user['username'], '/'));
 		}

@@ -322,7 +322,7 @@ function queryACMContestSubmissionData($contest, $prob_pos, $config = []) {
 function calcStandings($contest, $contest_data, &$score, &$standings, $update_contests_submissions = false) {
 	// score for OI: username, problem_pos => score, penalty, id
 	// score for ACM: username, problem_pos => score, penalty, id, cnt, n_failures, n_frozen
-	$score = array();
+	$score = [];
 	$n_people = count($contest_data['people']);
 	$n_problems = count($contest_data['problems']);
 	foreach ($contest_data['people'] as $person) {
@@ -330,7 +330,7 @@ function calcStandings($contest, $contest_data, &$score, &$standings, $update_co
 	}
 	
 	if ($contest['extra_config']['basic_rule'] === 'UOJ-OI') {
-		foreach ($contest_data['data'] as $sub) {		
+		foreach ($contest_data['data'] as $sub) {
 			$penalty = (new DateTime($sub[1]))->getTimestamp() - $contest['start_time']->getTimestamp();
 			if ($contest['extra_config']['standings_version'] >= 2) {
 				if ($sub[4] == 0) {
@@ -443,9 +443,9 @@ function calcStandings($contest, $contest_data, &$score, &$standings, $update_co
 		}
 	}
 	
-	$standings = array();
+	$standings = [];
 	foreach ($contest_data['people'] as $person) {
-		$cur = array(0, 0, $person);
+		$cur = [0, 0, $person];
 		for ($i = 0; $i < $n_problems; $i++) {
 			if (isset($score[$person[0]][$i])) {
 				$cur_row = $score[$person[0]][$i];
@@ -470,7 +470,7 @@ function calcStandings($contest, $contest_data, &$score, &$standings, $update_co
 
 	usort($standings, function($lhs, $rhs) {
 		if ($lhs[0] != $rhs[0]) {
-			return $rhs[0] - $lhs[0];
+			return $rhs[0] > $lhs[0] ? 1 : -1;
 		} else if ($lhs[1] != $rhs[1]) {
 			return $lhs[1] - $rhs[1];
 		} else {

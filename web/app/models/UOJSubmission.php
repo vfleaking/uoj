@@ -235,13 +235,10 @@ class UOJSubmission {
 
     public static function rejudgeAll($conds, array $cfg = []) {
         $res = DB::selectAll([
-            "select id from submissions",
+            "select id, contest_id from submissions",
             "where", $conds
         ]);
-        foreach ($res as &$row) {
-            $row = $row['id'];
-        }
-        static::rejudgeByIds($res, $cfg);
+        static::rejudgeSubmissions($res, $cfg);
     }
 
     public static function rejudgeProblem(UOJProblem $problem, array $cfg = []) {
@@ -270,19 +267,57 @@ class UOJSubmission {
             ["score", ">=", 97]
         ], $cfg);
 	}
-    public static function rejudgeById($id, $cfg = []) {
-        return static::rejudgeByIds([$id], $cfg);
+    /**
+     * @param array $subs an array in the form of [['id' => xxx, 'contest_id' => xxx], ...]
+     */
+    public static function rejudgeSubmission($sub, $cfg = []) {
+        static::rejudgeSubmissions([$sub], $cfg);
     }
-    public static function rejudgeByIds($ids, $cfg = []) {
+    /**
+     * @param array $subs an array in the form of [['id' => xxx, 'contest_id' => xxx], ...]
+     */
+    public static function rejudgeSubmissions($subs, $cfg = []) {
+        $bucket = [];
+        foreach ($subs as $sub) {
+            $h = isset($sub['contest_id']) ? "C{$sub['contest_id']}" : 'C0';
+            if (!isset($bucket[$h])) {
+                $bucket[$h] = [];
+            }
+            $bucket[$h][] = $sub;
+        }
+        foreach ($bucket as $h => $b) {
+            static::rejudgeSimilarSubmissions($b, $cfg);
+        }
+    }
+    /**
+     * @param array $subs an array in the form of [['id' => xxx, 'contest_id' => xxx], ...]
+     */
+    private static function rejudgeSimilarSubmissions($subs, $cfg = []) {
+        if (empty($subs)) {
+            return;
+        }
+
         $cfg += [
             'reason_text' => '管理员手动重测该提交记录',
-            'requestor' => Auth::check() ? Auth::id() : '',
+        ];
+        
+        if (isset($subs[0]['contest_id'])) {
+            $contest = UOJContest::query($subs[0]['contest_id']);
+            $reason = $contest->reasonForRejudgingContestSubmission();
+            if (isset($reason['reason_text'])) {
+                $cfg['reason_text'] = $reason['reason_text'].': '.$cfg['reason_text'];
+            }
+            $cfg += $reason;
+        }
+
+        $cfg += [
             'reason_url' => null,
+            'requestor' => Auth::check() ? Auth::id() : '',
             'set_q' => [],
             'batch_size' => 16,
             'major' => true,
         ];
-        
+
         $cfg['set_q'] += [
             'judge_time' => null,
             'result' => '',
@@ -295,13 +330,14 @@ class UOJSubmission {
             ])
         ];
 
-        foreach (array_chunk($ids, $cfg['batch_size']) as $batch) {
+        foreach (array_chunk($subs, $cfg['batch_size']) as $batch) {
+            $batch_ids = array_column($batch, 'id');
             if ($cfg['major']) {
-                DB::transaction(function() use(&$batch, &$cfg) {
-                    if (count($batch) == 1) {
-                        $cond = ['id', '=', $batch[0]];
+                DB::transaction(function() use(&$batch_ids, &$cfg) {
+                    if (count($batch_ids) == 1) {
+                        $cond = ['id', '=', $batch_ids[0]];
                     } else {
-                        $cond = ['id', 'in', DB::rawtuple($batch)];
+                        $cond = ['id', 'in', DB::rawtuple($batch_ids)];
                     }
 
                     $history_fields = [
@@ -338,7 +374,7 @@ class UOJSubmission {
                     'submission_id', 'judge_reason', 'result', 'status', 'major'
                 ];
                 $cur_vals = [];
-                foreach ($batch as $id) {
+                foreach ($batch_ids as $id) {
                     $cur_vals[] = [
                         $id, $cfg['set_q']['judge_reason'], $cfg['set_q']['result'], $cfg['set_q']['status'], 0
                     ];
@@ -350,6 +386,10 @@ class UOJSubmission {
                 ]);
             }
         }
+
+    }
+    public function rejudge($cfg = []) {
+        static::rejudgeSubmissions([$this->info], $cfg);
     }
 
     public function __construct($info) {
