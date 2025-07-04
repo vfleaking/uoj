@@ -54,13 +54,14 @@ class UOJContestProblem extends UOJProblem {
         $title = parent::getTitle(['with' => null] + $cfg);
         if ($cfg['simplify']) {
             $letter = $this->getLetter();
-            if (strStartWith($title, $letter)) {
-                $title = substr($title, strlen($letter));
-                if (strStartWith($title, '.')) {
-                    $title = substr($title, 1);
-                }
-                $title = trim($title);
-            }
+			if (strStartWith($title, $letter)) {
+				if (strStartWith($title, $letter . '.')) {
+					$title = substr($title, strlen($letter) + 1);
+				} else if (strStartWith($title, $letter . ' - ')) {
+					$title = substr($title, strlen($letter) + 3);
+				}
+				$title = trim($title);
+			}
         }
         if ($cfg['with'] == 'letter') {
             if (!isset($letter)) {
