@@ -27,5 +27,8 @@ return [
 	'contest final testing' => 'Final testing',
 	'contest official results to be announced' => 'Official results to be announced',
 	'contest ended' => 'Contest Ended',
-	'contest registrants' => 'Registrants'
+	'contest registrants' => 'Registrants',
+	'UOJ-OI' => 'OI Format',
+	'UOJ-ACM' => 'ACM Format',
+	'UOJ-IOI' => 'IOI Format',
 ];

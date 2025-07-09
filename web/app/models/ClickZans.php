@@ -78,7 +78,8 @@ class ClickZans {
 					"where", [
 						'username' => Auth::id(),
 						'type' => $type,
-						'target_id' => $id
+						'target_id' => $id,
+						'created_at' => DB::now()
 					]
 				]);
 			} else {

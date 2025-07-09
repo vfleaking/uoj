@@ -17,7 +17,10 @@ class UOJContest {
         return new UOJContest($info);
     }
 
-    public static function finalTest() {
+    /**
+     * do final test & reveal hidden scores
+     */
+    public static function doFinalProcessing() {
         $contest = self::info();
 
         $reason = self::cur()->reasonForFinalTest();
@@ -34,10 +37,16 @@ class UOJContest {
             } else {
                 continue;
             }
+
+            $set_q = [
+                "content" => json_encode($content),
+            ];
+            if ($submission['hide_score_to_others']) {
+                $set_q['hide_score_to_others'] = 0;
+                $set_q['hidden_score'] = null;
+            }
             UOJSubmission::rejudgeSubmission($submission, $reason + [
-                'set_q' => [
-                    "content" => json_encode($content)
-                ]
+                'set_q' => $set_q
             ]);
         }
         
@@ -170,14 +179,22 @@ class UOJContest {
         if (!isset($this->info['extra_config']['standings_version'])) {
             $this->info['extra_config']['standings_version'] = 2;
         }
+
+        // basic rules: UOJ-OI, UOJ-ACM, UOJ-IOI
         if (!isset($this->info['extra_config']['basic_rule'])) {
             $this->info['extra_config']['basic_rule'] = 'UOJ-OI';
+        }
+        if (!isset($this->info['extra_config']['sample_test_name'])) {
+            $this->info['extra_config']['sample_test_name'] = 'sample_test';
         }
         if (!isset($this->info['extra_config']['free_registration'])) {
             $this->info['extra_config']['free_registration'] = 1;
         }
         if (!isset($this->info['extra_config']['individual_or_team'])) {
             $this->info['extra_config']['individual_or_team'] = 'individual';
+        }
+        if (!isset($this->info['extra_config']['forzen_time_mode'])) {
+            $this->info['extra_config']['forzen_time_mode'] = 'no_freeze';
         }
         if (!isset($this->info['extra_config']['bonus'])) {
             $this->info['extra_config']['bonus'] = [];
@@ -195,10 +212,10 @@ class UOJContest {
             } else if (UOJTime::$time_now < $this->info['end_time']) {
                 $this->info['cur_progress'] = CONTEST_IN_PROGRESS;
             } else {
-                if ($this->info['extra_config']['basic_rule'] == 'UOJ-IOI') {
-                    $this->info['cur_progress'] = CONTEST_TESTING;
+                if ($this->hasFinalProcessing()) {
+                    $this->info['cur_progress'] = CONTEST_PENDING_FINAL_PROCESSING;
                 } else {
-                    $this->info['cur_progress'] = CONTEST_PENDING_FINAL_TEST;
+                    $this->info['cur_progress'] = CONTEST_TESTING;
                 }
             }
         } else if ($this->info['status'] == 'testing') {
@@ -206,17 +223,18 @@ class UOJContest {
         } else if ($this->info['status'] == 'finished') {
             $this->info['cur_progress'] = CONTEST_FINISHED;
         }
-        
-        $this->info['frozen_time'] = false;
-        $this->info['frozen'] = false;
-        
-        if ($this->info['extra_config']['basic_rule'] == 'UOJ-ACM') {
+
+        if ($this->info['extra_config']['forzen_time_mode'] == 'no_freeze') {
+            $this->info['frozen_time'] = false;
+            $this->info['frozen'] = false;
+        } else if ($this->info['extra_config']['forzen_time_mode'] == 'freeze_last_1_over_5') {
             $this->info['frozen_time'] = clone $this->info['end_time'];
-            
             $frozen_min = min($this->info['last_min'] / 5, 60);
-                
             $this->info['frozen_time']->sub(new DateInterval("PT{$frozen_min}M"));
             $this->info['frozen'] = $this->info['cur_progress'] < CONTEST_TESTING && UOJTime::$time_now > $this->info['frozen_time'];
+        } else { // all_freeze
+            $this->info['frozen_time'] = false; // frozen from the very beginning, so the UI won't show the frozen time
+            $this->info['frozen'] = $this->info['cur_progress'] < CONTEST_TESTING;
         }
     }
 
@@ -240,7 +258,19 @@ class UOJContest {
         return $this->info['extra_config']['free_registration'];
     }
 
-    public function labelForFinalTest() {
+    public function hasFinalTestPhase() {
+        return $this->basicRule() == 'UOJ-OI';
+    }
+
+    public function hasFrozenPhase() {
+        return $this->info['extra_config']['forzen_time_mode'] != 'no_freeze';
+    }
+
+    public function hasFinalProcessing() {
+        return $this->hasFinalTestPhase() || $this->hasFrozenPhase();
+    }
+
+    public function labelForFinalProcessing() {
         if ($this->basicRule() === 'UOJ-ACM') {
             $label = '揭榜';
         } else {
@@ -250,6 +280,14 @@ class UOJContest {
             $label = '重新'.$label;
         }
         return $label;
+    }
+
+    public function textForSampleTest() {
+        if ($this->info['extra_config']['sample_test_name'] === 'sample_test') {
+            return '样例测评';
+        } else {
+            return '预测评';
+        }
     }
 
     public function reasonForFinalTest() {
@@ -325,7 +363,7 @@ class UOJContest {
     }
 
     public function managerCanSeeStandingsUnfrozenTab(array $user = null) {
-		return $this->basicRule() == 'UOJ-ACM' && $this->progress() < CONTEST_TESTING;
+		return $this->hasFrozenPhase() && !$this->hasFinalTestPhase() && $this->progress() < CONTEST_TESTING;
     }
 
     public function userCanSeeProblemStatistics($user) {
@@ -343,7 +381,10 @@ class UOJContest {
             $cfg['ensure'] && $this->redirectToAnnouncementBlog();
             return false;
         }
-        if ($this->userCanManage($user) || $this->userHasRegistered($user) || $this->progress() > CONTEST_NOT_STARTED) {
+        $late_registration_ddl = clone $this->info['start_time'];
+        $late_registration_ddl->add(new DateInterval('PT'.LATE_REGISTRATION_DDL));
+        $too_late = $this->progress() > CONTEST_IN_PROGRESS || ($this->progress() > CONTEST_NOT_STARTED && UOJTime::$time_now > $late_registration_ddl);
+        if ($this->userCanManage($user) || $this->userHasRegistered($user) || $too_late) {
             $cfg['ensure'] && redirectTo('/contests');
             return false;
         }
@@ -370,6 +411,9 @@ class UOJContest {
             if ($cfg['check-register']) {
                 if ($user && $this->userHasRegistered($user)) {
                     return true;
+                }
+                if ($user && $this->userCanRegister($user)) {
+                    $cfg['ensure'] && redirectTo($this->getUri('/register'));
                 }
                 $cfg['ensure'] && UOJResponse::message("<h1>比赛正在进行中</h1><p>很遗憾，您尚未报名。比赛结束后再来看吧～</p>");
                 return false;

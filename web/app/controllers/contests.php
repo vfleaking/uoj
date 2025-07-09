@@ -27,13 +27,13 @@
 		} elseif ($contest['cur_progress'] == CONTEST_FINISHED) {
 			$contest_name_link .= '<sup><a style="color:grey" href="/contest/'.$contest['id'].'/standings">'.UOJLocale::get('contests::ended').'</a></sup>';
 		} else {
-			if ($contest['extra_config']['basic_rule'] == 'UOJ-OI') {
-				if ($contest['cur_progress'] == CONTEST_PENDING_FINAL_TEST) {
+			if ($ucontest->hasFinalTestPhase()) {
+				if ($contest['cur_progress'] == CONTEST_PENDING_FINAL_PROCESSING) {
 					$contest_name_link .= '<sup><a style="color:blue" href="/contest/'.$contest['id'].'">'.UOJLocale::get('contests::pending final test').'</a></sup>';
 				} elseif ($contest['cur_progress'] == CONTEST_TESTING) {
 					$contest_name_link .= '<sup><a style="color:blue" href="/contest/'.$contest['id'].'">'.UOJLocale::get('contests::final testing').'</a></sup>';
 				}
-			} elseif ($contest['extra_config']['basic_rule'] == 'UOJ-ACM' || $contest['extra_config']['basic_rule'] == 'UOJ-IOI') {
+			} else {
 				$contest_name_link .= '<sup><a style="color:blue" href="/contest/'.$contest['id'].'">'.UOJLocale::get('contests::official results to be announced').'</a></sup>';
 			}
 		}

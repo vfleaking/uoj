@@ -139,7 +139,7 @@
 						$contest['extra_config']['bonus']["problem_$problem_id"] = true;
 					} else {
 						$judge_type = null;
-						foreach (['sampe', 'full', 'no-details', 'default'] as $jt) {
+						foreach (['sample', 'sample-no-details', 'full', 'no-details', 'default'] as $jt) {
 							if ($arg === "[{$jt}]") {
 								$judge_type = $jt;
 							}
@@ -191,6 +191,11 @@
         'individual' => '个人赛',
         'team' => '团体赛'
     ], "个人赛/团体赛", $contest['extra_config']['individual_or_team']);
+    $rule_form->addSelect('forzen_time_mode', [
+        'no_freeze' => '不封榜',
+        'freeze_last_1_over_5' => '比赛结束前 1/5 的时间封榜（若比赛为5小时，则最后一小时封榜）',
+        'all_freeze' => '全程封榜（从一开始就看不到别人的得分）'
+    ], "什么时候封榜？", $contest['extra_config']['forzen_time_mode']);
     $rule_form->addInput(
         'max_n_submissions_per_problem', 'text', '每题最高提交次数（-1 表示不限制）',
         $contest['extra_config']['max_n_submissions_per_problem'],
@@ -199,12 +204,18 @@
         },
         null
     );
+    $rule_form->addSelect('sample_test_name', [
+        'sample_test' => '样例测评',
+        'pretest' => '预测评',
+    ], "如何称呼sample型的题目在比赛期间的测评方式？", $contest['extra_config']['sample_test_name']);
     $rule_form->handle = function() {
         global $contest;
         $contest['extra_config']['basic_rule'] = $_POST['basic_rule'];
         $contest['extra_config']['free_registration'] = (int)$_POST['free_registration'];
         $contest['extra_config']['individual_or_team'] = $_POST['individual_or_team'];
+        $contest['extra_config']['forzen_time_mode'] = $_POST['forzen_time_mode'];
         $contest['extra_config']['max_n_submissions_per_problem'] = (int)$_POST['max_n_submissions_per_problem'];
+        $contest['extra_config']['sample_test_name'] = $_POST['sample_test_name'];
         $esc_extra_config = json_encode($contest['extra_config']);
         DB::update([
             "update contests",
@@ -386,9 +397,10 @@
 			<li><strong>命令基本格式：</strong>命令一行一个，+233表示把题号为233的试题加入比赛，-233表示把题号为233的试题从比赛中移除。</li>
 			<li><strong>设置测评类型：</strong> UOJ 的比赛题目有如下四种测评类型。可以通过 +233[no-details] 这样的语法来手动设置测评类型。不加括号直接通过 +233 添加题目时，测评类型为 default。
 				<ul>
-					<li>sample：只测样例；</li>
+					<li>sample：根据题目配置进行简单样例测评或预测评，显示每个测试点分数和详情；</li>
+					<li>sample-no-details：根据题目配置进行简单样例测评或预测评，显示每个测试点分数，不显示详情；</li>
+					<li>full：测全部数据，显示每个测试点分数和详情；</li>
 					<li>no-details：测全部数据，显示每个测试点分数，不显示详情；</li>
-					<li>full：测全部数据，显示每个测试点分数和详情</li>
 					<li>default：设为本场比赛的赛制对应的默认测评类型。在 OI 赛制里为 sample，其余赛制里为 no-details。</li>
 				</ul>
 			</li>
@@ -401,7 +413,7 @@
 			<div class="col-sm-12">
 				<h3>赛制解释</h3>
 				<ul>
-				    <li><strong>UOJ-OI 赛制：</strong> 比赛期间可设置题目只测样例，结束后会进行重测。按最后一次有效提交算分和算罚时。</li>
+				    <li><strong>UOJ-OI 赛制：</strong> 比赛期间可设置题目只进行简单样例测评或预测评，结束后会进行重测。按最后一次有效提交算分和算罚时。</li>
 				    <li><strong>UOJ-ACM 赛制：</strong> 比赛期间所有题目显示最终测评结果（须手工将题目类型设置为 no-details 或 full）。比赛结束前一小时封榜，比赛时间不足5小时则比赛过去五分之四后封榜。一道题的罚时为得分最高的提交的时间，加上在此之前没有使得该题分数增加的提交的次数乘以 20 分钟。</li>
 				    <li><strong>UOJ-IOI 赛制：</strong> 比赛期间所有题目显示最终测评结果（须手工将题目类型设置为 no-details 或 full）。按得分最高的有效提交算分和算罚时。</li>
 				</ul>

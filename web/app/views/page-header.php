@@ -93,7 +93,7 @@ if (!isset($ShowPageHeader)) {
 		<?= HTML::js_src('/js/color-converter.min.js') ?>
 		
 		<!-- uoj -->
-		<?= HTML::js_src('/js/uoj.js?v=2024.07.12') ?>
+		<?= HTML::js_src('/js/uoj.js?v=2025.07.05') ?>
 		
 		<!-- readmore -->
 		<?= HTML::js_src('/js/readmore/readmore.min.js') ?>

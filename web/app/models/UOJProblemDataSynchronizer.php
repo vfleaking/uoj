@@ -452,21 +452,39 @@ class UOJProblemDataSynchronizer {
 						$this->compile_at_prepare('interactor', ['need_include_header' => true]);
 					}
 
-					$n_sample_tests = getUOJConfVal($this->problem_conf, 'n_sample_tests', $n_tests);
+					$n_sample_tests = getUOJConfVal($this->problem_conf, 'n_sample_tests', '0');
+					$pre_n_tests = getUOJConfVal($this->problem_conf, 'pre_n_tests', '0');
 					if (!validateUInt($n_sample_tests) || $n_sample_tests < 0) {
 						throw new UOJProblemConfException('n_sample_tests must be a non-negative integer. Current value: '.HTML::escape($n_sample_tests));
 					}
-					if ($n_sample_tests > $n_ex_tests) {
-						throw new UOJProblemConfException("n_sample_tests can't be greater than n_ex_tests");
+					if (!validateUInt($pre_n_tests) || $pre_n_tests < 0) {
+						throw new UOJProblemConfException('pre_n_tests must be a non-negative integer. Current value: '.HTML::escape($pre_n_tests));
+					}
+					if ($pre_n_tests + $n_sample_tests > $n_ex_tests) {
+						if ($n_sample_tests > $n_ex_tests) {
+							throw new UOJProblemConfException("n_sample_tests must be less than or equal to n_ex_tests");
+						}
+						if ($pre_n_tests > $n_ex_tests) {
+							throw new UOJProblemConfException("pre_n_tests must be less than or equal to n_ex_tests");
+						}
+						throw new UOJProblemConfException("pre_n_tests + n_sample_tests must be less than or equal to n_ex_tests");
 					}
 
 					if (!isset($this->problem_extra_config['dont_download_sample'])) {
 						for ($num = 1; $num <= $n_sample_tests; $num++) {
-							$input_file_name = getUOJProblemExtraInputFileName($this->problem_conf, $num);
-							$output_file_name = getUOJProblemExtraOutputFileName($this->problem_conf, $num);
-							$zip_file->addFile("{$this->prepare_dir}/{$input_file_name}", "$input_file_name");
+							$input_file_name = getUOJProblemExtraInputFileName($this->problem_conf, $pre_n_tests + $num);
+							$output_file_name = getUOJProblemExtraOutputFileName($this->problem_conf, $pre_n_tests + $num);
+							
+							// use input_pre as the base name for sample files
+							// if input_pre is empty, or equals "input" / "in", use "sample" as the problem name
+							$name = getUOJConfVal($this->problem_conf, 'input_pre', 'sample');
+							if ($name == "in" || $name == "input") {
+								$name = 'sample';
+							}
+
+							$zip_file->addFile("{$this->prepare_dir}/{$input_file_name}", "{$name}{$num}.in");
 							if (!isset($this->problem_extra_config['dont_download_sample_output'])) {
-								$zip_file->addFile("{$this->prepare_dir}/{$output_file_name}", "$output_file_name");
+								$zip_file->addFile("{$this->prepare_dir}/{$output_file_name}", "{$name}{$num}.ans");
 							}
 						}
 					}

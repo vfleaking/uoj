@@ -1,4 +1,4 @@
-<?php if ($contest['frozen']): ?>
+<?php if ($contest['frozen'] && $contest['frozen_time'] !== false): ?>
 <h4 class="text-center text-danger">封榜于 <?= $contest['frozen_time']->format('Y-m-d H:i:s') ?></h4>
 <?php endif ?>
 

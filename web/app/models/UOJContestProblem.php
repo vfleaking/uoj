@@ -151,7 +151,7 @@ class UOJContestProblem extends UOJProblem {
         // excluding manager_view, score; don't check whether $user is a manager
         if ($this->contest->progress() == CONTEST_IN_PROGRESS) {
             if ($submission->userIsSubmitter($user)) {
-                if ($this->getJudgeTypeInContest() == 'no-details') {
+                if (strpos($this->getJudgeTypeInContest(), 'no-details') !== false) {
                     return ['low_level_details'];
                 } else {
                     return [];

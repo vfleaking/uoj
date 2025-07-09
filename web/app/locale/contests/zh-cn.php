@@ -27,5 +27,8 @@ return [
 	'contest final testing' => '正在测评',
 	'contest official results to be announced' => '等待宣布正式成绩',
 	'contest ended' => '比赛已结束',
-	'contest registrants' => '报名选手列表'
+	'contest registrants' => '报名选手列表',
+	'UOJ-OI' => 'OI 赛制',
+	'UOJ-ACM' => 'ACM 赛制',
+	'UOJ-IOI' => 'IOI 赛制',
 ];

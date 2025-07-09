@@ -93,7 +93,8 @@ CREATE TABLE `click_zans` (
   `type` char(2) COLLATE utf8mb4_unicode_ci NOT NULL,
   `username` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `target_id` int NOT NULL,
-  `val` tinyint NOT NULL DEFAULT '1'
+  `val` tinyint NOT NULL DEFAULT '1',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -523,7 +524,8 @@ ALTER TABLE `blogs_tags`
 -- Indexes for table `click_zans`
 --
 ALTER TABLE `click_zans`
-  ADD PRIMARY KEY (`type`,`target_id`,`username`);
+  ADD PRIMARY KEY (`type`,`target_id`,`username`),
+  ADD KEY `type` (`type`, `target_id`, `created_at`);
 
 --
 -- Indexes for table `contests`

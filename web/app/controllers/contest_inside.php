@@ -44,15 +44,15 @@
     isset($tabs_info[$cur_tab]) || UOJResponse::page404();
 	
 	if (isSuperUser($myUser)) {
-		if (CONTEST_PENDING_FINAL_TEST <= $contest['cur_progress'] && $contest['cur_progress'] <= CONTEST_TESTING) {
-			$start_test_form = new UOJForm('start_test');
-			$start_test_form->handle = function() {
-				UOJContest::finalTest();
+		if (CONTEST_PENDING_FINAL_PROCESSING <= $contest['cur_progress'] && $contest['cur_progress'] <= CONTEST_TESTING) {
+			$start_process_form = new UOJForm('start_process');
+			$start_process_form->handle = function() {
+				UOJContest::doFinalProcessing();
 			};
-			$start_test_form->submit_button_config['class_str'] = 'btn btn-danger btn-block';
-			$start_test_form->submit_button_config['smart_confirm'] = '';
-			$start_test_form->submit_button_config['text'] = UOJContest::cur()->labelForFinalTest();
-			$start_test_form->runAtServer();
+			$start_process_form->submit_button_config['class_str'] = 'btn btn-danger btn-block';
+			$start_process_form->submit_button_config['smart_confirm'] = '';
+			$start_process_form->submit_button_config['text'] = UOJContest::cur()->labelForFinalProcessing();
+			$start_process_form->runAtServer();
 		}
 		if ($contest['cur_progress'] >= CONTEST_TESTING) {
 			$publish_result_form = new UOJForm('publish_result');
@@ -466,23 +466,26 @@
 	</div>
 	<div class="col-md-3">
 	<?php endif ?>
+		<p>此次比赛为 <?=UOJLocale::get('contests::'.$contest['extra_config']['basic_rule'])?>。</p>
 		<?php if ($contest['extra_config']['basic_rule'] === 'UOJ-OI'): ?>
-		<p>此次比赛为OI赛制。</p>
-		<p><strong>注意：比赛时只显示测样例的结果。</strong></p>
-		<?php elseif ($contest['extra_config']['basic_rule'] === 'UOJ-ACM'): ?>
-	    <p>此次比赛为ACM赛制。</p>
-		<p><strong>封榜时间：<?=$contest['frozen_time']->format('Y-m-d H:i:s')?></strong></p>
-		<?php elseif ($contest['extra_config']['basic_rule'] === 'UOJ-IOI'): ?>
-		<p>此次比赛为IOI赛制。</p>
+		<p><strong>注意：比赛时只显示<?=UOJContest::cur()->textForSampleTest()?>的结果。</strong></p>
+		<?php elseif (in_array($contest['extra_config']['basic_rule'], ['UOJ-ACM', 'UOJ-IOI'])): ?>
 		<p>比赛时显示的得分即最终得分。</p>
-	    <?php endif ?>
-	
+		<?php endif ?>
+		<?php if (UOJContest::cur()->hasFrozenPhase()): ?>
+			<?php if ($contest['frozen_time'] !== false): ?>
+			<p>封榜后不能看到其他人的得分情况。</p>
+			<p><strong>封榜时间：<?=$contest['frozen_time']->format('Y-m-d H:i:s')?></strong></p>
+			<?php else: ?>
+			<p>比赛期间无法看到其他选手的得分情况。</p>
+			<?php endif ?>
+		<?php endif ?>
 		<a href="/contest/<?=$contest['id']?>/registrants" class="btn btn-info btn-block"><?= UOJLocale::get('contests::contest registrants') ?></a>
 		<?php if (isSuperUser($myUser)): ?>
 		<a href="/contest/<?=$contest['id']?>/manage" class="btn btn-primary btn-block">管理</a>
-		<?php if (isset($start_test_form)): ?>
+		<?php if (isset($start_process_form)): ?>
 		<div class="top-buffer-sm">
-			<?php $start_test_form->printHTML(); ?>
+			<?php $start_process_form->printHTML(); ?>
 		</div>
 		<?php endif ?>
 		<?php if (isset($publish_result_form)): ?>

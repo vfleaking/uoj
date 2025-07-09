@@ -87,10 +87,12 @@ class UOJSubmission {
         $judge_reason = '';
 
 		$archive->content['config'][] = ['problem_id', UOJProblem::info('id')];
-		if ($is_contest_submission && UOJContestProblem::cur()->getJudgeTypeInContest() == 'sample') {
+		if ($is_contest_submission && strpos(UOJContestProblem::cur()->getJudgeTypeInContest(), 'sample') !== false) {
 			$archive->content['final_test_config'] = $archive->content['config'];
 			$archive->content['config'][] = ['test_sample_only', 'on'];
-            $judge_reason = json_encode(['text' => '样例测评']);
+            $judge_reason = json_encode([
+                'text' => UOJContestProblem::cur()->contest->textForSampleTest()
+            ]);
 		}
 		$content_json = json_encode($archive->content);
 

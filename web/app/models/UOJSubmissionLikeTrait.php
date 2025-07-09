@@ -50,6 +50,7 @@ trait UOJSubmissionLikeTrait {
 
     public function userCanView(array $user = null, array $cfg = []) {
         $cfg += ['ensure' => false];
+        Auth::check() || redirectToLogin();
         if (!$this->info['is_hidden']) {
             return true;
         } elseif ($this->userCanManageProblemOrContest($user)) {

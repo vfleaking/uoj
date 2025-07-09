@@ -41,6 +41,7 @@ function isdiff(k, i) {
 
 function getClickable() {
 	var res = [];
+	var last_k = -1;
 	for (var k = standings.length - 1; k >= 0; k--) {
 		for (var i = 0; i < problems.length; i++) {
 			if (isdiff(k, i)) {
@@ -48,10 +49,26 @@ function getClickable() {
 			}
 		}
 		if (res.length > 0) {
-			return res;
+			last_k = k;
+			break;
 		}
 	}
-	return [];
+
+	if (last_k == -1) {
+		return [];
+	}
+
+	for (var k = last_k - 1; k >= 0; k--) {
+		if (!is_same_rank(standings[k], standings[k + 1])) {
+			break;
+		}
+		for (var i = 0; i < problems.length; i++) {
+			if (isdiff(k, i)) {
+				res.push([k, i]);
+			}
+		}
+	}
+	return res;
 }
 
 function isClickable(clks, k, i) {
@@ -96,12 +113,16 @@ function genClickCallback(k, i) {
 
 function people_cmp(lhs, rhs) {
 	if (lhs[0] != rhs[0]) {
-		return rhs[0] - lhs[0];
+		return rhs[0] > lhs[0] ? 1 : -1;
 	} else if (lhs[1] != rhs[1]) {
 		return lhs[1] - rhs[1];
 	} else {
 		return lhs[2][0] > rhs[2][0] ? 1 : -1;
 	}
+}
+
+function is_same_rank(lhs, rhs) {
+	return lhs[0] == rhs[0] && lhs[1] == rhs[1];
 }
 
 function calcCurrentStandings() {
@@ -118,13 +139,10 @@ function calcCurrentStandings() {
 				cur[1] += cur_row[1];
 			}
 		}
+		cur[0] = Number(cur[0].toFixed(10));
 	}
 	
 	standings.sort(people_cmp);
-
-	var is_same_rank = function(lhs, rhs) {
-		return lhs[0] == rhs[0] && lhs[1] == rhs[1];
-	};
 
 	for (var k = 0; k < standings.length; k++) {
 		if (k == 0 || !is_same_rank(standings[k - 1], standings[k])) {
@@ -136,17 +154,18 @@ function calcCurrentStandings() {
 }
 
 function standingsSkeleton() {
+	var meta = getStandingsMeta();
 	var header = $('<tr />');
 
-	header.append(setACMStandingsTH(document.createElement('th'), -3));
-	header.append(setACMStandingsTH(document.createElement('th'), -2));
-	header.append(setACMStandingsTH(document.createElement('th'), -1));
+	header.append(setStandingsTH(document.createElement('th'), -3, meta));
+	header.append(setStandingsTH(document.createElement('th'), -2, meta));
+	header.append(setStandingsTH(document.createElement('th'), -1, meta));
 
 	for (let i = 0; i < problems.length; i++) {
 		let pid = problems[i];
 		let th = document.createElement('th');
 		th.id = 'th-prob-' + pid;
-		header.append(setACMStandingsTH(th, i));
+		header.append(setStandingsTH(th, i, meta));
 	}
 	
 	$('#standings').append(
@@ -181,28 +200,28 @@ function updateScoreTD(k, i, meta) {
 	}
 
 	if (meta === undefined) {
-		meta = getACMStandingsMeta();
+		meta = getStandingsMeta();
 	}
-	setACMStandingsTD(document.getElementById('tr-k-' + k + '-prob-' + i), row, i, meta)
+	setStandingsTD(document.getElementById('tr-k-' + k + '-prob-' + i), row, i, meta)
 }
 
 function updateStanding() {
 	calcCurrentStandings();
 
-	var meta = getACMStandingsMeta();
+	var meta = getStandingsMeta();
 
 	for (var i = 0; i < problems.length; i++) {
 		let pid = problems[i];
-		setACMStandingsTH(document.getElementById('th-prob-' + pid), i, meta);
+		setStandingsTH(document.getElementById('th-prob-' + pid), i, meta);
 	}
 
 	var clks = getClickable();
 	
 	for (var k = 0; k < standings.length; k++) {
 		var row = standings[k];
-		setACMStandingsTD(document.getElementById('tr-k-vrank-' + k), row, -3, meta);
-		setACMStandingsTD(document.getElementById('tr-k-name-' + k), row, -2, meta);
-		setACMStandingsTD(document.getElementById('tr-k-total-' + k), row, -1, meta);
+		setStandingsTD(document.getElementById('tr-k-vrank-' + k), row, -3, meta);
+		setStandingsTD(document.getElementById('tr-k-name-' + k), row, -2, meta);
+		setStandingsTD(document.getElementById('tr-k-total-' + k), row, -1, meta);
 		for (var i = 0; i < problems.length; i++) {
 			updateScoreTD(k, i, meta);
 			if (isClickable(clks, k, i)) {

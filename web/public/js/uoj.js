@@ -1280,6 +1280,70 @@ function showCommentReplies(id, replies) {
 	);
 }
 
+// standings
+
+// helper functions for OI and IOI
+
+function setOIStandingsTH(th, i, meta) {
+	if (i == -3) {
+		return $(th).css('width', '5em').text('#');
+	} else if (i == -2) {
+		return $(th).css('width', '14em').text(uojLocale('username'));
+	} else if (i == -1) {
+		return $(th).css('width', '5em').text(uojLocale('contests::total score'));
+	}
+
+	var pid = problems[i];
+
+	return $(th).css('width', '8em').html(
+		'<a href="/contest/' + contest_id + '/problem/' + pid + '">' + String.fromCharCode('A'.charCodeAt(0) + i) + '</a>'
+	);
+}
+
+function setOIStandingsTR(tr, row, meta) {
+	return $(tr);
+}
+
+function setOIStandingsTD(td, row, i, meta) {
+	if (i == -3) {
+		return $(td).html(row[3]);
+	} else if (i == -2) {
+		return $(td).html(getUserLink(row[2][0], row[2][1]));
+	} else if (i == -1) {
+		return $(td).html(
+			'<div><span class="uoj-score" data-max="' + problems.length * 100 + '" style="color:' + getColOfScore(row[0] / problems.length) + '">' + row[0] + '</span></div>' +
+			'<div>' + getPenaltyTimeStr(row[1]) + '</div>'
+		);
+	}
+
+	var col = score[row[2][0]][i];
+	var td_content = '';
+	if (col != undefined) {
+		td_content += '<div>';
+		if (col[0] !== null) {
+			td_content += '<a href="/submission/' + col[2] + '" class="uoj-score" style="color:' + getColOfScore(col[0]) + '">' + col[0] + '</a>';
+			if (col[3] > 0) {
+				td_content += ' + ';
+			}
+		}
+		if (col[3] > 0) {
+			td_content += '<a href="/submission/' + col[3] + '" class="text-muted">?</a>';
+		}
+		td_content += '</div>';
+
+		if (standings_version < 2) {
+			td_content += '<div>' + getPenaltyTimeStr(col[1]) + '</div>';
+		} else {
+			if (col[0] > 0) {
+				td_content += '<div>' + getPenaltyTimeStr(col[1]) + '</div>';
+			}
+		}
+	}
+	return $(td).html(td_content);
+}
+
+// helper functions for ACM
+
 function getACMStandingsMeta() {
 	var stat = {};
 	var full_score = 0;
@@ -1344,6 +1408,10 @@ function setACMStandingsTH(th, i, meta) {
 		th_str += '<div>' + meta.stat[pid].ac_cnt + '/' + meta.stat[pid].cnt + '</div>';
 	}
 	return $(th).html(th_str);
+}
+
+function setACMStandingsTR(tr, row, meta) {
+	return $(tr).css('height', '57px');
 }
 
 function setACMStandingsTD(td, row, i, meta) {
@@ -1482,86 +1550,69 @@ function setACMStandingsTD(td, row, i, meta) {
 	return $(td).attr('title', td_title).html(td_content);
 }
 
-// standings
-function showStandings() {
-	if (contest_rule == 'UOJ-OI' || contest_rule == 'UOJ-IOI') {
-		$("#standings").long_table(
-			standings,
-			1,
-			'<tr>' +
-				'<th style="width:5em">#</th>' +
-				'<th style="width:14em">'+uojLocale('username')+'</th>' +
-				'<th style="width:5em">'+uojLocale('contests::total score')+'</th>' +
-				$.map(problems, function(col, idx) {
-					return '<th style="width:8em;">' + '<a href="/contest/' + contest_id + '/problem/' + col + '">' + String.fromCharCode('A'.charCodeAt(0) + idx) + '</a>' + '</th>';
-				}).join('') +
-			'</tr>',
-			function(row) {
-				var col_tr = '';
-				if (myname != row[2][0]) {
-					col_tr += '<tr>';
-				} else {
-					col_tr += '<tr class="warning">';
-				}
-				col_tr += '<td>' + row[3] + '</td>';
-				col_tr += '<td>' + getUserLink(row[2][0], row[2][1]) + '</td>';
-				col_tr += '<td>' + '<div><span class="uoj-score" data-max="' + problems.length * 100 + '" style="color:' + getColOfScore(row[0] / problems.length) + '">' + row[0] + '</span></div>' + '<div>' + getPenaltyTimeStr(row[1]) + '</div></td>';
-				for (var i = 0; i < problems.length; i++) {
-					col_tr += '<td>';
-					col = score[row[2][0]][i];
-					if (col != undefined) {
-						col_tr += '<div><a href="/submission/' + col[2] + '" class="uoj-score" style="color:' + getColOfScore(col[0]) + '">' + col[0] + '</a></div>';
-						if (standings_version < 2) {
-							col_tr += '<div>' + getPenaltyTimeStr(col[1]) + '</div>';
-						} else {
-							if (col[0] > 0) {
-								col_tr += '<div>' + getPenaltyTimeStr(col[1]) + '</div>';
-							}
-						}
-					}
-					col_tr += '</td>';
-				}
-				col_tr += '</tr>';
-				return col_tr;
-			}, {
-				table_classes: ['table', 'table-bordered', 'table-striped', 'table-text-center', 'table-vertical-middle', 'table-condensed'],
-				page_len: 100,
-				top_pagination: true,
-			    max_extend: 10,
-				print_after_table: function() {
-					return '<div class="text-right text-muted">' + uojLocale("contests::n participants", standings.length) + '</div>';
-				}
-			}
-		);
-	} else if (contest_rule == 'UOJ-ACM') {
-		var meta = getACMStandingsMeta();
-		var header = $('<tr />');
-		for (let i = -3; i < problems.length; i++) {
-			header.append(setACMStandingsTH(document.createElement('th'), i, meta));
-		}
-	    
-	    $("#standings").long_table(
-		    standings,
-		    1,
-			header,
-		    function(row) {
-				var tr = $('<tr />').css('height', '57px');
-				if (myname == row[2][0]) {
-					tr.addClass('warning');
-				}
-			    for (let i = -3; i < problems.length; i++) {
-					tr.append(setACMStandingsTD(document.createElement('td'), row, i, meta));
-			    }
-				return tr;
-		    }, {
-			    table_classes: ['table', 'table-bordered', 'table-striped', 'table-text-center', 'table-vertical-middle', 'table-condensed'],
-			    page_len: 100,
-			    top_pagination: true,
-			    max_extend: 10,
-			    print_after_table: function() {
-				    return '<div class="text-right text-muted">' + uojLocale("contests::n participants", standings.length) + '</div>';
-			    }
-		    }
-	    );
+// call helper functions according to the contest_rule
+
+function getStandingsMeta() {
+	if (contest_rule == 'UOJ-ACM') {
+		return getACMStandingsMeta();
+	} else {
+		return {};
 	}
+}
+
+function setStandingsTH(th, i, meta) {
+	if (contest_rule == 'UOJ-ACM') {
+		return setACMStandingsTH(th, i, meta);
+	} else {
+		return setOIStandingsTH(th, i, meta);
+	}
+}
+
+function setStandingsTR(tr, row, meta) {
+	if (myname == row[2][0]) {
+		$(tr).addClass('warning');
+	}
+	if (contest_rule == 'UOJ-ACM') {
+		return setACMStandingsTR(tr, row, meta);
+	} else {
+		return setOIStandingsTR(tr, row, meta);
+	}
+}
+
+function setStandingsTD(td, row, i, meta) {
+	if (contest_rule == 'UOJ-ACM') {
+		return setACMStandingsTD(td, row, i, meta);
+	} else {
+		return setOIStandingsTD(td, row, i, meta);
+	}
+}
+
+// main function for standings
+function showStandings() {
+	var meta = getStandingsMeta();
+	var header = $('<tr />');
+	for (let i = -3; i < problems.length; i++) {
+		header.append(setStandingsTH(document.createElement('th'), i, meta));
+	}
+	$("#standings").long_table(
+		standings,
+		1,
+		header,
+		function(row) {
+			var tr = $('<tr />');
+			setStandingsTR(tr, row, meta);
+			for (let i = -3; i < problems.length; i++) {
+				tr.append(setStandingsTD(document.createElement('td'), row, i, meta));
+			}
+			return tr;
+		}, {
+			table_classes: ['table', 'table-bordered', 'table-striped', 'table-text-center', 'table-vertical-middle', 'table-condensed'],
+			page_len: 100,
+			top_pagination: true,
+			max_extend: 10,
+			print_after_table: function() {
+				return '<div class="text-right text-muted">' + uojLocale("contests::n participants", standings.length) + '</div>';
+			}
+		}
+	);
 }
