@@ -256,10 +256,13 @@ if (!isset($ShowPageHeader)) {
 		<?php endif ?>
 		
 		<?php if (isset($REQUIRE_LIB['shjs'])): ?>
-		<!-- shjs -->
-		<?= HTML::css_link('/css/sh_typical.min.css') ?>
-		<?= HTML::js_src('/js/sh_main.min.js') ?>
-		<script type="text/javascript">$(document).ready(function(){sh_highlightDocument()})</script>
+		<!-- prism.js -->
+		<?= HTML::css_link('/css/prism.css') ?>
+		<script src="https://prismjs.com/prism.js"></script>
+		<script src="https://prismjs.com/components/prism-pascal.js"></script>
+		<script src="https://prismjs.com/components/prism-c.js"></script>
+		<script src="https://prismjs.com/components/prism-cpp.js"></script>
+
 		<?php endif ?>
 		
 		<?php if (isset($REQUIRE_LIB['ckeditor'])): ?>
