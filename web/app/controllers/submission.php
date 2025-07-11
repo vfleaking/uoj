@@ -123,7 +123,7 @@ if (UOJSubmission::cur()->isLatest()) {
     }
 }
 
-requireLib('shjs');
+requireLib('highlight');
 
 ?>
 <?php echoUOJPageHeader(UOJLocale::get('problems::submission').' #'.$submission['id']) ?>
