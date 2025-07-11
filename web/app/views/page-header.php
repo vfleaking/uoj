@@ -258,10 +258,7 @@ if (!isset($ShowPageHeader)) {
 		<?php if (isset($REQUIRE_LIB['shjs'])): ?>
 		<!-- prism.js -->
 		<?= HTML::css_link('/css/prism.css') ?>
-		<script src="https://prismjs.com/prism.js"></script>
-		<script src="https://prismjs.com/components/prism-pascal.js"></script>
-		<script src="https://prismjs.com/components/prism-c.js"></script>
-		<script src="https://prismjs.com/components/prism-cpp.js"></script>
+		<?= HTML::js_src('/js/prism.js') ?>
 
 		<?php endif ?>
 		
