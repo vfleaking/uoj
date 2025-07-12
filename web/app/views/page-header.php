@@ -260,6 +260,7 @@ if (!isset($ShowPageHeader)) {
 		<?= HTML::css_link('/css/prism.css') ?>
 		<?= HTML::js_src('/js/prism.js') ?>
 
+		<!-- shjs -->
 		<?= HTML::css_link('/css/sh_typical.min.css') ?>
 		<?= HTML::js_src('/js/sh_main.min.js') ?>
 		<script type="text/javascript">$(document).ready(function(){sh_highlightDocument()})</script>
