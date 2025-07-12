@@ -262,7 +262,7 @@ if (UOJContest::cur()) {
 }
 
 requireLib('mathjax');
-requireLib('shjs');
+requireLib('highlight');
 
 ?>
 <?php echoUOJPageHeader(HTML::stripTags($problem['title']) . ' - ' . UOJLocale::get('problems::problem')) ?>

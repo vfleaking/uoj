@@ -237,35 +237,13 @@ function echoSubmissionContent($submission, $requirement) {
 			$file_content = uojTextEncode($file_content, ['allow_CR' => true, 'html_escape' => true]);
 			$file_language = htmlspecialchars($config["{$req['name']}_language"]);
 			$footer_text = UOJLocale::get('problems::source code').', '.UOJLocale::get('problems::language').': '.$file_language;
-			switch ($file_language) {
-				case 'C++':
-				case 'C++11':
-					$sh_class = 'sh_cpp';
-					break;
-				case 'Python2.7':
-				case 'Python3':
-					$sh_class = 'sh_python';
-					break;
-				case 'Java7':
-				case 'Java8':
-					$sh_class = 'sh_java';
-					break;
-				case 'C':
-					$sh_class = 'sh_c';
-					break;
-				case 'Pascal':
-					$sh_class = 'sh_pascal';
-					break;
-				default:
-					$sh_class = '';
-					break;
-			}
+			$language_class = UOJLang::getLanguagesCSSClass($file_language);
 			echo '<div class="panel panel-info">';
 			echo '<div class="panel-heading">';
 			echo '<h4 class="panel-title">'.$req['name'].'</h4>';
 			echo '</div>';
 			echo '<div class="panel-body">';
-			echo '<pre><code class="'.$sh_class.'">'.$file_content."\n".'</code></pre>';
+			echo '<pre><code class="'.$language_class.'">'.$file_content."\n".'</code></pre>';
 			echo '</div>';
 			echo '<div class="panel-footer">'.$footer_text.'</div>';
 			echo '</div>';

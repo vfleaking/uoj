@@ -404,7 +404,7 @@ $tabs_info = [
 
 isset($tabs_info[$cur_tab]) || UOJResponse::page404();
 
-requireLib('shjs');
+requireLib('highlight');
 requireLib('morris');
 
 ?>

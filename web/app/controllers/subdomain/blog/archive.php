@@ -42,7 +42,7 @@
     ]);
 	
 	requireLib('mathjax');
-	requireLib('shjs');
+	requireLib('highlight');
 ?>
 <?php echoUOJPageHeader('日志') ?>
 

@@ -205,14 +205,14 @@ trait UOJSubmissionLikeTrait {
                 $file_content = uojTextEncode($file_content, array('allow_CR' => true, 'html_escape' => true));
                 $footer_text = UOJLocale::get('problems::source code').': ';
                 $footer_text .= UOJLang::getLanguageDisplayName($file_language);
-                $sh_class = UOJLang::getLanguagesCSSClass($file_language);
+                $language_class = UOJLang::getLanguagesCSSClass($file_language);
                 echo <<<EOD
                 <div class="panel panel-info">
                     <div class="panel-heading">
                         <h4 class="panel-title">{$req['name']}</h4>
                     </div>
                     <div class="panel-body">
-                        <pre><code class="$sh_class">{$file_content}\n</code></pre>
+                        <pre><code class="$language_class">{$file_content}\n</code></pre>
                     </div>
                     <div class="panel-footer">$footer_text</div>
                 </div>

@@ -12,7 +12,7 @@
 ?>
 <?php
 	$REQUIRE_LIB['mathjax'] = '';
-	$REQUIRE_LIB['shjs'] = '';
+	$REQUIRE_LIB['highlight'] = '';
 ?>
 <?php echoUOJPageHeader(UOJUserBlog::id() . '的博客') ?>
 

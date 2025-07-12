@@ -215,7 +215,7 @@ class UOJBlogEditor {
 		if (isset($_POST['need_preview'])) {
 			ob_start();
 			if ($this->type == 'blog') {
-				echoUOJPageHeader('博客预览', ['ShowPageHeader' => false, 'REQUIRE_LIB' => ['mathjax' => '', 'shjs' => '']]);
+				echoUOJPageHeader('博客预览', ['ShowPageHeader' => false, 'REQUIRE_LIB' => ['mathjax' => '', 'highlight' => '']]);
 				echo '<article class="uoj-article">';
 				echo $this->post_data['content'];
 				echo '</article>';
@@ -228,7 +228,7 @@ class UOJBlogEditor {
 					]
 				));
 			} elseif ($this->type == 'quiz') {
-				echoUOJPageHeader('博客预览', ['ShowPageHeader' => false, 'REQUIRE_LIB' => ['mathjax' => '', 'shjs' => '']]);
+				echoUOJPageHeader('博客预览', ['ShowPageHeader' => false, 'REQUIRE_LIB' => ['mathjax' => '', 'highlight' => '']]);
 				echo '<article class="uoj-article">';
 				$form = new UOJQuizSubmissionForm('quiz', json_decode($this->post_data['content'], true));
 				$form->no_submit = true;
