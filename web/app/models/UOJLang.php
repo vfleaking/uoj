@@ -123,18 +123,18 @@ class UOJLang {
             case 'C++14':
             case 'C++17':
             case 'C++20':
-                return 'sh_cpp';
+                return 'language-cpp';
             case 'Python2.7':
             case 'Python3':
-                return 'sh_python';
+                return 'language-python';
             case 'Java8':
             case 'Java11':
             case 'Java17':
-                return 'sh_java';
+                return 'language-java';
             case 'C':
-                return 'sh_c';
+                return 'language-c';
             case 'Pascal':
-                return 'sh_pascal';
+                return 'language-pascal';
             default:
                 return '';
         }

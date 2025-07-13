@@ -57,7 +57,7 @@
     $perm = UOJHack::cur()->viewerCanSeeComponents(Auth::user());
 ?>
 <?php
-	$REQUIRE_LIB['shjs'] = "";
+	$REQUIRE_LIB['highlight'] = "";
 ?>
 <?php echoUOJPageHeader(UOJLocale::get('problems::hack').' #'.UOJHack::info('id')) ?>
 
