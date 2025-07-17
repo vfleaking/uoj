@@ -1634,13 +1634,33 @@ bool main_data_test(TP test_point_func) {
 
 	bool passed = true;
 	if (nT == 0) { // OI
+		map<int, score_t> point_scores;
+		score_t remaining_tests_total_score = 100;
+		int remaining_tests_cnt = n;
+
+		for (int i = 1; i <= n; i++) {
+			score_t point_score = conf_score("point_score", i, -1);
+
+			if (point_score != -1) {
+				point_scores[i] = point_score;
+				remaining_tests_total_score -= point_score;
+				remaining_tests_cnt--;
+			}
+		}
+
 		for (int i = 1; i <= n; i++) {
 			report_judge_status_f("Judging Test #%d", i);
 			PointInfo po = test_point_func(i);
 			if (po.scr != 100) {
 				passed = false;
 			}
-			po.scr = scale_score(po.scr, conf_score("point_score", i, 100 / n));
+
+			if (point_scores.count(i)) {
+				po.scr = scale_score(po.scr, point_scores[i]);
+			} else {
+				po.scr = scale_score(po.scr, remaining_tests_total_score / remaining_tests_cnt);
+			}
+
 			add_point_info(po);
 		}
 	} else if (nT == 1 && conf_subtask_meta_info(1).is_ordinary()) { // ACM
@@ -1658,9 +1678,30 @@ bool main_data_test(TP test_point_func) {
 			}
 		}
 	} else { // subtask
+		map<int, SubtaskMetaInfo> subtask_metas;
+		score_t remaining_subtasks_total_score = 100;
+		int remaining_subtasks_cnt = nT;
+
+		for (int t = 1; t <= nT; t++) {
+			score_t subtask_score = conf_score("subtask_score", t, -1);
+
+			subtask_metas[t] = conf_subtask_meta_info(t);
+			subtask_metas[t].full_score = subtask_score;
+
+			if (subtask_score != -1) {
+				remaining_subtasks_total_score -= subtask_score;
+				remaining_subtasks_cnt--;
+			}
+		}
+
 		map<int, SubtaskInfo> subtasks;
 		for (int t = 1; t <= nT; t++) {
-			SubtaskInfo st_info(conf_subtask_meta_info(t));
+			SubtaskInfo st_info(subtask_metas[t]);
+
+			if (st_info.full_score == -1) {
+				st_info.full_score = remaining_subtasks_total_score / remaining_subtasks_cnt;
+			}
+
 			if (!st_info.resolve_dependencies(subtasks)) {
 				st_info.info = "Skipped";
 			} else {
