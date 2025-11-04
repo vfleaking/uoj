@@ -9,6 +9,10 @@ class UOJLocale {
 		'en' => [
 			'name' => 'English',
 			'img' => '//img.uoj.ac/utility/flags/24/gb.png'
+		],
+		'vi' => [
+			'name' => 'Tiếng Việt',
+			'img' => '//img.uoj.ac/utility/flags/24/vn.png'
 		]
 	];
 	public static $supported_modules = ['basic', 'contests', 'problems'];
