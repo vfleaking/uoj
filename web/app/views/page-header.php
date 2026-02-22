@@ -145,6 +145,11 @@ if (!isset($ShowPageHeader)) {
 		<?= HTML::js_src('/js/bootstrap-dialog.min.js') ?>
 		<?php endif ?>
 		
+		<?php if (isset($REQUIRE_LIB['problem-subtasks'])): ?>
+		<?= HTML::css_link('/css/problem-subtasks.css?v=2026.02.21') ?>
+		<?= HTML::js_src('/js/problem-subtasks.js?v=2026.02.21') ?>
+		<?php endif ?>
+		
 		<?php if (isset($REQUIRE_LIB['switch'])): ?>
 		<!-- Bootstrap switch -->
 		<?= HTML::css_link('/css/bootstrap-switch.min.css') ?>

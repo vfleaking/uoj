@@ -111,7 +111,23 @@ function displayProblemConf(UOJProblemDataDisplayer $self) {
 	uojIncludeView('problem-data-basic-info');
 	$info_form->printHTML();
 	echoDataConfigureHeader();
+	echo '<div id="problem-conf-subtasks-section" class="top-buffer-sm" style="display:none">';
+	echo '<h4>子任务可视化</h4>';
+	echo '<div class="btn-toolbar problem-subtasks-toolbar" role="toolbar">';
+	echo '<div class="btn-group btn-group-sm" role="group">';
+	echo '<button type="button" class="btn btn-default" data-problem-subtasks-view="visual">可视化视图</button>';
+	echo '<button type="button" class="btn btn-default" data-problem-subtasks-view="raw">原始表格</button>';
+	echo '</div>';
+	echo '<div class="btn-group btn-group-sm" role="group">';
+	echo '<button type="button" class="btn btn-default" data-problem-subtasks-action="expand-all">全部展开</button>';
+	echo '<button type="button" class="btn btn-default" data-problem-subtasks-action="collapse-all">全部折叠</button>';
+	echo '</div>';
+	echo '</div>';
+	echo '<div id="problem-conf-subtasks-container" class="top-buffer-sm"></div>';
+	echo '</div>';
+	echo '<div id="problem-conf-table-wrapper">';
 	$self->echoProblemConfTable();
+	echo '</div>';
 	echoDataConfigureButton();
 	$self->echoFilePre('problem.conf');
 }
@@ -446,6 +462,7 @@ $rejudge_form->runAtServer();
 $info_form->runAtServer();
 
 requireLib('dialog');
+requireLib('problem-subtasks');
 
 ?>
 <?php echoUOJPageHeader(HTML::stripTags($problem['title']) . ' - 数据 - 题目管理') ?>
@@ -464,6 +481,9 @@ requireLib('dialog');
 			</div>
 			<script type="text/javascript">
 				curFileName = '';
+				if (window.UOJProblemSubtasks && window.UOJProblemSubtasks.init) {
+					window.UOJProblemSubtasks.init($('#div-file_content'));
+				}
 				$('#div-file_list a').click(function(e) {
 					$('#div-file_content').html('<h3>loading...</h3>');
 					$(this).tab('show');
@@ -479,6 +499,9 @@ requireLib('dialog');
 								return;
 							}
 							$('#div-file_content').html(data);
+							if (window.UOJProblemSubtasks && window.UOJProblemSubtasks.init) {
+								window.UOJProblemSubtasks.init($('#div-file_content'));
+							}
 						},
 						'html'
 					);
