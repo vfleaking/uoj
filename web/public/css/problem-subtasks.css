@@ -1,0 +1,22 @@
+#problem-conf-subtasks-section .problem-subtasks-toolbar {
+	margin-bottom: 10px;
+}
+
+#problem-conf-subtasks-section .problem-subtask-card .panel-title > a {
+	display: block;
+	text-decoration: none;
+}
+
+#problem-conf-subtasks-section .problem-subtask-default-hint {
+	margin-left: 6px;
+}
+
+#problem-conf-subtasks-section .problem-subtask-tests {
+	margin-top: 6px;
+	max-height: 260px;
+	overflow-y: auto;
+}
+
+#problem-conf-subtasks-section .problem-subtask-tests li {
+	margin-bottom: 4px;
+}
